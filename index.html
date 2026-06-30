@@ -233,6 +233,46 @@
 
   .loading { text-align: center; padding: 40px 20px; color: var(--gray-muted); font-size: 13px; }
 
+  /* ===== ADD CANDIDATE FORM ===== */
+  .form-body { padding: 18px 16px 24px; display: flex; flex-direction: column; gap: 16px; flex: 1; overflow-y: auto; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--gray-text); }
+  .form-input {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--gray-border);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--gray-text);
+    width: 100%;
+  }
+  .form-input:focus { outline: none; border-color: var(--purple); }
+  textarea.form-input { resize: vertical; font-family: 'Montserrat', sans-serif; }
+  .form-submit {
+    background: var(--magenta);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    margin-top: 6px;
+  }
+  .form-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+  .form-success {
+    display: none;
+    background: var(--green-light); color: var(--green);
+    padding: 12px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; text-align: center;
+  }
+  .form-error {
+    display: none;
+    background: var(--red-light); color: var(--red);
+    padding: 12px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; text-align: center;
+  }
+
   /* ===== SIGN-IN SCREEN ===== */
   #signin-screen {
     max-width: 480px; margin: 0 auto; min-height: 100vh;
@@ -337,14 +377,90 @@
     </div>
   </div>
 
-  <!-- ================= ADD CANDIDATE VIEW (placeholder for next phase) ================= -->
+  <!-- ================= ADD CANDIDATE VIEW ================= -->
   <div class="view" id="view-add">
     <div class="header">
-      <div><h1>ADD CANDIDATE</h1><div class="sub">Coming in phase 2</div></div>
+      <div><h1>ADD CANDIDATE</h1><div class="sub">Submit a new hire</div></div>
     </div>
-    <div class="empty-state">The add-candidate form will be built next.</div>
+
+    <form id="add-candidate-form" class="form-body" onsubmit="return submitCandidate(event)">
+
+      <div class="form-group">
+        <label class="form-label">Candidate name *</label>
+        <input type="text" class="form-input" id="f-name" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Phone *</label>
+        <input type="tel" class="form-input" id="f-phone" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input type="email" class="form-input" id="f-email" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Position *</label>
+        <input type="text" class="form-input" id="f-position" placeholder="e.g. RSR" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Market *</label>
+        <select class="form-input" id="f-market" required>
+          <option value="">Select market</option>
+          <option>Rhode Island</option>
+          <option>Mass</option>
+          <option>Connecticut</option>
+          <option>Knoxville</option>
+          <option>Arkansas</option>
+          <option>Chattanooga</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Home location assigned *</label>
+        <input type="text" class="form-input" id="f-location" placeholder="Store name/address" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Start date</label>
+        <input type="date" class="form-input" id="f-startdate">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Coach assigned *</label>
+        <select class="form-input" id="f-coach" required>
+          <option value="">Select coach</option>
+          <option>Rose Perez</option>
+          <option>Ambulai Sheku</option>
+          <option>Joel Montero</option>
+          <option>Manny Rivera</option>
+          <option>Mr. Watts</option>
+          <option>Cheryl</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Manager assigned</label>
+        <input type="text" class="form-input" id="f-manager">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-input" id="f-notes" rows="3"></textarea>
+      </div>
+
+      <button type="submit" class="form-submit" id="add-submit-btn">Submit candidate</button>
+      <div class="form-success" id="add-success">Candidate added successfully.</div>
+      <div class="form-error" id="add-error">Something went wrong submitting this candidate. Please try again.</div>
+
+    </form>
+
     <div class="bottom-nav">
-      <button class="nav-item active" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
+      <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
+      <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
     </div>
   </div>
 
@@ -399,6 +515,8 @@
   var graphToken = null;
   var allCandidates = [];
   var currentFilter = 'all';
+  var cachedSiteId = null;
+  var cachedListId = null;
 
   // ---------------- AUTH ----------------
   function initMsal() {
@@ -425,7 +543,7 @@
       document.getElementById('signin-error').style.display = 'block';
       return;
     }
-    var loginRequest = { scopes: ["Sites.Read.All", "User.Read"] };
+    var loginRequest = { scopes: ["Sites.ReadWrite.All", "User.Read"] };
     msalInstance.loginPopup(loginRequest).then(function (response) {
       graphToken = response.accessToken;
       onSignedIn();
@@ -438,7 +556,7 @@
   function getTokenSilent() {
     var accounts = msalInstance.getAllAccounts();
     if (accounts.length === 0) return Promise.reject("no account");
-    var request = { scopes: ["Sites.Read.All", "User.Read"], account: accounts[0] };
+    var request = { scopes: ["Sites.ReadWrite.All", "User.Read"], account: accounts[0] };
     return msalInstance.acquireTokenSilent(request).then(function (response) {
       graphToken = response.accessToken;
       return graphToken;
@@ -461,16 +579,96 @@
     });
   }
 
+  function graphPost(url, body) {
+    return fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + graphToken,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    }).then(function (res) {
+      if (!res.ok) {
+        return res.text().then(function (text) {
+          throw new Error("Graph POST failed: " + res.status + " " + text);
+        });
+      }
+      return res.json();
+    });
+  }
+
+  function submitCandidate(evt) {
+    evt.preventDefault();
+
+    var btn = document.getElementById('add-submit-btn');
+    var successEl = document.getElementById('add-success');
+    var errorEl = document.getElementById('add-error');
+    successEl.style.display = 'none';
+    errorEl.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    var fields = {
+      CandidateName: document.getElementById('f-name').value,
+      CandidatePhone: document.getElementById('f-phone').value,
+      CandidateEmail: document.getElementById('f-email').value,
+      Position: document.getElementById('f-position').value,
+      Market: document.getElementById('f-market').value,
+      HomeLocationAssigned: document.getElementById('f-location').value,
+      CoachAssigned: document.getElementById('f-coach').value,
+      ManagerAssigned: document.getElementById('f-manager').value,
+      NotesUpdates: document.getElementById('f-notes').value,
+      ClearIdentification: "Pending",
+      OfferLetter: "Pending",
+      NTIDCreated: "Pending",
+      OnboardingStatus: "Pending",
+      BrinksCredentials: "Pending",
+      ReadyForDayOne: "Pending"
+    };
+
+    var startDateVal = document.getElementById('f-startdate').value;
+    if (startDateVal) {
+      fields.StartDate = startDateVal;
+    }
+
+    getSiteId().then(function (siteId) {
+      return getListId(siteId).then(function (listId) {
+        var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items";
+        return graphPost(url, { fields: fields });
+      });
+    }).then(function () {
+      successEl.style.display = 'block';
+      document.getElementById('add-candidate-form').reset();
+      btn.disabled = false;
+      btn.textContent = 'Submit candidate';
+      loadCandidates();
+      setTimeout(function () { successEl.style.display = 'none'; }, 4000);
+    }).catch(function (err) {
+      console.error(err);
+      errorEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Submit candidate';
+    });
+
+    return false;
+  }
+
   function getSiteId() {
+    if (cachedSiteId) return Promise.resolve(cachedSiteId);
     var url = "https://graph.microsoft.com/v1.0/sites/" + CONFIG.siteHostname + ":" + CONFIG.sitePath;
-    return graphFetch(url).then(function (data) { return data.id; });
+    return graphFetch(url).then(function (data) {
+      cachedSiteId = data.id;
+      return cachedSiteId;
+    });
   }
 
   function getListId(siteId) {
+    if (cachedListId) return Promise.resolve(cachedListId);
     var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists?$filter=displayName eq '" + encodeURIComponent(CONFIG.listName) + "'";
     return graphFetch(url).then(function (data) {
       if (!data.value || data.value.length === 0) throw new Error("List not found: " + CONFIG.listName);
-      return data.value[0].id;
+      cachedListId = data.value[0].id;
+      return cachedListId;
     });
   }
 
