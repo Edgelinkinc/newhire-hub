@@ -228,6 +228,11 @@
   .progress-row { display: flex; gap: 4px; margin-top: 11px; padding-left: 48px; }
   .progress-seg { flex: 1; height: 6px; border-radius: 3px; background: #EEEEEE; }
   .next-step { font-size: 10px; color: var(--gray-muted); margin-top: 7px; padding-left: 48px; }
+  .card-info-strip {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 9px; padding-left: 48px;
+    font-size: 10px; color: var(--gray-muted);
+  }
+  .card-info-strip span { background: var(--gray-border); padding: 2px 8px; border-radius: 8px; }
 
   .empty-state { text-align: center; padding: 40px 20px; color: var(--gray-muted); font-size: 13px; }
 
@@ -289,10 +294,33 @@
   .admin-panel.active { display: flex; flex-direction: column; }
 
   .admin-candidate-card {
-    background: #fff; border-radius: 16px; padding: 14px;
+    background: #fff; border-radius: 16px;
     border: 0.5px solid var(--gray-border); margin-bottom: 10px;
+    overflow: hidden;
   }
-  .admin-candidate-card .candidate-name { margin-bottom: 2px; }
+  .admin-candidate-summary {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px; cursor: pointer;
+  }
+  .admin-candidate-summary .candidate-name { margin: 0; }
+  .admin-candidate-summary .candidate-meta { margin-top: 1px; }
+  .admin-summary-info { flex: 1; min-width: 0; }
+  .admin-chevron { font-size: 16px; color: var(--gray-muted); transition: transform 0.15s; flex-shrink: 0; }
+  .admin-candidate-card.expanded .admin-chevron { transform: rotate(90deg); }
+  .admin-candidate-detail { display: none; padding: 0 14px 14px; border-top: 0.5px solid var(--gray-border); }
+  .admin-candidate-card.expanded .admin-candidate-detail { display: block; padding-top: 10px; }
+  .admin-mini-progress { display: flex; gap: 3px; margin-top: 8px; }
+  .admin-mini-seg { flex: 1; height: 4px; border-radius: 2px; background: #EEEEEE; }
+  .admin-order-info {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    padding: 12px; background: var(--purple-light); border-radius: 12px; margin-bottom: 10px;
+  }
+  .admin-order-field { display: flex; flex-direction: column; gap: 3px; }
+  .admin-order-field label { font-size: 10px; font-weight: 600; color: var(--purple); }
+  .admin-order-field input {
+    font-family: 'Montserrat', sans-serif; font-size: 12px; padding: 6px 8px;
+    border-radius: 6px; border: 1.5px solid var(--gray-border);
+  }
   .admin-task-row {
     display: flex; align-items: center; justify-content: space-between;
     gap: 10px; padding: 8px 0; border-top: 0.5px solid var(--gray-border);
@@ -920,8 +948,13 @@
       position: f.Position || "",
       market: f.Market || "",
       homeLocation: f.HomeLocationAssigned || "",
+      trainingStore: f.TrainingStore || "",
       coach: f.CoachAssigned || "",
       manager: f.ManagerAssigned || "",
+      shirtSize: f.UniformShirtSize || "",
+      nameTag: f.NameTag || "",
+      ntid: f.NTID || "",
+      tmobileEmail: f.TMobileEmail || "",
       tasks: tasks,
       // overdue calc is a placeholder here; real threshold-based countdown
       // gets computed once per-task "last updated" date fields exist on the list
@@ -1098,6 +1131,14 @@
         html += '<div class="next-step" style="color:#3B6D11;">All steps complete</div>';
       }
 
+      html += '<div class="card-info-strip">';
+      html += '<span>Shirt: ' + (cand.shirtSize || '&ndash;') + '</span>';
+      html += '<span>Tag: ' + (cand.nameTag || '&ndash;') + '</span>';
+      if (cand.tasks.BrinksCredentials !== 'Pending') {
+        html += '<span>NTID: ' + (cand.ntid || '&ndash;') + '</span>';
+      }
+      html += '</div>';
+
       html += '</div>';
     }
     list.innerHTML = html;
@@ -1183,12 +1224,41 @@
       return;
     }
 
+    // remember which card(s) were expanded before re-render
+    var expandedIds = {};
+    var existingCards = document.querySelectorAll('.admin-candidate-card.expanded');
+    for (var e = 0; e < existingCards.length; e++) {
+      expandedIds[existingCards[e].id] = true;
+    }
+
     var html = '';
     for (var i = 0; i < allCandidates.length; i++) {
       var c = allCandidates[i];
-      html += '<div class="admin-candidate-card">';
+      var doneCount = taskCompleteCount(c);
+
+      html += '<div class="admin-candidate-card' + (expandedIds['admin-card-' + c.id] ? ' expanded' : '') + '" id="admin-card-' + c.id + '">';
+
+      html += '<div class="admin-candidate-summary" onclick="toggleAdminCard(\'' + c.id + '\')">';
+      html += '<div class="admin-summary-info">';
       html += '<div class="candidate-name">' + c.name + '</div>';
       html += '<div class="candidate-meta">' + c.position + ' &middot; ' + c.market + (hasStarted(c) ? ' &middot; <span style="color:#3B6D11; font-weight:600;">Started</span>' : '') + '</div>';
+      html += '<div class="admin-mini-progress">';
+      for (var p = 0; p < TASKS.length; p++) {
+        html += '<div class="admin-mini-seg" style="background:' + segColor(c.tasks[TASKS[p].key]) + ';"></div>';
+      }
+      html += '</div>';
+      html += '</div>';
+      html += '<div class="admin-chevron">&#8250;</div>';
+      html += '</div>';
+
+      html += '<div class="admin-candidate-detail">';
+
+      html += '<div class="admin-order-info">';
+      html += '<div class="admin-order-field"><label>Shirt size</label><input type="text" value="' + (c.shirtSize || '') + '" onchange="updateOrderField(\'' + c.id + '\', \'UniformShirtSize\', \'shirtSize\', this.value)"></div>';
+      html += '<div class="admin-order-field"><label>Name tag</label><input type="text" value="' + (c.nameTag || '') + '" onchange="updateOrderField(\'' + c.id + '\', \'NameTag\', \'nameTag\', this.value)"></div>';
+      html += '<div class="admin-order-field"><label>NTID</label><input type="text" value="' + (c.ntid || '') + '" onchange="updateOrderField(\'' + c.id + '\', \'NTID\', \'ntid\', this.value)"></div>';
+      html += '<div class="admin-order-field"><label>T-Mobile email</label><input type="text" value="' + (c.tmobileEmail || '') + '" onchange="updateOrderField(\'' + c.id + '\', \'TMobileEmail\', \'tmobileEmail\', this.value)"></div>';
+      html += '</div>';
 
       for (var k = 0; k < TASKS.length; k++) {
         var task = TASKS[k];
@@ -1207,10 +1277,21 @@
       if (c.tasks.BrinksCredentials !== 'Complete') {
         html += '<button class="brinks-send-btn" onclick="sendBrinksRequest(\'' + c.id + '\', \'' + c.name.replace(/'/g, "\\'") + '\')">Send Brinks request</button>';
       }
+      html += '</div>'; // detail
 
-      html += '</div>';
+      html += '</div>'; // card
     }
     container.innerHTML = html;
+  }
+
+  function toggleAdminCard(itemId) {
+    var card = document.getElementById('admin-card-' + itemId);
+    if (!card) return;
+    if (card.className.indexOf('expanded') !== -1) {
+      card.className = 'admin-candidate-card';
+    } else {
+      card.className = 'admin-candidate-card expanded';
+    }
   }
 
   function updateTaskStatus(itemId, taskKey, newValue) {
@@ -1246,6 +1327,36 @@
       console.error(err);
       alert('Could not update this task. Please try again.');
       renderAdminCandidates(); // revert dropdown to last known state
+    });
+  }
+
+  function updateOrderField(itemId, sharePointField, localKey, newValue) {
+    var fields = {};
+    fields[sharePointField] = newValue;
+
+    getSiteId().then(function (siteId) {
+      return getListId(siteId).then(function (listId) {
+        var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items/" + itemId + "/fields";
+        return fetch(url, {
+          method: "PATCH",
+          headers: {
+            Authorization: "Bearer " + graphToken,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(fields)
+        });
+      });
+    }).then(function (res) {
+      if (!res.ok) throw new Error("Update failed: " + res.status);
+      for (var i = 0; i < allCandidates.length; i++) {
+        if (allCandidates[i].id === itemId) {
+          allCandidates[i][localKey] = newValue;
+        }
+      }
+      renderCandidates();
+    }).catch(function (err) {
+      console.error(err);
+      alert('Could not save this field. Please try again.');
     });
   }
 
