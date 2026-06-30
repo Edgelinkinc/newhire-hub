@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>New Hire Hub - Edgelink</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/msal/2.38.3/msal-browser.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --magenta: #E20074;
+    --magenta-light: #FBEAF0;
+    --purple: #4A1B5C;
+    --purple-light: #F3E9F6;
+    --green: #3B6D11;
+    --green-light: #EAF3DE;
+    --amber: #854F0B;
+    --amber-light: #FAC775;
+    --red: #A32D2D;
+    --red-light: #FCEBEB;
+    --teal: #0F6E56;
+    --teal-light: #E1F5EE;
+    --gray-border: #E5E1D8;
+    --gray-muted: #8A8780;
+    --gray-text: #2C2C2A;
+    --bg-page: #F7F0E3;
+    --bg-card: #FFFFFF;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg-page);
+    font-family: 'Montserrat', sans-serif;
+    color: var(--gray-text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: var(--bg-card);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  @media (min-width: 700px) {
+    #app {
+      max-width: 900px;
+      margin: 20px auto;
+      min-height: calc(100vh - 40px);
+      border-radius: 16px;
+      box-shadow: none;
+      border: 0.5px solid var(--gray-border);
+      overflow: hidden;
+    }
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: #fff;
+    padding: 22px 18px 14px;
+    border-bottom: 2px solid var(--purple);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1.5px;
+    font-size: 24px;
+    color: var(--purple);
+  }
+  .header .sub {
+    font-size: 11px;
+    color: var(--magenta);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .bell {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--magenta);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+    font-size: 16px;
+  }
+
+  /* ===== STATS STRIP ===== */
+  .stats {
+    margin: 16px 16px 0;
+    background: #fff;
+    border-radius: 18px;
+    padding: 14px 8px;
+    border: 0.5px solid var(--purple);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .stat { text-align: center; flex: 1; }
+  .stat .num { font-size: 19px; font-weight: 700; color: var(--purple); }
+  .stat .num.alert { color: var(--magenta); }
+  .stat .label { font-size: 9px; color: var(--gray-muted); margin-top: 2px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .stat-divider { width: 0.5px; height: 30px; background: var(--gray-border); }
+
+  /* ===== HOME ACTIONS ===== */
+  .section-label {
+    font-size: 11px;
+    color: var(--gray-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 0 16px 8px;
+    margin-top: 22px;
+  }
+  .actions { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .action-tile {
+    border-radius: 16px;
+    padding: 15px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    border: none;
+    text-align: left;
+    width: 100%;
+    transition: transform 0.1s;
+  }
+  .action-tile:active { transform: scale(0.98); }
+  .action-tile.primary { background: var(--magenta); }
+  .action-tile.secondary { background: var(--purple); }
+  .action-tile.tertiary { background: #fff; border: 1.5px solid var(--purple); }
+  .action-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 18px;
+  }
+  .action-tile.primary .action-icon { background: rgba(255,255,255,0.22); color: #fff; }
+  .action-tile.secondary .action-icon { background: rgba(255,255,255,0.18); color: #fff; }
+  .action-tile.tertiary .action-icon { background: var(--purple-light); color: var(--purple); }
+  .action-text { flex: 1; }
+  .action-title { font-size: 13px; font-weight: 600; }
+  .action-tile.primary .action-title, .action-tile.secondary .action-title { color: #fff; }
+  .action-tile.tertiary .action-title { color: var(--purple); }
+  .action-desc { font-size: 10px; margin-top: 1px; }
+  .action-tile.primary .action-desc { color: #FBEAF0; }
+  .action-tile.secondary .action-desc { color: #D9C5E0; }
+  .action-tile.tertiary .action-desc { color: var(--gray-muted); }
+  .action-chevron { font-size: 15px; }
+  .action-tile.primary .action-chevron, .action-tile.secondary .action-chevron { color: #fff; }
+  .action-tile.tertiary .action-chevron { color: var(--purple); }
+
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    padding: 10px 16px;
+    border-top: 0.5px solid var(--gray-border);
+    display: flex;
+    justify-content: space-around;
+    background: #fff;
+    margin-top: auto;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    cursor: pointer; border: none; background: none; padding: 4px 8px;
+  }
+  .nav-item .icon { font-size: 19px; color: var(--gray-muted); }
+  .nav-item .label { font-size: 9px; color: var(--gray-muted); }
+  .nav-item.active .icon, .nav-item.active .label { color: var(--magenta); font-weight: 600; }
+
+  /* ===== VIEW WRAPPER ===== */
+  .view { display: none; flex-direction: column; flex: 1; }
+  .view.active { display: flex; }
+
+  /* ===== CANDIDATES LIST ===== */
+  .candidates-header {
+    background: #fff;
+    padding: 18px 16px 0;
+    border-bottom: 0.5px solid var(--gray-border);
+  }
+  .candidates-header h2 { font-size: 18px; font-weight: 600; color: var(--purple); margin-bottom: 12px; }
+  .filter-pills { display: flex; gap: 6px; padding-bottom: 12px; flex-wrap: wrap; }
+  .pill {
+    font-size: 11px; padding: 6px 13px; border-radius: 14px; font-weight: 600;
+    cursor: pointer; border: 1.5px solid transparent; background: var(--gray-border); color: var(--gray-text);
+  }
+  .pill.active.all { background: var(--magenta); color: #fff; }
+  .pill.active.overdue { background: var(--red-light); color: var(--red); border-color: var(--red); }
+  .pill.active.ready { background: var(--green-light); color: var(--green); border-color: var(--green); }
+
+  .candidates-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
+    overflow-y: auto;
+  }
+
+  .candidate-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px;
+    border: 0.5px solid var(--gray-border);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .candidate-card .stripe {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+  }
+  .candidate-top { display: flex; align-items: center; gap: 10px; padding-left: 6px; }
+  .avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .candidate-info { flex: 1; min-width: 0; }
+  .candidate-name { font-size: 14px; font-weight: 600; color: var(--gray-text); }
+  .candidate-meta { font-size: 11px; color: var(--gray-muted); margin-top: 1px; }
+  .status-chip { font-size: 10px; padding: 4px 9px; border-radius: 10px; font-weight: 600; white-space: nowrap; }
+  .progress-row { display: flex; gap: 4px; margin-top: 11px; padding-left: 48px; }
+  .progress-seg { flex: 1; height: 6px; border-radius: 3px; background: #EEEEEE; }
+  .next-step { font-size: 10px; color: var(--gray-muted); margin-top: 7px; padding-left: 48px; }
+
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--gray-muted); font-size: 13px; }
+
+  .loading { text-align: center; padding: 40px 20px; color: var(--gray-muted); font-size: 13px; }
+
+  /* ===== SIGN-IN SCREEN ===== */
+  #signin-screen {
+    max-width: 480px; margin: 0 auto; min-height: 100vh;
+    background: #fff; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 32px;
+    text-align: center;
+  }
+  #signin-screen h1 {
+    font-family: 'Bebas Neue', sans-serif; letter-spacing: 1.5px;
+    font-size: 28px; color: var(--purple); margin-bottom: 6px;
+  }
+  #signin-screen p { font-size: 13px; color: var(--gray-muted); margin-bottom: 24px; }
+  #signin-btn {
+    background: var(--magenta); color: #fff; border: none; border-radius: 10px;
+    padding: 14px 28px; font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+  }
+  #signin-error { color: var(--red); font-size: 12px; margin-top: 14px; display: none; }
+</style>
+</head>
+<body>
+
+<div id="signin-screen">
+  <h1>NEW HIRE HUB</h1>
+  <p>Sign in with your Edgelink Microsoft 365 account to continue.</p>
+  <button id="signin-btn" onclick="signIn()">Sign in</button>
+  <div id="signin-error">Sign-in failed. Check your connection and try again.</div>
+</div>
+
+<div id="app" style="display:none;">
+
+  <!-- ================= HOME VIEW ================= -->
+  <div class="view active" id="view-home">
+    <div class="header">
+      <div>
+        <h1>NEW HIRE HUB</h1>
+        <div class="sub">Edgelink onboarding</div>
+      </div>
+      <div class="bell">&#128276;</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="num" id="stat-active">-</div><div class="label">In progress</div></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><div class="num alert" id="stat-overdue">-</div><div class="label">Overdue</div></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><div class="num" id="stat-ready">-</div><div class="label">Day one ready</div></div>
+    </div>
+
+    <div class="section-label">Quick actions</div>
+    <div class="actions">
+      <button class="action-tile primary" onclick="goToView('add')">
+        <div class="action-icon">&#43;</div>
+        <div class="action-text">
+          <div class="action-title">Add candidate</div>
+          <div class="action-desc">Submit a new hire</div>
+        </div>
+        <div class="action-chevron">&#8250;</div>
+      </button>
+      <button class="action-tile secondary" onclick="goToView('candidates')">
+        <div class="action-icon">&#9776;</div>
+        <div class="action-text">
+          <div class="action-title">View candidates</div>
+          <div class="action-desc">Track onboarding progress</div>
+        </div>
+        <div class="action-chevron">&#8250;</div>
+      </button>
+      <button class="action-tile tertiary" onclick="goToView('admin')">
+        <div class="action-icon">&#128274;</div>
+        <div class="action-text">
+          <div class="action-title">Admin</div>
+          <div class="action-desc">PIN required</div>
+        </div>
+        <div class="action-chevron">&#8250;</div>
+      </button>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="nav-item active" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
+      <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
+    </div>
+  </div>
+
+  <!-- ================= CANDIDATES VIEW ================= -->
+  <div class="view" id="view-candidates">
+    <div class="candidates-header">
+      <h2>Candidates</h2>
+      <div class="filter-pills">
+        <div class="pill active all" data-filter="all" onclick="setFilter('all')">All <span id="count-all">0</span></div>
+        <div class="pill" data-filter="overdue" onclick="setFilter('overdue')">Overdue <span id="count-overdue">0</span></div>
+        <div class="pill" data-filter="ready" onclick="setFilter('ready')">Ready <span id="count-ready">0</span></div>
+      </div>
+    </div>
+    <div class="candidates-list" id="candidates-list">
+      <div class="loading">Loading candidates...</div>
+    </div>
+    <div class="bottom-nav">
+      <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
+      <button class="nav-item active" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
+    </div>
+  </div>
+
+  <!-- ================= ADD CANDIDATE VIEW (placeholder for next phase) ================= -->
+  <div class="view" id="view-add">
+    <div class="header">
+      <div><h1>ADD CANDIDATE</h1><div class="sub">Coming in phase 2</div></div>
+    </div>
+    <div class="empty-state">The add-candidate form will be built next.</div>
+    <div class="bottom-nav">
+      <button class="nav-item active" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN VIEW (placeholder for next phase) ================= -->
+  <div class="view" id="view-admin">
+    <div class="header">
+      <div><h1>ADMIN</h1><div class="sub">Coming in phase 3</div></div>
+    </div>
+    <div class="empty-state">PIN gate and admin tools will be built next.</div>
+    <div class="bottom-nav">
+      <button class="nav-item active" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ===========================================================
+  // NEW HIRE HUB - Phase 1: Home + View Candidates (read-only)
+  // ES5 only. No build step. Deploys directly to GitHub Pages.
+  // Connects to a Microsoft List via Graph API + MSAL.
+  // ===========================================================
+
+  // ---------------- CONFIG ----------------
+  // NOTE: confirm with Cheryl whether the existing Edgelink Azure AD
+  // app registration (used by Time Adjustment / Roster / WFO) already
+  // has access granted to the NEWHIRESS site. If not, this clientId
+  // and/or the site permissions will need to be updated.
+  var CONFIG = {
+    clientId: "fa7fee44-07c3-4f31-ab00-3b83f124e654",
+    tenantId: "evolutionwirelessinc.onmicrosoft.com",
+    siteHostname: "evolutionwirelessinc.sharepoint.com",
+    sitePath: "/sites/NEWHIRESS",
+    listName: "EdgeLink Inc New Hire Onboarding Tracker",
+    redirectUri: window.location.href.split('#')[0]
+  };
+
+  // Task fields shown as progress segments, in display order.
+  // Add a new task in the future by adding one object here AND
+  // adding a matching Choice column on the SharePoint list.
+  // 'choices' documents the valid values for reference / validation only.
+  var TASKS = [
+    { key: "ClearIdentification", label: "Clear identification", choices: ["Pending", "Complete"] },
+    { key: "OfferLetter", label: "Offer letter", choices: ["Sent", "Pending", "Complete"] },
+    { key: "NTIDCreated", label: "NTID created", choices: ["Pending", "Complete"] },
+    { key: "OnboardingStatus", label: "Onboarding (paperwork)", choices: ["Sent", "Pending", "Complete"] },
+    { key: "BrinksCredentials", label: "Brinks credentials", choices: ["Requested Creation", "Pending", "Complete"] },
+    { key: "ReadyForDayOne", label: "Ready for day one", choices: ["Pending", "Complete"] }
+  ];
+
+  var msalInstance = null;
+  var graphToken = null;
+  var allCandidates = [];
+  var currentFilter = 'all';
+
+  // ---------------- AUTH ----------------
+  function initMsal() {
+    var msalConfig = {
+      auth: {
+        clientId: CONFIG.clientId,
+        authority: "https://login.microsoftonline.com/" + CONFIG.tenantId,
+        redirectUri: CONFIG.redirectUri
+      },
+      cache: { cacheLocation: "sessionStorage" }
+    };
+    msalInstance = new msal.PublicClientApplication(msalConfig);
+  }
+
+  function signIn() {
+    var loginRequest = { scopes: ["Sites.Read.All", "User.Read"] };
+    msalInstance.loginPopup(loginRequest).then(function (response) {
+      graphToken = response.accessToken;
+      onSignedIn();
+    }).catch(function (err) {
+      console.error(err);
+      document.getElementById('signin-error').style.display = 'block';
+    });
+  }
+
+  function getTokenSilent() {
+    var accounts = msalInstance.getAllAccounts();
+    if (accounts.length === 0) return Promise.reject("no account");
+    var request = { scopes: ["Sites.Read.All", "User.Read"], account: accounts[0] };
+    return msalInstance.acquireTokenSilent(request).then(function (response) {
+      graphToken = response.accessToken;
+      return graphToken;
+    });
+  }
+
+  function onSignedIn() {
+    document.getElementById('signin-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    loadCandidates();
+  }
+
+  // ---------------- GRAPH DATA ----------------
+  function graphFetch(url) {
+    return fetch(url, {
+      headers: { Authorization: "Bearer " + graphToken }
+    }).then(function (res) {
+      if (!res.ok) throw new Error("Graph request failed: " + res.status);
+      return res.json();
+    });
+  }
+
+  function getSiteId() {
+    var url = "https://graph.microsoft.com/v1.0/sites/" + CONFIG.siteHostname + ":" + CONFIG.sitePath;
+    return graphFetch(url).then(function (data) { return data.id; });
+  }
+
+  function getListId(siteId) {
+    var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists?$filter=displayName eq '" + encodeURIComponent(CONFIG.listName) + "'";
+    return graphFetch(url).then(function (data) {
+      if (!data.value || data.value.length === 0) throw new Error("List not found: " + CONFIG.listName);
+      return data.value[0].id;
+    });
+  }
+
+  function getListItems(siteId, listId) {
+    var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items?expand=fields&$top=200";
+    return graphFetch(url).then(function (data) { return data.value || []; });
+  }
+
+  function mapListItemToCandidate(item) {
+    var f = item.fields || {};
+    var tasks = {};
+    for (var i = 0; i < TASKS.length; i++) {
+      tasks[TASKS[i].key] = f[TASKS[i].key] || "Pending";
+    }
+    var name = f.CandidateName || f.Title || "Unnamed candidate";
+    var initials = name.split(" ").map(function (p) { return p.charAt(0); }).join("").substring(0, 2).toUpperCase();
+    return {
+      id: item.id,
+      name: name,
+      initials: initials,
+      position: f.Position || "",
+      market: f.Market || "",
+      homeLocation: f.HomeLocationAssigned || "",
+      coach: f.CoachAssigned || "",
+      manager: f.ManagerAssigned || "",
+      tasks: tasks,
+      // overdue calc is a placeholder here; real threshold-based countdown
+      // gets computed once per-task "last updated" date fields exist on the list
+      overdueDays: 0,
+      nextStep: computeNextStep(tasks)
+    };
+  }
+
+  function computeNextStep(tasks) {
+    for (var i = 0; i < TASKS.length; i++) {
+      if (tasks[TASKS[i].key] !== "Complete") {
+        return TASKS[i].label;
+      }
+    }
+    return "";
+  }
+
+  function loadCandidates() {
+    var list = document.getElementById('candidates-list');
+    if (list) list.innerHTML = '<div class="loading">Loading candidates...</div>';
+
+    getSiteId().then(function (siteId) {
+      return getListId(siteId).then(function (listId) {
+        return getListItems(siteId, listId);
+      });
+    }).then(function (items) {
+      allCandidates = items.map(mapListItemToCandidate);
+      renderStats();
+      renderCounts();
+      renderCandidates();
+    }).catch(function (err) {
+      console.error(err);
+      if (list) list.innerHTML = '<div class="empty-state">Could not load candidates. Check sign-in and list configuration.</div>';
+    });
+  }
+
+  // ---------------- DISPLAY HELPERS ----------------
+  function taskCompleteCount(c) {
+    var count = 0;
+    for (var i = 0; i < TASKS.length; i++) {
+      if (c.tasks[TASKS[i].key] === 'Complete') count++;
+    }
+    return count;
+  }
+
+  function isReady(c) {
+    return c.tasks.ReadyForDayOne === 'Complete';
+  }
+
+  function isOverdue(c) {
+    return c.overdueDays && c.overdueDays > 0 && !isReady(c);
+  }
+
+  function statusChip(c) {
+    if (isReady(c)) {
+      return { text: 'Day one ready', bg: '#EAF3DE', color: '#3B6D11' };
+    }
+    if (isOverdue(c)) {
+      return { text: c.overdueDays + 'd left', bg: '#FCEBEB', color: '#A32D2D' };
+    }
+    return { text: 'On track', bg: '#F3E9F6', color: '#4A1B5C' };
+  }
+
+  function avatarColors(c) {
+    if (isReady(c)) return { bg: '#EAF3DE', color: '#3B6D11' };
+    if (isOverdue(c)) return { bg: '#FCEBEB', color: '#A32D2D' };
+    return { bg: '#F3E9F6', color: '#4A1B5C' };
+  }
+
+  function stripeColor(c) {
+    if (isReady(c)) return '#639922';
+    if (isOverdue(c)) return '#D85A30';
+    return '#5DCAA5';
+  }
+
+  function segColor(status) {
+    if (status === 'Complete') return '#5DCAA5';
+    if (status === 'Pending') return '#FAC775';
+    if (status === 'Requested Creation') return '#378ADD';
+    if (status === 'Sent') return '#FAC775';
+    return '#EEEEEE';
+  }
+
+  function renderStats() {
+    var active = 0, overdue = 0, ready = 0;
+    for (var i = 0; i < allCandidates.length; i++) {
+      var c = allCandidates[i];
+      if (isReady(c)) { ready++; } else { active++; }
+      if (isOverdue(c)) { overdue++; }
+    }
+    document.getElementById('stat-active').textContent = active;
+    document.getElementById('stat-overdue').textContent = overdue;
+    document.getElementById('stat-ready').textContent = ready;
+  }
+
+  function renderCounts() {
+    var overdueCount = 0, readyCount = 0;
+    for (var i = 0; i < allCandidates.length; i++) {
+      if (isOverdue(allCandidates[i])) overdueCount++;
+      if (isReady(allCandidates[i])) readyCount++;
+    }
+    document.getElementById('count-all').textContent = allCandidates.length;
+    document.getElementById('count-overdue').textContent = overdueCount;
+    document.getElementById('count-ready').textContent = readyCount;
+  }
+
+  function renderCandidates() {
+    var list = document.getElementById('candidates-list');
+    var filtered = [];
+    for (var i = 0; i < allCandidates.length; i++) {
+      var c = allCandidates[i];
+      if (currentFilter === 'all') { filtered.push(c); }
+      else if (currentFilter === 'overdue' && isOverdue(c)) { filtered.push(c); }
+      else if (currentFilter === 'ready' && isReady(c)) { filtered.push(c); }
+    }
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="empty-state">No candidates match this filter.</div>';
+      return;
+    }
+
+    var html = '';
+    for (var j = 0; j < filtered.length; j++) {
+      var cand = filtered[j];
+      var chip = statusChip(cand);
+      var av = avatarColors(cand);
+      var stripe = stripeColor(cand);
+
+      html += '<div class="candidate-card">';
+      html += '<div class="stripe" style="background:' + stripe + ';"></div>';
+      html += '<div class="candidate-top">';
+      html += '<div class="avatar" style="background:' + av.bg + '; color:' + av.color + ';">' + cand.initials + '</div>';
+      html += '<div class="candidate-info">';
+      html += '<div class="candidate-name">' + cand.name + '</div>';
+      html += '<div class="candidate-meta">' + cand.position + ' &middot; ' + cand.market + '</div>';
+      html += '</div>';
+      html += '<div class="status-chip" style="background:' + chip.bg + '; color:' + chip.color + ';">' + chip.text + '</div>';
+      html += '</div>';
+
+      html += '<div class="progress-row">';
+      for (var k = 0; k < TASKS.length; k++) {
+        var st = cand.tasks[TASKS[k].key];
+        html += '<div class="progress-seg" style="background:' + segColor(st) + ';" title="' + TASKS[k].label + ': ' + st + '"></div>';
+      }
+      html += '</div>';
+
+      if (cand.nextStep) {
+        html += '<div class="next-step">Next: ' + cand.nextStep + '</div>';
+      } else {
+        html += '<div class="next-step" style="color:#3B6D11;">All steps complete</div>';
+      }
+
+      html += '</div>';
+    }
+    list.innerHTML = html;
+  }
+
+  function setFilter(filter) {
+    currentFilter = filter;
+    var pills = document.querySelectorAll('.pill');
+    for (var i = 0; i < pills.length; i++) {
+      pills[i].className = 'pill';
+    }
+    var activePill = document.querySelector('.pill[data-filter="' + filter + '"]');
+    if (activePill) {
+      activePill.className = 'pill active ' + filter;
+    }
+    renderCandidates();
+  }
+
+  function goToView(viewName) {
+    var views = document.querySelectorAll('.view');
+    for (var i = 0; i < views.length; i++) {
+      views[i].className = 'view';
+    }
+    document.getElementById('view-' + viewName).className = 'view active';
+
+    var navItems = document.querySelectorAll('.nav-item');
+    for (var j = 0; j < navItems.length; j++) {
+      navItems[j].className = 'nav-item';
+      if (navItems[j].getAttribute('data-nav') === viewName) {
+        navItems[j].className = 'nav-item active';
+      }
+    }
+  }
+
+  // ---------------- INIT ----------------
+  initMsal();
+  // Try silent sign-in first (returning visit); fall back to sign-in screen.
+  getTokenSilent().then(function () {
+    onSignedIn();
+  }).catch(function () {
+    // sign-in screen stays visible, user clicks "Sign in"
+  });
+
+</script>
+
+</body>
+</html>
