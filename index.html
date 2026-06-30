@@ -411,11 +411,17 @@
       cache: { cacheLocation: "sessionStorage" }
     };
     msalInstance = new msal.PublicClientApplication(msalConfig);
+    return msalInstance.initialize();
   }
 
   function signIn() {
     if (typeof msal === 'undefined') {
       document.getElementById('signin-error').textContent = 'Sign-in library failed to load. Check your internet connection and refresh the page.';
+      document.getElementById('signin-error').style.display = 'block';
+      return;
+    }
+    if (!msalInstance) {
+      document.getElementById('signin-error').textContent = 'Still loading, please try again in a moment.';
       document.getElementById('signin-error').style.display = 'block';
       return;
     }
@@ -677,12 +683,17 @@
   }
 
   // ---------------- INIT ----------------
-  initMsal();
-  // Try silent sign-in first (returning visit); fall back to sign-in screen.
-  getTokenSilent().then(function () {
-    onSignedIn();
-  }).catch(function () {
-    // sign-in screen stays visible, user clicks "Sign in"
+  initMsal().then(function () {
+    // Try silent sign-in first (returning visit); fall back to sign-in screen.
+    return getTokenSilent().then(function () {
+      onSignedIn();
+    }).catch(function () {
+      // sign-in screen stays visible, user clicks "Sign in"
+    });
+  }).catch(function (err) {
+    console.error('MSAL init failed:', err);
+    document.getElementById('signin-error').textContent = 'Could not initialize sign-in. Please refresh the page.';
+    document.getElementById('signin-error').style.display = 'block';
   });
 
 </script>
