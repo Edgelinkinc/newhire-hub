@@ -560,7 +560,7 @@
     { key: "NTIDCreated", label: "NTID created", choices: ["Pending", "Complete"] },
     { key: "OnboardingStatus", label: "Onboarding (paperwork)", choices: ["Sent", "Pending", "Complete"] },
     { key: "BrinksCredentials", label: "Brinks credentials", choices: ["Requested Creation", "Pending", "Complete"] },
-    { key: "ReadyForDayOne", label: "Ready for day one", choices: ["Pending", "Complete"] }
+    { key: "ReadyForDayOne", label: "Ready for day one", choices: ["Pending", "Complete", "Started"] }
   ];
 
   // Full 34-store list, used for Home Store and Training Store dropdowns
@@ -870,6 +870,10 @@
     return c.tasks.ReadyForDayOne === 'Complete';
   }
 
+  function hasStarted(c) {
+    return c.tasks.ReadyForDayOne === 'Started';
+  }
+
   function isOverdue(c) {
     return c.overdueDays && c.overdueDays > 0 && !isReady(c);
   }
@@ -898,16 +902,31 @@
 
   function segColor(status) {
     if (status === 'Complete') return '#5DCAA5';
+    if (status === 'Started') return '#639922';
     if (status === 'Pending') return '#FAC775';
     if (status === 'Requested Creation') return '#378ADD';
     if (status === 'Sent') return '#FAC775';
     return '#EEEEEE';
   }
 
+  function getActiveCandidates() {
+    // Candidates who have flipped to "Started" leave Active New Hires entirely.
+    // Their record stays permanently in SharePoint - this only filters the
+    // dashboard view. They are reserved for a future Training Watch screen.
+    var active = [];
+    for (var i = 0; i < allCandidates.length; i++) {
+      if (!hasStarted(allCandidates[i])) {
+        active.push(allCandidates[i]);
+      }
+    }
+    return active;
+  }
+
   function renderStats() {
     var active = 0, overdue = 0, ready = 0;
-    for (var i = 0; i < allCandidates.length; i++) {
-      var c = allCandidates[i];
+    var pool = getActiveCandidates();
+    for (var i = 0; i < pool.length; i++) {
+      var c = pool[i];
       if (isReady(c)) { ready++; } else { active++; }
       if (isOverdue(c)) { overdue++; }
     }
@@ -917,21 +936,23 @@
   }
 
   function renderCounts() {
+    var pool = getActiveCandidates();
     var overdueCount = 0, readyCount = 0;
-    for (var i = 0; i < allCandidates.length; i++) {
-      if (isOverdue(allCandidates[i])) overdueCount++;
-      if (isReady(allCandidates[i])) readyCount++;
+    for (var i = 0; i < pool.length; i++) {
+      if (isOverdue(pool[i])) overdueCount++;
+      if (isReady(pool[i])) readyCount++;
     }
-    document.getElementById('count-all').textContent = allCandidates.length;
+    document.getElementById('count-all').textContent = pool.length;
     document.getElementById('count-overdue').textContent = overdueCount;
     document.getElementById('count-ready').textContent = readyCount;
   }
 
   function renderCandidates() {
     var list = document.getElementById('candidates-list');
+    var pool = getActiveCandidates();
     var filtered = [];
-    for (var i = 0; i < allCandidates.length; i++) {
-      var c = allCandidates[i];
+    for (var i = 0; i < pool.length; i++) {
+      var c = pool[i];
       if (currentFilter === 'all') { filtered.push(c); }
       else if (currentFilter === 'overdue' && isOverdue(c)) { filtered.push(c); }
       else if (currentFilter === 'ready' && isReady(c)) { filtered.push(c); }
