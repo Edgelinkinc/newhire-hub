@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>New Hire Hub - Edgelink</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/msal/2.38.3/msal-browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3/lib/msal-browser.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&display=swap');
 
@@ -414,6 +414,11 @@
   }
 
   function signIn() {
+    if (typeof msal === 'undefined') {
+      document.getElementById('signin-error').textContent = 'Sign-in library failed to load. Check your internet connection and refresh the page.';
+      document.getElementById('signin-error').style.display = 'block';
+      return;
+    }
     var loginRequest = { scopes: ["Sites.Read.All", "User.Read"] };
     msalInstance.loginPopup(loginRequest).then(function (response) {
       graphToken = response.accessToken;
