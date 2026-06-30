@@ -402,7 +402,12 @@
 
       <div class="form-group">
         <label class="form-label">Position *</label>
-        <input type="text" class="form-input" id="f-position" placeholder="e.g. RSR" required>
+        <select class="form-input" id="f-position" required>
+          <option value="">Select position</option>
+          <option>RSR</option>
+          <option>Store Manager</option>
+          <option>Multi-Store Manager</option>
+        </select>
       </div>
 
       <div class="form-group">
@@ -419,8 +424,17 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Home location assigned *</label>
-        <input type="text" class="form-input" id="f-location" placeholder="Store name/address" required>
+        <label class="form-label">Home store assigned *</label>
+        <select class="form-input" id="f-location" required>
+          <option value="">Select home store</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Training store</label>
+        <select class="form-input" id="f-trainingstore">
+          <option value="">Select training store (if different)</option>
+        </select>
       </div>
 
       <div class="form-group">
@@ -444,6 +458,44 @@
       <div class="form-group">
         <label class="form-label">Manager assigned</label>
         <input type="text" class="form-input" id="f-manager">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Uniform shirt size *</label>
+        <select class="form-input" id="f-shirtsize" required>
+          <option value="">Select size</option>
+          <optgroup label="Men's">
+            <option>Men's XS</option>
+            <option>Men's S</option>
+            <option>Men's M</option>
+            <option>Men's L</option>
+            <option>Men's XL</option>
+            <option>Men's 2XL</option>
+            <option>Men's 3XL</option>
+            <option>Men's 4XL</option>
+          </optgroup>
+          <optgroup label="Women's">
+            <option>Women's XS</option>
+            <option>Women's S</option>
+            <option>Women's M</option>
+            <option>Women's L</option>
+            <option>Women's XL</option>
+            <option>Women's 2XL</option>
+            <option>Women's 3XL</option>
+            <option>Women's 4XL</option>
+          </optgroup>
+          <option>Other (note size below)</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="shirtsize-other-group" style="display:none;">
+        <label class="form-label">Other size details</label>
+        <input type="text" class="form-input" id="f-shirtsize-other" placeholder="Specify size needed">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Name for name tag *</label>
+        <input type="text" class="form-input" id="f-nametag" placeholder="As it should appear on tag" required>
       </div>
 
       <div class="form-group">
@@ -511,6 +563,34 @@
     { key: "ReadyForDayOne", label: "Ready for day one", choices: ["Pending", "Complete"] }
   ];
 
+  // Full 34-store list, used for Home Store and Training Store dropdowns
+  var STORE_LIST = [
+    "AR-COLONEL GLENN", "AR-RADIO GEYER", "CT-BUCKLAND HILLS MALL", "CT-NEW LONDON",
+    "CT-NORWICH", "MA-SOUTH SHORE MALL", "MA-CAPE COD MALL", "MA-COGGESHALL",
+    "MA-EXCHANGE ST.", "MA-FALLRIVER", "MA-HOLYOKE", "MA-KELLEY SQUARE",
+    "MA-LOCUST STREET", "MA-ROCKDALE", "MA-STATE STREET", "MA-WESTERN AVE",
+    "RI-751BROAD", "RI-BALD HILL", "RI-BROAD ST", "RI-BROADWAY", "RI-COVENTRY",
+    "RI-DOUGLAS", "RI-EAST PROVIDENCE", "RI-HARTFORD AVE", "RI-NEWPORT AVE",
+    "RI-PROVIDENCE PLACE MALL", "RI-RESERVOIR AVE", "TN-KEITH ST", "TN-MAGNOLIA",
+    "TN-MORRISTOWN", "TN-NORTH BROARDWAY", "TN-SHALLOWFORD RD", "TN-WEST MARKET",
+    "TN-WESTERN AVE"
+  ];
+
+  var ALL_POSITIONS = ["RSR", "Store Manager", "Multi-Store Manager"];
+  var MANAGER_ONLY_POSITIONS = ["RSR"];
+
+  // Coach identity lookup - anyone signed in with one of these emails
+  // sees the full Position list; everyone else is treated as a Manager
+  // and only sees RSR. Source: Time Adjustment dashboard backsheet.
+  var COACH_EMAILS = [
+    "rose@edgelinkinc.com",
+    "ambulai@edgelinkinc.com",
+    "joel@edgelinkinc.com",
+    "angel.rivera@edgelinkinc.com",
+    "jameswatts@evolutionwireless.net",
+    "cheryl@edgelinkinc.com"
+  ];
+
   var msalInstance = null;
   var graphToken = null;
   var allCandidates = [];
@@ -566,7 +646,46 @@
   function onSignedIn() {
     document.getElementById('signin-screen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
+    populateStoreDropdowns();
+    applyPositionFilterForCurrentUser();
     loadCandidates();
+  }
+
+  function populateStoreDropdowns() {
+    var homeSelect = document.getElementById('f-location');
+    var trainingSelect = document.getElementById('f-trainingstore');
+    for (var i = 0; i < STORE_LIST.length; i++) {
+      var opt1 = document.createElement('option');
+      opt1.textContent = STORE_LIST[i];
+      homeSelect.appendChild(opt1);
+
+      var opt2 = document.createElement('option');
+      opt2.textContent = STORE_LIST[i];
+      trainingSelect.appendChild(opt2);
+    }
+  }
+
+  function getCurrentUserEmail() {
+    var accounts = msalInstance.getAllAccounts();
+    if (accounts.length === 0) return "";
+    return (accounts[0].username || "").toLowerCase();
+  }
+
+  function applyPositionFilterForCurrentUser() {
+    var email = getCurrentUserEmail();
+    var isCoach = COACH_EMAILS.indexOf(email) !== -1;
+    var positionsToShow = isCoach ? ALL_POSITIONS : MANAGER_ONLY_POSITIONS;
+
+    var select = document.getElementById('f-position');
+    // clear existing options except the placeholder
+    while (select.options.length > 1) {
+      select.remove(1);
+    }
+    for (var i = 0; i < positionsToShow.length; i++) {
+      var opt = document.createElement('option');
+      opt.textContent = positionsToShow[i];
+      select.appendChild(opt);
+    }
   }
 
   // ---------------- GRAPH DATA ----------------
@@ -608,6 +727,11 @@
     btn.disabled = true;
     btn.textContent = 'Submitting...';
 
+    var shirtSizeVal = document.getElementById('f-shirtsize').value;
+    if (shirtSizeVal === 'Other (note size below)') {
+      shirtSizeVal = 'Other: ' + document.getElementById('f-shirtsize-other').value;
+    }
+
     var fields = {
       CandidateName: document.getElementById('f-name').value,
       CandidatePhone: document.getElementById('f-phone').value,
@@ -615,8 +739,11 @@
       Position: document.getElementById('f-position').value,
       Market: document.getElementById('f-market').value,
       HomeLocationAssigned: document.getElementById('f-location').value,
+      TrainingStore: document.getElementById('f-trainingstore').value,
       CoachAssigned: document.getElementById('f-coach').value,
       ManagerAssigned: document.getElementById('f-manager').value,
+      UniformShirtSize: shirtSizeVal,
+      NameTag: document.getElementById('f-nametag').value,
       NotesUpdates: document.getElementById('f-notes').value,
       ClearIdentification: "Pending",
       OfferLetter: "Pending",
@@ -851,6 +978,14 @@
     list.innerHTML = html;
   }
 
+  function setupShirtSizeToggle() {
+    var sizeSelect = document.getElementById('f-shirtsize');
+    var otherGroup = document.getElementById('shirtsize-other-group');
+    sizeSelect.addEventListener('change', function () {
+      otherGroup.style.display = (sizeSelect.value === 'Other (note size below)') ? 'flex' : 'none';
+    });
+  }
+
   function setFilter(filter) {
     currentFilter = filter;
     var pills = document.querySelectorAll('.pill');
@@ -881,6 +1016,7 @@
   }
 
   // ---------------- INIT ----------------
+  setupShirtSizeToggle();
   initMsal().then(function () {
     // Try silent sign-in first (returning visit); fall back to sign-in screen.
     return getTokenSilent().then(function () {
