@@ -628,6 +628,7 @@
         <div class="admin-tab active" data-admintab="candidates" onclick="setAdminTab('candidates')">Candidates</div>
         <div class="admin-tab" data-admintab="recipients" onclick="setAdminTab('recipients')">Email recipients</div>
         <div class="admin-tab" data-admintab="thresholds" onclick="setAdminTab('thresholds')">Day thresholds</div>
+        <div class="admin-tab" data-admintab="diagnostics" onclick="setAdminTab('diagnostics')">Diagnostics</div>
       </div>
 
       <!-- Candidates tab: editable task statuses -->
@@ -645,6 +646,14 @@
       <!-- Day thresholds tab (backsheet) -->
       <div class="admin-panel" id="admin-panel-thresholds">
         <div class="candidates-list" id="admin-thresholds-list"></div>
+      </div>
+
+      <!-- Diagnostics tab -->
+      <div class="admin-panel" id="admin-panel-diagnostics">
+        <div class="candidates-list">
+          <button class="form-submit" style="margin-bottom:14px;" onclick="runFieldDiagnostic()">Show real SharePoint field names</button>
+          <div id="diagnostic-output" style="font-size:11px; font-family:monospace; white-space:pre-wrap; background:#fff; border:0.5px solid var(--gray-border); border-radius:10px; padding:12px; color:var(--gray-text);"></div>
+        </div>
       </div>
 
       <div class="bottom-nav">
@@ -1405,6 +1414,28 @@
     saveBacksheet(backsheet);
   }
 
+  function runFieldDiagnostic() {
+    var output = document.getElementById('diagnostic-output');
+    output.textContent = 'Loading...';
+
+    getSiteId().then(function (siteId) {
+      return getListId(siteId).then(function (listId) {
+        var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/columns";
+        return graphFetch(url);
+      });
+    }).then(function (data) {
+      var lines = ['DISPLAY NAME  ->  INTERNAL NAME', '------------------------------------'];
+      for (var i = 0; i < data.value.length; i++) {
+        var col = data.value[i];
+        if (col.hidden || col.readOnly) continue;
+        lines.push(col.displayName + '  ->  ' + col.name);
+      }
+      output.textContent = lines.join('\n');
+    }).catch(function (err) {
+      console.error(err);
+      output.textContent = 'Could not load field names: ' + err.message;
+    });
+  }
   function setupShirtSizeToggle() {
     var sizeSelect = document.getElementById('f-shirtsize');
     var otherGroup = document.getElementById('shirtsize-other-group');
