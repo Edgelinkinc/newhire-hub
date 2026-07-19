@@ -669,6 +669,13 @@
       <!-- Diagnostics tab -->
       <div class="admin-panel" id="admin-panel-diagnostics">
         <div class="candidates-list">
+          <div class="form-group">
+            <label class="form-label">Which list to inspect</label>
+            <select class="form-input" id="diagnostic-list-select">
+              <option value="onboarding">EdgeLink Inc New Hire Onboarding Tracker</option>
+              <option value="roster">EdgeLink Store Roster</option>
+            </select>
+          </div>
           <button class="form-submit" style="margin-bottom:14px;" onclick="runFieldDiagnostic()">Show real SharePoint field names</button>
           <div id="diagnostic-output" style="font-size:11px; font-family:monospace; white-space:pre-wrap; background:#fff; border:0.5px solid var(--gray-border); border-radius:10px; padding:12px; color:var(--gray-text);"></div>
         </div>
@@ -698,6 +705,7 @@
     siteHostname: "evolutionwirelessinc.sharepoint.com",
     sitePath: "/sites/NEWHIRESS",
     listName: "EdgeLink Inc New Hire Onboarding Tracker",
+    rosterListName: "EdgeLink Store Roster",
     redirectUri: window.location.href.split('#')[0]
   };
 
@@ -872,7 +880,7 @@
   function onSignedIn() {
     document.getElementById('signin-screen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
-    populateStoreDropdowns();
+    loadStoreRoster(); // loads roster then calls populateStoreDropdowns
     applyPositionFilterForCurrentUser();
     loadCandidates();
   }
@@ -890,16 +898,19 @@
       return;
     }
 
-    var manager = STORE_MANAGER_MAP[store];
+    // Try live roster data first, fall back to hardcoded maps
+    var entry = getStoreRosterEntry(store);
+    var manager = entry ? entry.manager : (STORE_MANAGER_MAP[store] || "TBD");
+    var coach = entry ? entry.coach : (STORE_COACH_MAP[store] || "TBD");
+
     var mOpt = document.createElement('option');
-    mOpt.value = manager || "TBD";
-    mOpt.textContent = manager ? manager : "TBD - No manager assigned yet";
+    mOpt.value = manager;
+    mOpt.textContent = manager === "TBD" ? "TBD - No manager assigned yet" : manager;
     managerSelect.appendChild(mOpt);
 
-    var coach = STORE_COACH_MAP[store];
     var cOpt = document.createElement('option');
-    cOpt.value = coach || "TBD";
-    cOpt.textContent = coach ? coach : "TBD - No coach assigned yet";
+    cOpt.value = coach;
+    cOpt.textContent = coach === "TBD" ? "TBD - No coach assigned yet" : coach;
     coachSelect.appendChild(cOpt);
   }
 
@@ -910,13 +921,26 @@
     homeSelect.innerHTML = '<option value="">Select home store</option>';
     trainingSelect.innerHTML = '<option value="">Select training store (if different)</option>';
 
-    for (var i = 0; i < STORE_LIST.length; i++) {
+    // Build store list from live roster data if available, fall back to hardcoded
+    var stores = [];
+    if (storeRosterData.length > 0) {
+      for (var i = 0; i < storeRosterData.length; i++) {
+        var f = storeRosterData[i].fields || {};
+        var name = f[ROSTER_FIELD_MAP.StoreName] || f.Title || "";
+        if (name) stores.push(name);
+      }
+      stores.sort();
+    } else {
+      stores = STORE_LIST.slice(); // fallback to hardcoded
+    }
+
+    for (var j = 0; j < stores.length; j++) {
       var opt1 = document.createElement('option');
-      opt1.textContent = STORE_LIST[i];
+      opt1.textContent = stores[j];
       homeSelect.appendChild(opt1);
 
       var opt2 = document.createElement('option');
-      opt2.textContent = STORE_LIST[i];
+      opt2.textContent = stores[j];
       trainingSelect.appendChild(opt2);
     }
   }
@@ -1592,12 +1616,16 @@
 
   function runFieldDiagnostic() {
     var output = document.getElementById('diagnostic-output');
-    output.textContent = 'Loading...';
+    var sel = document.getElementById('diagnostic-list-select');
+    var listName = (sel && sel.value === 'roster') ? CONFIG.rosterListName : CONFIG.listName;
+    output.textContent = 'Loading ' + listName + '...';
 
     getSiteId().then(function (siteId) {
-      return getListId(siteId).then(function (listId) {
-        var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/columns";
-        return graphFetch(url);
+      var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists?$filter=displayName eq '" + encodeURIComponent(listName) + "'";
+      return graphFetch(url).then(function (data) {
+        if (!data.value || data.value.length === 0) throw new Error("List not found: " + listName);
+        var listId = data.value[0].id;
+        return graphFetch("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/columns");
       });
     }).then(function (data) {
       var lines = ['DISPLAY NAME  ->  INTERNAL NAME', '------------------------------------'];
@@ -1611,6 +1639,59 @@
       console.error(err);
       output.textContent = 'Could not load field names: ' + err.message;
     });
+  }
+
+  // Store Roster field map (from freshly created list - names should be clean)
+  var ROSTER_FIELD_MAP = {
+    StoreName: "Title",
+    Market: "Market",
+    CoachAssigned: "CoachAssigned",
+    ManagerAssigned: "ManagerAssigned",
+    ManagerEmail: "ManagerEmail"
+  };
+
+  var cachedRosterListId = null;
+  var storeRosterData = [];
+
+  function getRosterListId(siteId) {
+    if (cachedRosterListId) return Promise.resolve(cachedRosterListId);
+    var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists?$filter=displayName eq '" + encodeURIComponent(CONFIG.rosterListName) + "'";
+    return graphFetch(url).then(function (data) {
+      if (!data.value || data.value.length === 0) throw new Error("Store Roster list not found");
+      cachedRosterListId = data.value[0].id;
+      return cachedRosterListId;
+    });
+  }
+
+  function loadStoreRoster() {
+    getSiteId().then(function (siteId) {
+      return getRosterListId(siteId).then(function (listId) {
+        return graphFetch("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items?expand=fields&$top=200");
+      });
+    }).then(function (data) {
+      storeRosterData = data.value || [];
+      populateStoreDropdowns();
+    }).catch(function (err) {
+      console.warn('Store Roster load failed, falling back to static list:', err);
+      // Falls back gracefully - store dropdown still populates from STORE_LIST
+      // but coach/manager won't auto-fill until roster loads
+      populateStoreDropdowns();
+    });
+  }
+
+  function getStoreRosterEntry(storeName) {
+    for (var i = 0; i < storeRosterData.length; i++) {
+      var f = storeRosterData[i].fields || {};
+      var name = f[ROSTER_FIELD_MAP.StoreName] || f.Title || "";
+      if (name.toUpperCase() === storeName.toUpperCase()) {
+        return {
+          coach: f[ROSTER_FIELD_MAP.CoachAssigned] || f.CoachAssigned || "TBD",
+          manager: f[ROSTER_FIELD_MAP.ManagerAssigned] || f.ManagerAssigned || "TBD",
+          managerEmail: f[ROSTER_FIELD_MAP.ManagerEmail] || f.ManagerEmail || ""
+        };
+      }
+    }
+    return null;
   }
   var STORE_COACH_MAP = {
     "MA-KELLEY SQUARE": "Rose Perez",
@@ -1708,4 +1789,3 @@
 
 </body>
 </html>
-
