@@ -432,6 +432,27 @@
     <div class="bottom-nav">
       <button class="nav-item active" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
       <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
+      <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
+      <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
+    </div>
+  </div>
+
+  <!-- ================= TRAINING WATCH VIEW (under construction) ================= -->
+  <div class="view" id="view-training">
+    <div class="header">
+      <div><h1>TRAINING WATCH</h1><div class="sub">Coming soon</div></div>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px; text-align:center;">
+      <div style="font-size:48px; margin-bottom:16px;">🚧</div>
+      <p style="font-size:16px; font-weight:700; color:var(--purple); margin-bottom:8px;">Under Construction</p>
+      <p style="font-size:13px; color:var(--gray-muted); max-width:260px;">The Training Watch tab will house 90-day evaluations for candidates who have started. Coming in a future phase.</p>
+    </div>
+    <div class="bottom-nav">
+      <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
+      <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item active" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
+      <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
     </div>
   </div>
@@ -452,6 +473,7 @@
     <div class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
       <button class="nav-item active" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
     </div>
   </div>
@@ -524,19 +546,15 @@
       <div class="form-group">
         <label class="form-label">Coach assigned *</label>
         <select class="form-input" id="f-coach" required>
-          <option value="">Select coach</option>
-          <option>Rose Perez</option>
-          <option>Ambulai Sheku</option>
-          <option>Joel Montero</option>
-          <option>Manny Rivera</option>
-          <option>Mr. Watts</option>
-          <option>Cheryl</option>
+          <option value="">Select home store first</option>
         </select>
       </div>
 
       <div class="form-group">
         <label class="form-label">Manager assigned</label>
-        <input type="text" class="form-input" id="f-manager">
+        <select class="form-input" id="f-manager">
+          <option value="">Select home store first</option>
+        </select>
       </div>
 
       <div class="form-group">
@@ -591,6 +609,7 @@
     <div class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
       <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
     </div>
   </div>
@@ -614,6 +633,7 @@
       <div class="bottom-nav">
         <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
         <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+        <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
         <button class="nav-item active" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
       </div>
     </div>
@@ -659,6 +679,7 @@
       <div class="bottom-nav">
         <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
         <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+        <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
         <button class="nav-item active" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
       </div>
     </div>
@@ -1572,6 +1593,78 @@
       output.textContent = 'Could not load field names: ' + err.message;
     });
   }
+  var STORE_COACH_MAP = {
+    "MA-KELLEY SQUARE": "Rose Perez",
+    "MA-LOCUST STREET": "Joel Montero",
+    "RI-BALD HILL": "TBD",
+    "MA-SOUTH SHORE MALL": "Rose Perez",
+    "MA-WESTERN AVE": "Rose Perez",
+    "MA-HOLYOKE": "Joel Montero",
+    "TN-WEST MARKET": "Cheryl",
+    "RI-DOUGLAS": "Ambulai Sheku",
+    "RI-COVENTRY": "Ambulai Sheku",
+    "RI-RESERVOIR AVE": "Ambulai Sheku",
+    "TN-MORRISTOWN": "Mr. Watts",
+    "TN-NORTH BROARDWAY": "Mr. Watts",
+    "MA-EXCHANGE ST.": "Joel Montero",
+    "MA-STATE STREET": "Joel Montero",
+    "CT-NEW LONDON": "TBD",
+    "CT-NORWICH": "TBD",
+    "AR-COLONEL GLENN": "TBD",
+    "AR-RADIO GEYER": "TBD",
+    "RI-751BROAD": "Rose Perez",
+    "MA-ROCKDALE": "Manny Rivera",
+    "TN-KEITH ST": "Mr. Watts",
+    "TN-SHALLOWFORD RD": "Mr. Watts",
+    "TN-MAGNOLIA": "Mr. Watts",
+    "MA-COGGESHALL": "Manny Rivera",
+    "CT-BUCKLAND HILLS MALL": "TBD",
+    "RI-NEWPORT AVE": "TBD",
+    "RI-EAST PROVIDENCE": "TBD",
+    "RI-PROVIDENCE PLACE MALL": "Rose Perez",
+    "MA-CAPE CODE MALL": "Ambulai Sheku",
+    "MA-FALLRIVER": "Manny Rivera",
+    "RI-BROAD ST": "Rose Perez",
+    "RI-BROADWAY": "Rose Perez",
+    "TN-WESTERN AVE": "Mr. Watts",
+    "RI-HARTFORD AVE": "Rose Perez"
+  };
+
+  function setupStoreManagerLink() {
+    var storeSelect = document.getElementById('f-location');
+    var managerSelect = document.getElementById('f-manager');
+    var coachSelect = document.getElementById('f-coach');
+
+    storeSelect.addEventListener('change', function () {
+      var store = storeSelect.value;
+
+      // Reset both dropdowns
+      managerSelect.innerHTML = '';
+      coachSelect.innerHTML = '';
+
+      if (!store) {
+        managerSelect.innerHTML = '<option value="">Select home store first</option>';
+        coachSelect.innerHTML = '<option value="">Select home store first</option>';
+        return;
+      }
+
+      // Populate manager
+      var manager = STORE_MANAGER_MAP[store];
+      var mOpt = document.createElement('option');
+      mOpt.value = manager || "TBD";
+      mOpt.textContent = manager || "TBD - No manager assigned yet";
+      managerSelect.appendChild(mOpt);
+
+      // Populate coach
+      var coach = STORE_COACH_MAP[store];
+      var cOpt = document.createElement('option');
+      cOpt.value = coach || "TBD";
+      cOpt.textContent = coach || "TBD - No coach assigned yet";
+      coachSelect.appendChild(cOpt);
+    });
+  }
+
+
   function setupShirtSizeToggle() {
     var sizeSelect = document.getElementById('f-shirtsize');
     var otherGroup = document.getElementById('shirtsize-other-group');
@@ -1611,6 +1704,7 @@
 
   // ---------------- INIT ----------------
   setupShirtSizeToggle();
+  setupStoreManagerLink();
   initMsal().then(function () {
     // Try silent sign-in first (returning visit); fall back to sign-in screen.
     return getTokenSilent().then(function () {
