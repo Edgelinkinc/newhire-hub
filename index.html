@@ -798,10 +798,10 @@
     ReadyForDayOne: "field_14",
     NTID: "field_15",
     TMobileEmail: "field_16",
-    NotesUpdates: "field_17"
-    // NOTE: TrainingStore, UniformShirtSize, NameTag are NOT yet columns on
-    // the SharePoint list. Add them in SharePoint, then re-run Diagnostics
-    // and add their real internal names here before those fields will save.
+    NotesUpdates: "field_17",
+    TrainingStore: "TrainingStore",
+    UniformShirtSize: "UniformShirtSize",
+    NameTag: "NameTag"
   };
 
   function toRealFields(friendlyFields) {
@@ -984,9 +984,6 @@
       fields.StartDate = startDateVal;
     }
 
-    // NOTE: TrainingStore, UniformShirtSize, NameTag are set above in the
-    // fields object, but won't actually save to SharePoint until those
-    // columns exist there and are added to FIELD_MAP.
     var realFields = toRealFields(fields);
 
     getSiteId().then(function (siteId) {
@@ -1051,11 +1048,11 @@
       position: f[FIELD_MAP.Position] || "",
       market: f[FIELD_MAP.Market] || "",
       homeLocation: f[FIELD_MAP.HomeLocationAssigned] || "",
-      trainingStore: f.TrainingStore || "", // column not yet created - see FIELD_MAP note
+      trainingStore: f[FIELD_MAP.TrainingStore] || "",
       coach: f[FIELD_MAP.CoachAssigned] || "",
       manager: f[FIELD_MAP.ManagerAssigned] || "",
-      shirtSize: f.UniformShirtSize || "", // column not yet created - see FIELD_MAP note
-      nameTag: f.NameTag || "", // column not yet created - see FIELD_MAP note
+      shirtSize: f[FIELD_MAP.UniformShirtSize] || "",
+      nameTag: f[FIELD_MAP.NameTag] || "",
       ntid: f[FIELD_MAP.NTID] || "",
       tmobileEmail: f[FIELD_MAP.TMobileEmail] || "",
       tasks: tasks,
