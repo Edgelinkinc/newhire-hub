@@ -763,10 +763,24 @@
   ];
 
   function getManagerStores(email) {
+    // Try live roster data first
+    if (storeRosterData.length > 0) {
+      var stores = [];
+      for (var i = 0; i < storeRosterData.length; i++) {
+        var f = storeRosterData[i].fields || {};
+        var managerEmail = (f[ROSTER_FIELD_MAP.ManagerEmail] || "").toLowerCase();
+        if (managerEmail && managerEmail === email.toLowerCase()) {
+          var storeName = f[ROSTER_FIELD_MAP.StoreName] || "";
+          if (storeName) stores.push(storeName);
+        }
+      }
+      if (stores.length > 0) return stores;
+    }
+    // Fall back to hardcoded roster
     var lc = email.toLowerCase();
-    for (var i = 0; i < MANAGER_ROSTER.length; i++) {
-      if (MANAGER_ROSTER[i].email.toLowerCase() === lc) {
-        return MANAGER_ROSTER[i].stores;
+    for (var j = 0; j < MANAGER_ROSTER.length; j++) {
+      if (MANAGER_ROSTER[j].email.toLowerCase() === lc) {
+        return MANAGER_ROSTER[j].stores;
       }
     }
     return null;
@@ -926,7 +940,7 @@
     if (storeRosterData.length > 0) {
       for (var i = 0; i < storeRosterData.length; i++) {
         var f = storeRosterData[i].fields || {};
-        var name = f[ROSTER_FIELD_MAP.StoreName] || f.Title || "";
+        var name = f[ROSTER_FIELD_MAP.StoreName] || "";
         if (name) stores.push(name);
       }
       stores.sort();
@@ -1644,10 +1658,10 @@
   // Store Roster field map (from freshly created list - names should be clean)
   var ROSTER_FIELD_MAP = {
     StoreName: "Title",
-    Market: "Market",
-    CoachAssigned: "CoachAssigned",
-    ManagerAssigned: "ManagerAssigned",
-    ManagerEmail: "ManagerEmail"
+    Market: "field_1",
+    CoachAssigned: "field_2",
+    ManagerAssigned: "field_3",
+    ManagerEmail: "field_4"
   };
 
   var cachedRosterListId = null;
@@ -1682,12 +1696,12 @@
   function getStoreRosterEntry(storeName) {
     for (var i = 0; i < storeRosterData.length; i++) {
       var f = storeRosterData[i].fields || {};
-      var name = f[ROSTER_FIELD_MAP.StoreName] || f.Title || "";
+      var name = f[ROSTER_FIELD_MAP.StoreName] || "";
       if (name.toUpperCase() === storeName.toUpperCase()) {
         return {
-          coach: f[ROSTER_FIELD_MAP.CoachAssigned] || f.CoachAssigned || "TBD",
-          manager: f[ROSTER_FIELD_MAP.ManagerAssigned] || f.ManagerAssigned || "TBD",
-          managerEmail: f[ROSTER_FIELD_MAP.ManagerEmail] || f.ManagerEmail || ""
+          coach: f[ROSTER_FIELD_MAP.CoachAssigned] || "TBD",
+          manager: f[ROSTER_FIELD_MAP.ManagerAssigned] || "TBD",
+          managerEmail: f[ROSTER_FIELD_MAP.ManagerEmail] || ""
         };
       }
     }
