@@ -1048,9 +1048,11 @@
     };
 
     var startDateVal = document.getElementById('f-startdate').value;
-    if (startDateVal) {
-      fields.StartDate = startDateVal;
+    if (startDateVal && startDateVal.length === 10) {
+      // Send as midnight UTC — SharePoint date columns require full ISO 8601
+      fields.StartDate = startDateVal + "T00:00:00Z";
     }
+    // If blank, omit StartDate entirely so SharePoint doesn't reject a null date
 
     var realFields = toRealFields(fields);
 
