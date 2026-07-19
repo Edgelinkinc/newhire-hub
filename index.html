@@ -880,6 +880,11 @@
   function populateStoreDropdowns() {
     var homeSelect = document.getElementById('f-location');
     var trainingSelect = document.getElementById('f-trainingstore');
+
+    // Clear and rebuild both store dropdowns
+    homeSelect.innerHTML = '<option value="">Select home store</option>';
+    trainingSelect.innerHTML = '<option value="">Select training store (if different)</option>';
+
     for (var i = 0; i < STORE_LIST.length; i++) {
       var opt1 = document.createElement('option');
       opt1.textContent = STORE_LIST[i];
@@ -889,6 +894,35 @@
       opt2.textContent = STORE_LIST[i];
       trainingSelect.appendChild(opt2);
     }
+
+    // Attach the manager/coach auto-populate listener HERE, after the
+    // dropdown is built, so it doesn't get wiped by the rebuild
+    homeSelect.addEventListener('change', function () {
+      var store = homeSelect.value;
+      var managerSelect = document.getElementById('f-manager');
+      var coachSelect = document.getElementById('f-coach');
+
+      managerSelect.innerHTML = '';
+      coachSelect.innerHTML = '';
+
+      if (!store) {
+        managerSelect.innerHTML = '<option value="">Select home store first</option>';
+        coachSelect.innerHTML = '<option value="">Select home store first</option>';
+        return;
+      }
+
+      var manager = STORE_MANAGER_MAP[store];
+      var mOpt = document.createElement('option');
+      mOpt.value = manager || "TBD";
+      mOpt.textContent = manager || "TBD - No manager assigned yet";
+      managerSelect.appendChild(mOpt);
+
+      var coach = STORE_COACH_MAP[store];
+      var cOpt = document.createElement('option');
+      cOpt.value = coach || "TBD";
+      cOpt.textContent = coach || "TBD - No coach assigned yet";
+      coachSelect.appendChild(cOpt);
+    });
   }
 
   function getCurrentUserEmail() {
@@ -1619,39 +1653,7 @@
     "RI-HARTFORD AVE": "Rose Perez"
   };
 
-  function setupStoreManagerLink() {
-    var storeSelect = document.getElementById('f-location');
-    var managerSelect = document.getElementById('f-manager');
-    var coachSelect = document.getElementById('f-coach');
 
-    storeSelect.addEventListener('change', function () {
-      var store = storeSelect.value;
-
-      // Reset both dropdowns
-      managerSelect.innerHTML = '';
-      coachSelect.innerHTML = '';
-
-      if (!store) {
-        managerSelect.innerHTML = '<option value="">Select home store first</option>';
-        coachSelect.innerHTML = '<option value="">Select home store first</option>';
-        return;
-      }
-
-      // Populate manager
-      var manager = STORE_MANAGER_MAP[store];
-      var mOpt = document.createElement('option');
-      mOpt.value = manager || "TBD";
-      mOpt.textContent = manager || "TBD - No manager assigned yet";
-      managerSelect.appendChild(mOpt);
-
-      // Populate coach
-      var coach = STORE_COACH_MAP[store];
-      var cOpt = document.createElement('option');
-      cOpt.value = coach || "TBD";
-      cOpt.textContent = coach || "TBD - No coach assigned yet";
-      coachSelect.appendChild(cOpt);
-    });
-  }
 
 
   function setupShirtSizeToggle() {
@@ -1693,7 +1695,6 @@
 
   // ---------------- INIT ----------------
   setupShirtSizeToggle();
-  setupStoreManagerLink();
   initMsal().then(function () {
     // Try silent sign-in first (returning visit); fall back to sign-in screen.
     return getTokenSilent().then(function () {
