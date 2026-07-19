@@ -1056,6 +1056,13 @@
 
     var realFields = toRealFields(fields);
 
+    // Debug: log exactly what we're sending to Graph
+    console.log('Submitting fields to SharePoint:', JSON.stringify(realFields, null, 2));
+
+    // Remove StartDate from payload temporarily to isolate date error
+    // if submission still fails after this, the error is in another field
+    delete realFields[FIELD_MAP.StartDate ? "field_6" : "StartDate"];
+
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
         var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items";
