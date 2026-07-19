@@ -703,19 +703,53 @@
 
   // Full 34-store list, used for Home Store and Training Store dropdowns
   var STORE_LIST = [
-    "AR-COLONEL GLENN", "AR-RADIO GEYER", "CT-BUCKLAND HILLS MALL", "CT-NEW LONDON",
-    "CT-NORWICH", "MA-SOUTH SHORE MALL", "MA-CAPE COD MALL", "MA-COGGESHALL",
-    "MA-EXCHANGE ST.", "MA-FALLRIVER", "MA-HOLYOKE", "MA-KELLEY SQUARE",
-    "MA-LOCUST STREET", "MA-ROCKDALE", "MA-STATE STREET", "MA-WESTERN AVE",
-    "RI-751BROAD", "RI-BALD HILL", "RI-BROAD ST", "RI-BROADWAY", "RI-COVENTRY",
-    "RI-DOUGLAS", "RI-EAST PROVIDENCE", "RI-HARTFORD AVE", "RI-NEWPORT AVE",
-    "RI-PROVIDENCE PLACE MALL", "RI-RESERVOIR AVE", "TN-KEITH ST", "TN-MAGNOLIA",
-    "TN-MORRISTOWN", "TN-NORTH BROARDWAY", "TN-SHALLOWFORD RD", "TN-WEST MARKET",
-    "TN-WESTERN AVE"
+    "AR-COLONEL GLENN", "AR-RADIO GEYER",
+    "CT-BUCKLAND HILLS MALL", "CT-NEW LONDON", "CT-NORWICH",
+    "MA-CAPE CODE MALL", "MA-COGGESHALL", "MA-EXCHANGE ST.", "MA-FALLRIVER",
+    "MA-HOLYOKE", "MA-KELLEY SQUARE", "MA-LOCUST STREET", "MA-ROCKDALE",
+    "MA-SOUTH SHORE MALL", "MA-STATE STREET", "MA-WESTERN AVE",
+    "RI-751BROAD", "RI-BALD HILL", "RI-BROAD ST", "RI-BROADWAY",
+    "RI-COVENTRY", "RI-DOUGLAS", "RI-EAST PROVIDENCE", "RI-HARTFORD AVE",
+    "RI-NEWPORT AVE", "RI-PROVIDENCE PLACE MALL", "RI-RESERVOIR AVE",
+    "TN-KEITH ST", "TN-MAGNOLIA", "TN-MORRISTOWN", "TN-NORTH BROARDWAY",
+    "TN-SHALLOWFORD RD", "TN-WEST MARKET", "TN-WESTERN AVE"
   ];
 
   var ALL_POSITIONS = ["RSR", "Store Manager", "Multi-Store Manager"];
   var MANAGER_ONLY_POSITIONS = ["RSR"];
+
+  // Store manager roster - email → stores they manage (exact store names matching dropdown)
+  var MANAGER_ROSTER = [
+    { email: "alex.correa@edgelinkinc.com", stores: ["MA-KELLEY SQUARE"] },
+    { email: "alicia.montero@edgelinkinc.com", stores: ["MA-LOCUST STREET"] },
+    { email: "allia@edgelinkinc.com", stores: ["RI-BALD HILL"] },
+    { email: "amina.fellah@edgelinkinc.com", stores: ["MA-SOUTH SHORE MALL", "MA-WESTERN AVE"] },
+    { email: "charisma.heggie@edgelinkinc.com", stores: ["TN-WEST MARKET"] },
+    { email: "chris.paul@edgelinkinc.com", stores: ["RI-DOUGLAS", "RI-COVENTRY"] },
+    { email: "danielrosales@edgelinkinc.com", stores: ["RI-RESERVOIR AVE"] },
+    { email: "franchesca.rader@edgelinkinc.com", stores: ["TN-MORRISTOWN", "TN-NORTH BROARDWAY"] },
+    { email: "jazmine.heredia@edgelinkinc.com", stores: ["MA-EXCHANGE ST."] },
+    { email: "jessica.retamar@edgelinkinc.com", stores: ["MA-STATE STREET"] },
+    { email: "josh.landry@edgelinkinc.com", stores: ["CT-NEW LONDON", "CT-NORWICH"] },
+    { email: "karminamendoza@edgelinkinc.com", stores: ["AR-COLONEL GLENN", "AR-RADIO GEYER"] },
+    { email: "loriruiz@edgelinkinc.com", stores: ["MA-ROCKDALE"] },
+    { email: "marquesha.jones@edgelinkinc.com", stores: ["TN-KEITH ST", "TN-SHALLOWFORD RD"] },
+    { email: "mel@edgelinkinc.com", stores: ["TN-MAGNOLIA"] },
+    { email: "napoleao@edgelinkinc.com", stores: ["MA-COGGESHALL"] },
+    { email: "nereidarodriguez@edgelinkinc.com", stores: ["CT-BUCKLAND HILLS MALL"] },
+    { email: "saimary.hernandez@edgelinkinc.com", stores: ["RI-NEWPORT AVE", "RI-EAST PROVIDENCE"] },
+    { email: "yanna.soriano@edgelinkinc.com", stores: ["RI-HARTFORD AVE"] }
+  ];
+
+  function getManagerStores(email) {
+    var lc = email.toLowerCase();
+    for (var i = 0; i < MANAGER_ROSTER.length; i++) {
+      if (MANAGER_ROSTER[i].email.toLowerCase() === lc) {
+        return MANAGER_ROSTER[i].stores;
+      }
+    }
+    return null;
+  }
 
   // Coach identity lookup - anyone signed in with one of these emails
   // sees the full Position list; everyone else is treated as a Manager
@@ -728,6 +762,47 @@
     "jameswatts@evolutionwireless.net",
     "cheryl@edgelinkinc.com"
   ];
+
+  // Real SharePoint internal field names (from Diagnostics tab), mapped to the
+  // friendly keys used throughout this app. SharePoint auto-generates field_N
+  // names when a column is renamed after creation - these do NOT match the
+  // display names shown in the list UI.
+  var FIELD_MAP = {
+    CandidateName: "Title",
+    CandidatePhone: "field_1",
+    CandidateEmail: "field_2",
+    Position: "field_3",
+    Market: "field_4",
+    HomeLocationAssigned: "field_5",
+    StartDate: "field_6",
+    CoachAssigned: "field_7",
+    ManagerAssigned: "field_8",
+    ClearIdentification: "field_9",
+    OfferLetter: "field_10",
+    NTIDCreated: "field_11",
+    OnboardingStatus: "field_12",
+    BrinksCredentials: "field_13",
+    ReadyForDayOne: "field_14",
+    NTID: "field_15",
+    TMobileEmail: "field_16",
+    NotesUpdates: "field_17"
+    // NOTE: TrainingStore, UniformShirtSize, NameTag are NOT yet columns on
+    // the SharePoint list. Add them in SharePoint, then re-run Diagnostics
+    // and add their real internal names here before those fields will save.
+  };
+
+  function toRealFields(friendlyFields) {
+    var real = {};
+    for (var key in friendlyFields) {
+      var realKey = FIELD_MAP[key];
+      if (realKey) {
+        real[realKey] = friendlyFields[key];
+      } else {
+        console.warn('No SharePoint field mapping for "' + key + '" - skipped. Add the column in SharePoint and update FIELD_MAP.');
+      }
+    }
+    return real;
+  }
 
   var msalInstance = null;
   var graphToken = null;
@@ -896,10 +971,15 @@
       fields.StartDate = startDateVal;
     }
 
+    // NOTE: TrainingStore, UniformShirtSize, NameTag are set above in the
+    // fields object, but won't actually save to SharePoint until those
+    // columns exist there and are added to FIELD_MAP.
+    var realFields = toRealFields(fields);
+
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
         var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items";
-        return graphPost(url, { fields: fields });
+        return graphPost(url, { fields: realFields });
       });
     }).then(function () {
       successEl.style.display = 'block';
@@ -946,24 +1026,25 @@
     var f = item.fields || {};
     var tasks = {};
     for (var i = 0; i < TASKS.length; i++) {
-      tasks[TASKS[i].key] = f[TASKS[i].key] || "Pending";
+      var realKey = FIELD_MAP[TASKS[i].key];
+      tasks[TASKS[i].key] = (realKey && f[realKey]) || "Pending";
     }
-    var name = f.CandidateName || f.Title || "Unnamed candidate";
+    var name = f[FIELD_MAP.CandidateName] || "Unnamed candidate";
     var initials = name.split(" ").map(function (p) { return p.charAt(0); }).join("").substring(0, 2).toUpperCase();
     return {
       id: item.id,
       name: name,
       initials: initials,
-      position: f.Position || "",
-      market: f.Market || "",
-      homeLocation: f.HomeLocationAssigned || "",
-      trainingStore: f.TrainingStore || "",
-      coach: f.CoachAssigned || "",
-      manager: f.ManagerAssigned || "",
-      shirtSize: f.UniformShirtSize || "",
-      nameTag: f.NameTag || "",
-      ntid: f.NTID || "",
-      tmobileEmail: f.TMobileEmail || "",
+      position: f[FIELD_MAP.Position] || "",
+      market: f[FIELD_MAP.Market] || "",
+      homeLocation: f[FIELD_MAP.HomeLocationAssigned] || "",
+      trainingStore: f.TrainingStore || "", // column not yet created - see FIELD_MAP note
+      coach: f[FIELD_MAP.CoachAssigned] || "",
+      manager: f[FIELD_MAP.ManagerAssigned] || "",
+      shirtSize: f.UniformShirtSize || "", // column not yet created - see FIELD_MAP note
+      nameTag: f.NameTag || "", // column not yet created - see FIELD_MAP note
+      ntid: f[FIELD_MAP.NTID] || "",
+      tmobileEmail: f[FIELD_MAP.TMobileEmail] || "",
       tasks: tasks,
       // overdue calc is a placeholder here; real threshold-based countdown
       // gets computed once per-task "last updated" date fields exist on the list
@@ -1056,16 +1137,51 @@
   }
 
   function getActiveCandidates() {
-    // Candidates who have flipped to "Started" leave Active New Hires entirely.
-    // Their record stays permanently in SharePoint - this only filters the
-    // dashboard view. They are reserved for a future Training Watch screen.
+    var email = getCurrentUserEmail();
+    var isCoach = COACH_EMAILS.indexOf(email) !== -1;
+    var managerStores = getManagerStores(email);
+    var isCheryl = (email === "cheryl@edgelinkinc.com");
+
     var active = [];
     for (var i = 0; i < allCandidates.length; i++) {
-      if (!hasStarted(allCandidates[i])) {
-        active.push(allCandidates[i]);
+      var c = allCandidates[i];
+      if (hasStarted(c)) continue; // started = moved to training, hide from active view
+
+      if (isCheryl) {
+        // Cheryl sees everyone
+        active.push(c);
+      } else if (isCoach) {
+        // Coaches see candidates assigned to them
+        var coachName = getCoachNameForEmail(email);
+        if (c.coach && coachName && c.coach.toLowerCase().indexOf(coachName.toLowerCase()) !== -1) {
+          active.push(c);
+        }
+      } else if (managerStores) {
+        // Managers see candidates whose home store exactly matches their stores
+        for (var s = 0; s < managerStores.length; s++) {
+          if (c.homeLocation && c.homeLocation.toUpperCase() === managerStores[s].toUpperCase()) {
+            active.push(c);
+            break;
+          }
+        }
+      } else {
+        // Unknown user - show nothing, prompt them to contact admin
+        break;
       }
     }
     return active;
+  }
+
+  function getCoachNameForEmail(email) {
+    var map = {
+      "rose@edgelinkinc.com": "Rose Perez",
+      "ambulai@edgelinkinc.com": "Ambulai Sheku",
+      "joel@edgelinkinc.com": "Joel Montero",
+      "angel.rivera@edgelinkinc.com": "Manny Rivera",
+      "jameswatts@evolutionwireless.net": "Mr. Watts",
+      "cheryl@edgelinkinc.com": "Cheryl"
+    };
+    return map[email.toLowerCase()] || null;
   }
 
   function renderStats() {
@@ -1105,7 +1221,14 @@
     }
 
     if (filtered.length === 0) {
-      list.innerHTML = '<div class="empty-state">No candidates match this filter.</div>';
+      var email = getCurrentUserEmail();
+      var isCoach = COACH_EMAILS.indexOf(email) !== -1;
+      var managerStores = getManagerStores(email);
+      if (!isCoach && !managerStores && email !== "cheryl@edgelinkinc.com") {
+        list.innerHTML = '<div class="empty-state">Your account (' + email + ') is not yet set up in the system. Please contact Cheryl at hr@edgelinkinc.com to get access.</div>';
+      } else {
+        list.innerHTML = '<div class="empty-state">No candidates match this filter.</div>';
+      }
       return;
     }
 
@@ -1304,8 +1427,15 @@
   }
 
   function updateTaskStatus(itemId, taskKey, newValue) {
-    var fields = {};
-    fields[taskKey] = newValue;
+    var friendlyFields = {};
+    friendlyFields[taskKey] = newValue;
+    var realFields = toRealFields(friendlyFields);
+
+    if (Object.keys(realFields).length === 0) {
+      alert('This field is not yet connected to SharePoint. Check the Diagnostics tab.');
+      renderAdminCandidates();
+      return;
+    }
 
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
@@ -1316,7 +1446,7 @@
             Authorization: "Bearer " + graphToken,
             "Content-Type": "application/json"
           },
-          body: JSON.stringify(fields)
+          body: JSON.stringify(realFields)
         });
       });
     }).then(function (res) {
@@ -1339,9 +1469,15 @@
     });
   }
 
-  function updateOrderField(itemId, sharePointField, localKey, newValue) {
-    var fields = {};
-    fields[sharePointField] = newValue;
+  function updateOrderField(itemId, friendlyKey, localKey, newValue) {
+    var friendlyFields = {};
+    friendlyFields[friendlyKey] = newValue;
+    var realFields = toRealFields(friendlyFields);
+
+    if (Object.keys(realFields).length === 0) {
+      alert('This column ("' + friendlyKey + '") does not exist in SharePoint yet. Add it, then update FIELD_MAP in the code.');
+      return;
+    }
 
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
@@ -1352,7 +1488,7 @@
             Authorization: "Bearer " + graphToken,
             "Content-Type": "application/json"
           },
-          body: JSON.stringify(fields)
+          body: JSON.stringify(realFields)
         });
       });
     }).then(function (res) {
