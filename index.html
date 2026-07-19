@@ -1056,12 +1056,17 @@
 
     var realFields = toRealFields(fields);
 
-    // Debug: log exactly what we're sending to Graph
+    // DEBUG: log and strip problematic fields to isolate 400 error
     console.log('Submitting fields to SharePoint:', JSON.stringify(realFields, null, 2));
-
-    // Remove StartDate from payload temporarily to isolate date error
-    // if submission still fails after this, the error is in another field
-    delete realFields[FIELD_MAP.StartDate ? "field_6" : "StartDate"];
+    // Temporarily remove Choice columns to find which one SharePoint rejects
+    delete realFields["field_3"]; // Position
+    delete realFields["field_4"]; // Market
+    delete realFields["field_9"]; // ClearIdentification
+    delete realFields["field_10"]; // OfferLetter
+    delete realFields["field_11"]; // NTIDCreated
+    delete realFields["field_12"]; // OnboardingStatus
+    delete realFields["field_13"]; // BrinksCredentials
+    delete realFields["field_14"]; // ReadyForDayOne
 
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
