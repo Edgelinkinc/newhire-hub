@@ -1055,23 +1055,16 @@
     // If blank, omit StartDate entirely so SharePoint doesn't reject a null date
 
     var realFields = toRealFields(fields);
+    console.log('Full payload:', JSON.stringify(realFields, null, 2));
 
-    // DEBUG: log and strip problematic fields to isolate 400 error
-    console.log('Submitting fields to SharePoint:', JSON.stringify(realFields, null, 2));
-    // Temporarily remove Choice columns to find which one SharePoint rejects
-    delete realFields["field_3"]; // Position
-    delete realFields["field_4"]; // Market
-    delete realFields["field_9"]; // ClearIdentification
-    delete realFields["field_10"]; // OfferLetter
-    delete realFields["field_11"]; // NTIDCreated
-    delete realFields["field_12"]; // OnboardingStatus
-    delete realFields["field_13"]; // BrinksCredentials
-    delete realFields["field_14"]; // ReadyForDayOne
+    // DIAGNOSTIC: send only Title to test bare minimum submission
+    var testFields = { "Title": realFields["Title"] };
+    console.log('Test payload (Title only):', JSON.stringify(testFields));
 
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
         var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items";
-        return graphPost(url, { fields: realFields });
+        return graphPost(url, { fields: testFields });
       });
     }).then(function () {
       successEl.style.display = 'block';
