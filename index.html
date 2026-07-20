@@ -1118,13 +1118,14 @@
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
         var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items";
-        console.log('POST URL:', url);
-        console.log('siteId:', siteId, 'listId:', listId);
-        // Verify list name before posting
-        return graphFetch("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "?$select=displayName").then(function(listInfo) {
-          console.log('Posting to list:', listInfo.displayName);
-          return graphPost(url, { fields: cleanFields });
-        });
+
+        // Binary search: try each field individually to find which one fails
+        var fieldKeys = Object.keys(cleanFields).filter(function(k) { return k !== 'Title'; });
+        var testField = fieldKeys[0]; // test first non-Title field
+        var testPayload = { "Title": cleanFields["Title"] };
+        testPayload[testField] = cleanFields[testField];
+        console.log('Testing field:', testField, '=', cleanFields[testField]);
+        return graphPost(url, { fields: testPayload });
       });
     }).then(function () {
       // Populate confirmation screen
