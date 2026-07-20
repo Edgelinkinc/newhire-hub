@@ -1120,7 +1120,11 @@
         var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items";
         console.log('POST URL:', url);
         console.log('siteId:', siteId, 'listId:', listId);
-        return graphPost(url, { fields: cleanFields });
+        // Verify list name before posting
+        return graphFetch("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "?$select=displayName").then(function(listInfo) {
+          console.log('Posting to list:', listInfo.displayName);
+          return graphPost(url, { fields: cleanFields });
+        });
       });
     }).then(function () {
       // Populate confirmation screen
@@ -1164,6 +1168,7 @@
     return graphFetch(url).then(function (data) {
       if (!data.value || data.value.length === 0) throw new Error("List not found: " + CONFIG.listName);
       cachedListId = data.value[0].id;
+      console.log("Onboarding Tracker list ID cached:", cachedListId);
       return cachedListId;
     });
   }
