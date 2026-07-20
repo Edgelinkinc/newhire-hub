@@ -437,7 +437,58 @@
     </div>
   </div>
 
-  <!-- ================= TRAINING WATCH VIEW (under construction) ================= -->
+  <!-- ================= ADD CANDIDATE SUCCESS VIEW ================= -->
+  <div class="view" id="view-add-success">
+    <div class="header">
+      <div><h1>NEW HIRE HUB</h1><div class="sub">Edgelink onboarding</div></div>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px; text-align:center;">
+      <div style="width:64px; height:64px; border-radius:50%; background:var(--purple-light); display:flex; align-items:center; justify-content:center; margin-bottom:20px;">
+        <span style="font-size:32px;">✓</span>
+      </div>
+      <p style="font-family:'Bebas Neue', sans-serif; font-size:22px; color:var(--purple); letter-spacing:1px; margin-bottom:6px;">Candidate submitted!</p>
+      <p style="font-size:13px; color:var(--gray-muted); margin-bottom:28px;">The following has been added to the onboarding tracker.</p>
+
+      <div style="background:#fff; border-radius:16px; border:0.5px solid var(--gray-border); padding:20px; width:100%; max-width:340px; text-align:left; margin-bottom:28px;">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div>
+            <div style="font-size:10px; color:var(--gray-muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:2px;">Candidate</div>
+            <div style="font-size:15px; font-weight:600; color:var(--purple);" id="success-name">—</div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div>
+              <div style="font-size:10px; color:var(--gray-muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:2px;">Store</div>
+              <div style="font-size:13px; font-weight:500; color:var(--gray-text);" id="success-store">—</div>
+            </div>
+            <div>
+              <div style="font-size:10px; color:var(--gray-muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:2px;">Position</div>
+              <div style="font-size:13px; font-weight:500; color:var(--gray-text);" id="success-position">—</div>
+            </div>
+            <div>
+              <div style="font-size:10px; color:var(--gray-muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:2px;">Coach</div>
+              <div style="font-size:13px; font-weight:500; color:var(--gray-text);" id="success-coach">—</div>
+            </div>
+            <div>
+              <div style="font-size:10px; color:var(--gray-muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:2px;">Manager</div>
+              <div style="font-size:13px; font-weight:500; color:var(--gray-text);" id="success-manager">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px; width:100%; max-width:340px;">
+        <button class="form-submit" onclick="goToView('add'); resetAddForm();">Add another candidate</button>
+        <button style="background:#fff; border:1.5px solid var(--purple); color:var(--purple); border-radius:12px; padding:14px; font-size:14px; font-weight:600; cursor:pointer; font-family:'Montserrat',sans-serif;" onclick="goToView('home')">Go home</button>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
+      <button class="nav-item active" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
+      <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
+    </div>
+  </div>
   <div class="view" id="view-training">
     <div class="header">
       <div><h1>TRAINING WATCH</h1><div class="sub">Coming soon</div></div>
@@ -538,7 +589,7 @@
 
       <div class="form-group">
         <label class="form-label">Start date</label>
-        <input type="date" class="form-input" id="f-startdate">
+        <input type="date" class="form-input" id="f-startdate" placeholder="mm/dd/yyyy">
       </div>
 
       <div class="form-group">
@@ -1055,24 +1106,41 @@
     // If blank, omit StartDate entirely so SharePoint doesn't reject a null date
 
     var realFields = toRealFields(fields);
-    console.log('Full payload:', JSON.stringify(realFields, null, 2));
+    console.log('Full payload before cleanup:', JSON.stringify(realFields, null, 2));
 
-    // DIAGNOSTIC: send only Title to test bare minimum submission
-    var testFields = { "Title": realFields["Title"] };
-    console.log('Test payload (Title only):', JSON.stringify(testFields));
+    // Strip empty strings, nulls, and undefined — SharePoint rejects them on some column types
+    var cleanFields = {};
+    for (var key in realFields) {
+      var val = realFields[key];
+      if (val !== null && val !== undefined && val !== '') {
+        cleanFields[key] = val;
+      }
+    }
+
+    console.log('Clean payload:', JSON.stringify(cleanFields, null, 2));
 
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
         var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items";
-        return graphPost(url, { fields: testFields });
+        return graphPost(url, { fields: cleanFields });
       });
     }).then(function () {
-      successEl.style.display = 'block';
-      document.getElementById('add-candidate-form').reset();
+      // Populate confirmation screen
+      document.getElementById('success-name').textContent = document.getElementById('f-name').value;
+      document.getElementById('success-store').textContent = document.getElementById('f-location').value;
+      document.getElementById('success-position').textContent = document.getElementById('f-position').value;
+      document.getElementById('success-coach').textContent = document.getElementById('f-coach').value;
+      document.getElementById('success-manager').textContent = document.getElementById('f-manager').value;
+
       btn.disabled = false;
       btn.textContent = 'Submit candidate';
+      document.getElementById('add-candidate-form').reset();
+      // Reset coach/manager dropdowns back to placeholder
+      document.getElementById('f-coach').innerHTML = '<option value="">Select home store first</option>';
+      document.getElementById('f-manager').innerHTML = '<option value="">Select home store first</option>';
+
       loadCandidates();
-      setTimeout(function () { successEl.style.display = 'none'; }, 4000);
+      goToView('add-success');
     }).catch(function (err) {
       console.error(err);
       errorEl.style.display = 'block';
@@ -1578,235 +1646,4 @@
       });
     }).then(function (res) {
       if (!res.ok) throw new Error("Update failed: " + res.status);
-      for (var i = 0; i < allCandidates.length; i++) {
-        if (allCandidates[i].id === itemId) {
-          allCandidates[i][localKey] = newValue;
-        }
-      }
-      renderCandidates();
-    }).catch(function (err) {
-      console.error(err);
-      alert('Could not save this field. Please try again.');
-    });
-  }
-
-  function sendBrinksRequest(itemId, candidateName) {
-    // NOTE: this flips the field to "Requested Creation" which the future
-    // Power Automate flow watches for to email the Brinks department.
-    // Actual email sending is not yet wired - that's a later phase.
-    updateTaskStatus(itemId, 'BrinksCredentials', 'Requested Creation');
-    alert('Brinks Credentials set to "Requested Creation" for ' + candidateName + '. Once email automation is built, this will notify the Brinks department automatically.');
-  }
-
-  // ---------------- ADMIN: BACKSHEET (email recipients) ----------------
-  function renderBacksheetRecipients() {
-    var container = document.getElementById('admin-recipients-list');
-    var html = '';
-    for (var i = 0; i < TASKS.length; i++) {
-      var task = TASKS[i];
-      var entry = backsheet[task.key];
-      html += '<div class="backsheet-row">';
-      html += '<div class="task-title">' + task.label + '</div>';
-      html += '<div class="backsheet-field"><label>On complete, notify</label><input type="text" value="' + entry.onCompleteRecipients + '" onchange="updateBacksheetField(\'' + task.key + '\', \'onCompleteRecipients\', this.value)"></div>';
-      html += '<div class="backsheet-field"><label>On overdue, notify</label><input type="text" value="' + entry.onOverdueRecipients + '" onchange="updateBacksheetField(\'' + task.key + '\', \'onOverdueRecipients\', this.value)"></div>';
-      html += '</div>';
-    }
-    html += '<div class="backsheet-save-note">Defaults: "coach,manager". Add specific emails comma-separated to override. Changes save automatically.</div>';
-    container.innerHTML = html;
-  }
-
-  function renderBacksheetThresholds() {
-    var container = document.getElementById('admin-thresholds-list');
-    var html = '';
-    for (var i = 0; i < TASKS.length; i++) {
-      var task = TASKS[i];
-      var entry = backsheet[task.key];
-      html += '<div class="backsheet-row">';
-      html += '<div class="task-title">' + task.label + '</div>';
-      html += '<div class="backsheet-field"><label>Days before overdue reminder</label><input type="number" min="1" value="' + entry.thresholdDays + '" onchange="updateBacksheetField(\'' + task.key + '\', \'thresholdDays\', this.value)"></div>';
-      html += '</div>';
-    }
-    html += '<div class="backsheet-save-note">These power the countdown shown to coaches/managers. Changes save automatically.</div>';
-    container.innerHTML = html;
-  }
-
-  function updateBacksheetField(taskKey, field, value) {
-    backsheet[taskKey][field] = (field === 'thresholdDays') ? parseInt(value, 10) : value;
-    saveBacksheet(backsheet);
-  }
-
-  function runFieldDiagnostic() {
-    var output = document.getElementById('diagnostic-output');
-    var sel = document.getElementById('diagnostic-list-select');
-    var listName = (sel && sel.value === 'roster') ? CONFIG.rosterListName : CONFIG.listName;
-    output.textContent = 'Loading ' + listName + '...';
-
-    getSiteId().then(function (siteId) {
-      var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists?$filter=displayName eq '" + encodeURIComponent(listName) + "'";
-      return graphFetch(url).then(function (data) {
-        if (!data.value || data.value.length === 0) throw new Error("List not found: " + listName);
-        var listId = data.value[0].id;
-        return graphFetch("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/columns");
-      });
-    }).then(function (data) {
-      var lines = ['DISPLAY NAME  ->  INTERNAL NAME', '------------------------------------'];
-      for (var i = 0; i < data.value.length; i++) {
-        var col = data.value[i];
-        if (col.hidden || col.readOnly) continue;
-        lines.push(col.displayName + '  ->  ' + col.name);
-      }
-      output.textContent = lines.join('\n');
-    }).catch(function (err) {
-      console.error(err);
-      output.textContent = 'Could not load field names: ' + err.message;
-    });
-  }
-
-  // Store Roster field map (from freshly created list - names should be clean)
-  var ROSTER_FIELD_MAP = {
-    StoreName: "Title",
-    Market: "field_1",
-    CoachAssigned: "field_2",
-    ManagerAssigned: "field_3",
-    ManagerEmail: "field_4"
-  };
-
-  var cachedRosterListId = null;
-  var storeRosterData = [];
-
-  function getRosterListId(siteId) {
-    if (cachedRosterListId) return Promise.resolve(cachedRosterListId);
-    var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists?$filter=displayName eq '" + encodeURIComponent(CONFIG.rosterListName) + "'";
-    return graphFetch(url).then(function (data) {
-      if (!data.value || data.value.length === 0) throw new Error("Store Roster list not found");
-      cachedRosterListId = data.value[0].id;
-      return cachedRosterListId;
-    });
-  }
-
-  function loadStoreRoster() {
-    getSiteId().then(function (siteId) {
-      return getRosterListId(siteId).then(function (listId) {
-        return graphFetch("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items?expand=fields&$top=200");
-      });
-    }).then(function (data) {
-      storeRosterData = data.value || [];
-      populateStoreDropdowns();
-    }).catch(function (err) {
-      console.warn('Store Roster load failed, falling back to static list:', err);
-      // Falls back gracefully - store dropdown still populates from STORE_LIST
-      // but coach/manager won't auto-fill until roster loads
-      populateStoreDropdowns();
-    });
-  }
-
-  function getStoreRosterEntry(storeName) {
-    for (var i = 0; i < storeRosterData.length; i++) {
-      var f = storeRosterData[i].fields || {};
-      var name = f[ROSTER_FIELD_MAP.StoreName] || "";
-      if (name.toUpperCase() === storeName.toUpperCase()) {
-        return {
-          coach: f[ROSTER_FIELD_MAP.CoachAssigned] || "TBD",
-          manager: f[ROSTER_FIELD_MAP.ManagerAssigned] || "TBD",
-          managerEmail: f[ROSTER_FIELD_MAP.ManagerEmail] || ""
-        };
-      }
-    }
-    return null;
-  }
-  var STORE_COACH_MAP = {
-    "MA-KELLEY SQUARE": "Rose Perez",
-    "MA-LOCUST STREET": "Joel Montero",
-    "RI-BALD HILL": "TBD",
-    "MA-SOUTH SHORE MALL": "Rose Perez",
-    "MA-WESTERN AVE": "Rose Perez",
-    "MA-HOLYOKE": "Joel Montero",
-    "TN-WEST MARKET": "Cheryl",
-    "RI-DOUGLAS": "Ambulai Sheku",
-    "RI-COVENTRY": "Ambulai Sheku",
-    "RI-RESERVOIR AVE": "Ambulai Sheku",
-    "TN-MORRISTOWN": "Mr. Watts",
-    "TN-NORTH BROARDWAY": "Mr. Watts",
-    "MA-EXCHANGE ST.": "Joel Montero",
-    "MA-STATE STREET": "Joel Montero",
-    "CT-NEW LONDON": "TBD",
-    "CT-NORWICH": "TBD",
-    "AR-COLONEL GLENN": "TBD",
-    "AR-RADIO GEYER": "TBD",
-    "RI-751BROAD": "Rose Perez",
-    "MA-ROCKDALE": "Manny Rivera",
-    "TN-KEITH ST": "Mr. Watts",
-    "TN-SHALLOWFORD RD": "Mr. Watts",
-    "TN-MAGNOLIA": "Mr. Watts",
-    "MA-COGGESHALL": "Manny Rivera",
-    "CT-BUCKLAND HILLS MALL": "TBD",
-    "RI-NEWPORT AVE": "TBD",
-    "RI-EAST PROVIDENCE": "TBD",
-    "RI-PROVIDENCE PLACE MALL": "Rose Perez",
-    "MA-CAPE CODE MALL": "Ambulai Sheku",
-    "MA-FALLRIVER": "Manny Rivera",
-    "RI-BROAD ST": "Rose Perez",
-    "RI-BROADWAY": "Rose Perez",
-    "TN-WESTERN AVE": "Mr. Watts",
-    "RI-HARTFORD AVE": "Rose Perez"
-  };
-
-
-
-
-  function setupShirtSizeToggle() {
-    var sizeSelect = document.getElementById('f-shirtsize');
-    var otherGroup = document.getElementById('shirtsize-other-group');
-    sizeSelect.addEventListener('change', function () {
-      otherGroup.style.display = (sizeSelect.value === 'Other (note size below)') ? 'flex' : 'none';
-    });
-  }
-
-  function setFilter(filter) {
-    currentFilter = filter;
-    var pills = document.querySelectorAll('.pill');
-    for (var i = 0; i < pills.length; i++) {
-      pills[i].className = 'pill';
-    }
-    var activePill = document.querySelector('.pill[data-filter="' + filter + '"]');
-    if (activePill) {
-      activePill.className = 'pill active ' + filter;
-    }
-    renderCandidates();
-  }
-
-  function goToView(viewName) {
-    var views = document.querySelectorAll('.view');
-    for (var i = 0; i < views.length; i++) {
-      views[i].className = 'view';
-    }
-    document.getElementById('view-' + viewName).className = 'view active';
-
-    var navItems = document.querySelectorAll('.nav-item');
-    for (var j = 0; j < navItems.length; j++) {
-      navItems[j].className = 'nav-item';
-      if (navItems[j].getAttribute('data-nav') === viewName) {
-        navItems[j].className = 'nav-item active';
-      }
-    }
-  }
-
-  // ---------------- INIT ----------------
-  setupShirtSizeToggle();
-  initMsal().then(function () {
-    // Try silent sign-in first (returning visit); fall back to sign-in screen.
-    return getTokenSilent().then(function () {
-      onSignedIn();
-    }).catch(function () {
-      // sign-in screen stays visible, user clicks "Sign in"
-    });
-  }).catch(function (err) {
-    console.error('MSAL init failed:', err);
-    document.getElementById('signin-error').textContent = 'Could not initialize sign-in. Please refresh the page.';
-    document.getElementById('signin-error').style.display = 'block';
-  });
-
-</script>
-
-</body>
-</html>
+      for (var i = 0; i < allCandidates.length; i++
