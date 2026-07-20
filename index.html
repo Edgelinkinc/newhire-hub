@@ -1167,7 +1167,8 @@
       ManagerAssigned: document.getElementById('f-manager').value,
       UniformShirtSize: shirtSizeVal,
       NameTag: document.getElementById('f-name').value.split(' ')[0],
-      BiLingual: document.getElementById('f-bilingual').value === 'Yes' ? true : false,
+      // BiLingual excluded temporarily - testing if it causes 500
+      // BiLingual: document.getElementById('f-bilingual').value,
       Availability: getAvailabilityValue(),
       NotesUpdates: document.getElementById('f-notes').value
     };
