@@ -1080,7 +1080,7 @@
       Position: document.getElementById('f-position').value,
       Market: document.getElementById('f-market').value,
       HomeLocationAssigned: document.getElementById('f-location').value,
-      TrainingStore: document.getElementById('f-trainingstore').value,
+      TrainingStore: document.getElementById('f-trainingstore').value || "",
       CoachAssigned: document.getElementById('f-coach').value,
       ManagerAssigned: document.getElementById('f-manager').value,
       UniformShirtSize: shirtSizeVal,
@@ -1091,7 +1091,7 @@
     var realFields = toRealFields(fields);
     console.log('Full payload before cleanup:', JSON.stringify(realFields, null, 2));
 
-    // Strip empty strings, nulls, and undefined — SharePoint rejects them on some column types
+    // Strip empty strings and nulls
     var cleanFields = {};
     for (var key in realFields) {
       var val = realFields[key];
@@ -1100,7 +1100,18 @@
       }
     }
 
+    // Also strip TrainingStore if it wasn't deliberately selected
+    var trainingVal = document.getElementById('f-trainingstore').value;
+    if (!trainingVal || trainingVal === '' || trainingVal === document.getElementById('f-location').value) {
+      delete cleanFields['TrainingStore'];
+    }
+
     console.log('Clean payload:', JSON.stringify(cleanFields, null, 2));
+
+    // TEMP DEBUG: remove UniformShirtSize and NameTag to isolate 400
+    delete cleanFields['UniformShirtSize'];
+    delete cleanFields['NameTag'];
+    console.log('Debug payload (no shirt/tag):', JSON.stringify(cleanFields, null, 2));
 
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
