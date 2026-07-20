@@ -1111,11 +1111,15 @@
     // TEMP DEBUG: remove UniformShirtSize and NameTag to isolate 400
     delete cleanFields['UniformShirtSize'];
     delete cleanFields['NameTag'];
-    console.log('Debug payload (no shirt/tag):', JSON.stringify(cleanFields, null, 2));
+    delete cleanFields['field_3']; // Position
+    delete cleanFields['field_4']; // Market
+    console.log('Debug payload (text only):', JSON.stringify(cleanFields, null, 2));
 
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
         var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items";
+        console.log('POST URL:', url);
+        console.log('siteId:', siteId, 'listId:', listId);
         return graphPost(url, { fields: cleanFields });
       });
     }).then(function () {
