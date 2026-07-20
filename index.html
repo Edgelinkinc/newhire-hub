@@ -1106,26 +1106,12 @@
       delete cleanFields['TrainingStore'];
     }
 
-    console.log('Clean payload:', JSON.stringify(cleanFields, null, 2));
-
-    // TEMP DEBUG: remove UniformShirtSize and NameTag to isolate 400
-    delete cleanFields['UniformShirtSize'];
-    delete cleanFields['NameTag'];
-    delete cleanFields['field_3']; // Position
-    delete cleanFields['field_4']; // Market
-    console.log('Debug payload (text only):', JSON.stringify(cleanFields, null, 2));
+    console.log('Submitting to SharePoint:', JSON.stringify(cleanFields, null, 2));
 
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
         var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items";
-
-        // Binary search: try each field individually to find which one fails
-        var fieldKeys = Object.keys(cleanFields).filter(function(k) { return k !== 'Title'; });
-        var testField = fieldKeys[0]; // test first non-Title field
-        var testPayload = { "Title": cleanFields["Title"] };
-        testPayload[testField] = cleanFields[testField];
-        console.log('Testing field:', testField, '=', cleanFields[testField]);
-        return graphPost(url, { fields: testPayload });
+        return graphPost(url, { fields: cleanFields });
       });
     }).then(function () {
       // Populate confirmation screen
