@@ -1106,17 +1106,17 @@
       delete cleanFields['TrainingStore'];
     }
 
-    // Incremental field test - adding one field at a time
     var testFields = {
       "Title": cleanFields["Title"],
       "field_1": cleanFields["field_1"],
-      "field_2": cleanFields["field_2"]
+      "field_2": cleanFields["field_2"],
+      "field_3": cleanFields["field_3"]
     };
 
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
         var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items";
-        console.log('Testing Title + field_1 + field_2:', JSON.stringify(testFields));
+        console.log('Testing +field_3:', JSON.stringify(testFields));
         return graphPost(url, { fields: testFields });
       });
     }).then(function () {
