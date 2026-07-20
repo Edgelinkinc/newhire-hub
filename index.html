@@ -1737,16 +1737,19 @@
         });
       });
     }).then(function (res) {
-      if (!res.ok) throw new Error("Update failed: " + res.status);
+      if (!res.ok) {
+        return res.text().then(function(t) { throw new Error("Update failed: " + res.status + " " + t); });
+      }
       for (var i = 0; i < allCandidates.length; i++) {
         if (allCandidates[i].id === itemId) {
           allCandidates[i][localKey] = newValue;
         }
       }
       renderCandidates();
+      console.log('Saved ' + friendlyKey + ' = ' + newValue);
     }).catch(function (err) {
-      console.error(err);
-      alert('Could not save this field. Please try again.');
+      console.error('updateOrderField error:', err);
+      alert('Could not save ' + friendlyKey + ': ' + err.message);
     });
   }
 
