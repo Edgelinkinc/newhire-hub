@@ -268,6 +268,23 @@
     margin-top: 6px;
   }
   .form-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* Availability grid */
+  .avail-row { display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 8px; }
+  .avail-day { font-size: 12px; font-weight: 600; color: var(--gray-text); }
+  .avail-shifts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .avail-shift-btn {
+    font-size: 11px; padding: 4px 10px; border-radius: 8px;
+    border: 1.5px solid var(--gray-border); background: #fff;
+    color: var(--gray-text); cursor: pointer; font-family: 'Montserrat', sans-serif;
+  }
+  .avail-shift-btn.selected { background: var(--purple); color: #fff; border-color: var(--purple); }
+  .avail-off-btn {
+    font-size: 11px; padding: 4px 10px; border-radius: 8px;
+    border: 1.5px solid var(--gray-border); background: #fff;
+    color: var(--gray-muted); cursor: pointer; font-family: 'Montserrat', sans-serif;
+  }
+  .avail-off-btn.selected { background: var(--gray-border); color: var(--gray-text); border-color: var(--gray-muted); }
   .form-success {
     display: none;
     background: var(--green-light); color: var(--green);
@@ -636,8 +653,22 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Name for name tag *</label>
-        <input type="text" class="form-input" id="f-nametag" placeholder="As it should appear on tag" required>
+        <label class="form-label">Bi-lingual *</label>
+        <select class="form-input" id="f-bilingual" required>
+          <option value="">Select</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Availability</label>
+        <div style="background:#fff; border:1.5px solid var(--gray-border); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:grid; grid-template-columns:80px 1fr; align-items:center; gap:8px; font-size:12px; font-weight:600; color:var(--gray-muted); padding-bottom:4px; border-bottom:0.5px solid var(--gray-border);">
+            <span>Day</span><span>Shift</span>
+          </div>
+          <div id="availability-rows"></div>
+        </div>
       </div>
 
       <div class="form-group">
@@ -870,7 +901,9 @@
     NotesUpdates: "field_17",
     TrainingStore: "TrainingStore",
     UniformShirtSize: "UniformShirtSize",
-    NameTag: "NameTag"
+    NameTag: "NameTag",
+    BiLingual: "Bi_x002d_Lingual",
+    Availability: "Availability"
   };
 
   function toRealFields(friendlyFields) {
@@ -941,9 +974,59 @@
   function onSignedIn() {
     document.getElementById('signin-screen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
-    loadStoreRoster(); // loads roster then calls populateStoreDropdowns
+    buildAvailabilityGrid();
+    loadStoreRoster();
     applyPositionFilterForCurrentUser();
     loadCandidates();
+  }
+
+  var DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  var SHIFTS = ['Opening','Mid','Closing','Off'];
+
+  function buildAvailabilityGrid() {
+    var container = document.getElementById('availability-rows');
+    if (!container) return;
+    var html = '';
+    for (var i = 0; i < DAYS.length; i++) {
+      var day = DAYS[i];
+      html += '<div class="avail-row" id="avail-row-' + day + '">';
+      html += '<div class="avail-day">' + day.substring(0,3) + '</div>';
+      html += '<div class="avail-shifts">';
+      for (var j = 0; j < SHIFTS.length; j++) {
+        var shift = SHIFTS[j];
+        var cls = shift === 'Off' ? 'avail-off-btn' : 'avail-shift-btn';
+        html += '<button type="button" class="' + cls + '" data-day="' + day + '" data-shift="' + shift + '" onclick="toggleShift(this)">' + shift + '</button>';
+      }
+      html += '</div></div>';
+    }
+    container.innerHTML = html;
+  }
+
+  function toggleShift(btn) {
+    var day = btn.getAttribute('data-day');
+    // Clear other selections for this day
+    var row = document.getElementById('avail-row-' + day);
+    var btns = row.querySelectorAll('button');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].className = btns[i].getAttribute('data-shift') === 'Off' ? 'avail-off-btn' : 'avail-shift-btn';
+    }
+    // Select this one
+    var isOff = btn.getAttribute('data-shift') === 'Off';
+    btn.className = (isOff ? 'avail-off-btn' : 'avail-shift-btn') + ' selected';
+  }
+
+  function getAvailabilityValue() {
+    var parts = [];
+    for (var i = 0; i < DAYS.length; i++) {
+      var day = DAYS[i];
+      var row = document.getElementById('avail-row-' + day);
+      if (!row) continue;
+      var selected = row.querySelector('button.selected');
+      if (selected && selected.getAttribute('data-shift') !== 'Off') {
+        parts.push(day.substring(0,3) + ':' + selected.getAttribute('data-shift'));
+      }
+    }
+    return parts.join(', ');
   }
 
   function onStoreChange(store) {
@@ -959,7 +1042,6 @@
       return;
     }
 
-    // Try live roster data first, fall back to hardcoded maps
     var entry = getStoreRosterEntry(store);
     var manager = entry ? entry.manager : (STORE_MANAGER_MAP[store] || "TBD");
     var coach = entry ? entry.coach : (STORE_COACH_MAP[store] || "TBD");
@@ -1084,7 +1166,9 @@
       CoachAssigned: document.getElementById('f-coach').value,
       ManagerAssigned: document.getElementById('f-manager').value,
       UniformShirtSize: shirtSizeVal,
-      NameTag: document.getElementById('f-nametag').value,
+      NameTag: document.getElementById('f-name').value.split(' ')[0],
+      BiLingual: document.getElementById('f-bilingual').value,
+      Availability: getAvailabilityValue(),
       NotesUpdates: document.getElementById('f-notes').value
     };
 
@@ -1818,6 +1902,7 @@
     document.getElementById('f-coach').innerHTML = '<option value="">Select home store first</option>';
     document.getElementById('f-manager').innerHTML = '<option value="">Select home store first</option>';
     document.getElementById('shirtsize-other-group').style.display = 'none';
+    buildAvailabilityGrid(); // reset availability selections
   }
 
   function setupShirtSizeToggle() {
