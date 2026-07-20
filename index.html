@@ -1112,15 +1112,13 @@
       "field_2": cleanFields["field_2"],
       "field_3": cleanFields["field_3"],
       "field_4": cleanFields["field_4"],
-      "field_5": cleanFields["field_5"],
-      "field_7": cleanFields["field_7"],
-      "field_8": cleanFields["field_8"]
+      "field_5": cleanFields["field_5"]
     };
 
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
         var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items";
-        console.log('Testing +field_4,5,7,8:', JSON.stringify(testFields));
+        console.log('Testing +field_4,5:', JSON.stringify(testFields));
         return graphPost(url, { fields: testFields });
       });
     }).then(function () {
