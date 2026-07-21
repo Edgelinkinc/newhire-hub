@@ -1439,41 +1439,46 @@
 
   function getActiveCandidates() {
     var email = getCurrentUserEmail();
-    var isCoach = COACH_EMAILS.indexOf(email) !== -1;
-    var managerStores = getManagerStores(email);
     var isCheryl = (email === "cheryl@edgelinkinc.com");
+    var managerStores = getManagerStores(email);
+    var coachName = getCoachNameFromEmail(email);
+    var isCoach = coachName !== null && !isCheryl;
 
     var active = [];
     for (var i = 0; i < allCandidates.length; i++) {
       var c = allCandidates[i];
-      if (hasStarted(c)) continue; // started = moved to training, hide from active view
+      if (hasStarted(c)) continue;
 
       if (isCheryl) {
-        // Cheryl sees everyone
         active.push(c);
       } else if (isCoach) {
-        // Coaches see candidates assigned to them
-        var coachName = getCoachNameForEmail(email);
         if (c.coach && coachName && c.coach.toLowerCase().indexOf(coachName.toLowerCase()) !== -1) {
           active.push(c);
         }
       } else if (managerStores) {
-        // Managers see candidates whose home store exactly matches their stores
         for (var s = 0; s < managerStores.length; s++) {
           if (c.homeLocation && c.homeLocation.toUpperCase() === managerStores[s].toUpperCase()) {
             active.push(c);
             break;
           }
         }
-      } else {
-        // Unknown user - show nothing, prompt them to contact admin
-        break;
       }
     }
     return active;
   }
 
-  function getCoachNameForEmail(email) {
+  function getCoachNameFromEmail(email) {
+    // Try live roster first
+    if (storeRosterData.length > 0) {
+      for (var i = 0; i < storeRosterData.length; i++) {
+        var f = storeRosterData[i].fields || {};
+        var ce = (f[ROSTER_FIELD_MAP.CoachEmail] || "").toLowerCase();
+        if (ce && ce === email.toLowerCase()) {
+          return f[ROSTER_FIELD_MAP.CoachAssigned] || null;
+        }
+      }
+    }
+    // Hardcoded fallback
     var map = {
       "rose@edgelinkinc.com": "Rose Perez",
       "ambulai@edgelinkinc.com": "Ambulai Sheku",
@@ -1483,6 +1488,23 @@
       "cheryl@edgelinkinc.com": "Cheryl"
     };
     return map[email.toLowerCase()] || null;
+  }
+
+  function getCoachEmailForSignedInUser() {
+    var email = getCurrentUserEmail();
+    // Check live roster data first
+    if (storeRosterData.length > 0) {
+      for (var i = 0; i < storeRosterData.length; i++) {
+        var f = storeRosterData[i].fields || {};
+        var coachEmail = (f[ROSTER_FIELD_MAP.CoachEmail] || "").toLowerCase();
+        if (coachEmail && coachEmail === email) {
+          return email;
+        }
+      }
+    }
+    // Fall back to hardcoded coach list
+    if (COACH_EMAILS.indexOf(email) !== -1) return email;
+    return null;
   }
 
   function renderStats() {
@@ -1906,7 +1928,8 @@
     Market: "field_1",
     CoachAssigned: "field_2",
     ManagerAssigned: "field_3",
-    ManagerEmail: "field_4"
+    ManagerEmail: "field_4",
+    CoachEmail: "CoachEmail"
   };
 
   var cachedRosterListId = null;
@@ -1946,7 +1969,8 @@
         return {
           coach: f[ROSTER_FIELD_MAP.CoachAssigned] || "TBD",
           manager: f[ROSTER_FIELD_MAP.ManagerAssigned] || "TBD",
-          managerEmail: f[ROSTER_FIELD_MAP.ManagerEmail] || ""
+          managerEmail: f[ROSTER_FIELD_MAP.ManagerEmail] || "",
+          coachEmail: f[ROSTER_FIELD_MAP.CoachEmail] || ""
         };
       }
     }
