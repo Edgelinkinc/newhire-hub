@@ -825,6 +825,7 @@
             <select class="form-input" id="diagnostic-list-select">
               <option value="onboarding">EdgeLink Inc New Hire Onboarding Tracker</option>
               <option value="roster">EdgeLink Store Roster</option>
+              <option value="emailsettings">EdgeLink Email Settings</option>
             </select>
           </div>
           <button class="form-submit" style="margin-bottom:14px;" onclick="runFieldDiagnostic()">Show real SharePoint field names</button>
@@ -857,6 +858,7 @@
     sitePath: "/sites/NEWHIRESS",
     listName: "EdgeLink Inc New Hire Onboarding Tracker",
     rosterListName: "EdgeLink Store Roster",
+    emailSettingsListName: "EdgeLink Email Settings",
     redirectUri: window.location.href.split('#')[0]
   };
 
@@ -1874,7 +1876,7 @@
   function runFieldDiagnostic() {
     var output = document.getElementById('diagnostic-output');
     var sel = document.getElementById('diagnostic-list-select');
-    var listName = (sel && sel.value === 'roster') ? CONFIG.rosterListName : CONFIG.listName;
+    var listName = sel && sel.value === 'roster' ? CONFIG.rosterListName : sel && sel.value === 'emailsettings' ? CONFIG.emailSettingsListName : CONFIG.listName;
     output.textContent = 'Loading ' + listName + '...';
 
     getSiteId().then(function (siteId) {
