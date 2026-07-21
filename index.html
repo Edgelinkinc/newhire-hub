@@ -372,31 +372,104 @@
 
   /* ===== SIGN-IN SCREEN ===== */
   #signin-screen {
-    max-width: 480px; margin: 0 auto; min-height: 100vh;
-    background: #fff; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; padding: 32px;
-    text-align: center;
+    max-width: 480px;
+    margin: 0 auto;
+    background: #fff;
+    overflow-y: auto;
   }
-  #signin-screen h1 {
-    font-family: 'Bebas Neue', sans-serif; letter-spacing: 1.5px;
-    font-size: 28px; color: var(--purple); margin-bottom: 6px;
-  }
-  #signin-screen p { font-size: 13px; color: var(--gray-muted); margin-bottom: 24px; }
-  #signin-btn {
-    background: var(--magenta); color: #fff; border: none; border-radius: 10px;
-    padding: 14px 28px; font-size: 14px; font-weight: 600; cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-  }
-  #signin-error { color: var(--red); font-size: 12px; margin-top: 14px; display: none; }
 </style>
 </head>
 <body>
 
 <div id="signin-screen">
-  <h1>NEW HIRE HUB</h1>
-  <p>Sign in with your Edgelink Microsoft 365 account to continue.</p>
-  <button id="signin-btn" onclick="signIn()">Sign in</button>
-  <div id="signin-error">Sign-in failed. Check your connection and try again.</div>
+  <div style="background:#4A1B5C; padding:48px 32px 56px; position:relative; overflow:hidden;">
+    <div style="position:absolute; top:-50px; right:-50px; width:200px; height:200px; border-radius:50%; background:#E20074; opacity:0.15;"></div>
+    <div style="position:absolute; bottom:-70px; left:-40px; width:160px; height:160px; border-radius:50%; background:#E20074; opacity:0.10;"></div>
+    <div style="position:absolute; top:30px; right:70px; width:50px; height:50px; border-radius:50%; background:#fff; opacity:0.05;"></div>
+    <div style="position:absolute; bottom:30px; right:40px; width:24px; height:24px; transform:rotate(45deg); background:#E20074; opacity:0.25;"></div>
+    <div style="position:absolute; top:70px; left:24px; width:14px; height:14px; transform:rotate(45deg); background:#fff; opacity:0.10;"></div>
+    <div style="position:absolute; top:110px; right:24px; width:8px; height:8px; border-radius:50%; background:#E20074; opacity:0.4;"></div>
+    <div style="position:relative; z-index:1;">
+      <div style="display:inline-block; background:#E20074; border-radius:8px; padding:5px 12px; margin-bottom:14px;">
+        <span style="font-size:10px; font-weight:700; color:#fff; letter-spacing:1.5px; font-family:'Montserrat',sans-serif;">EDGELINK HR &amp; RECRUITING</span>
+      </div>
+      <h1 style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; margin:0 0 10px; line-height:1.05;">NEW HIRE HUB</h1>
+      <p style="font-size:13px; color:#E20074; font-weight:700; margin:0 0 6px; letter-spacing:0.3px; font-family:'Montserrat',sans-serif;">From Magenta Clear to Day One —</p>
+      <p style="font-size:13px; color:#D9C5E0; margin:0; line-height:1.5; font-family:'Montserrat',sans-serif;">your new hire's journey starts here.</p>
+    </div>
+  </div>
+
+  <div style="background:#FBEAF0; padding:18px 32px; border-bottom:2px solid #E20074;">
+    <p style="font-size:13px; font-weight:600; color:#4A1B5C; margin:0 0 3px; font-family:'Montserrat',sans-serif;">👋 Welcome, EdgeLink team!</p>
+    <p style="font-size:11px; color:#993556; margin:0; font-family:'Montserrat',sans-serif;">A message from EdgeLink Human Resources &amp; Recruiting</p>
+  </div>
+
+  <div style="padding:24px 32px; max-width:480px; margin:0 auto;">
+    <p style="font-size:13px; color:#2C2C2A; line-height:1.75; margin:0 0 22px; font-family:'Montserrat',sans-serif;">New Hire Hub is your one-stop portal for submitting new candidates and tracking their onboarding progress — every step of the way, from their Magenta Clear email to their first day on the floor. HR manages progress behind the scenes so you always have a clear picture of where your new hire stands.</p>
+
+    <p style="font-size:10px; font-weight:700; color:#4A1B5C; letter-spacing:1px; margin:0 0 14px; font-family:'Montserrat',sans-serif;">THE NEW HIRE JOURNEY</p>
+
+    <div style="display:flex; flex-direction:column; gap:0; margin-bottom:24px;">
+
+      <div style="display:flex; gap:14px; align-items:stretch;">
+        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:28px;">
+          <div style="width:28px; height:28px; border-radius:50%; background:#E20074; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <span style="font-size:12px; font-weight:700; color:#fff; font-family:'Montserrat',sans-serif;">1</span>
+          </div>
+          <div style="width:2px; flex:1; background:#F0D0DA; margin:4px 0;"></div>
+        </div>
+        <div style="padding-bottom:18px;">
+          <p style="font-size:13px; font-weight:600; color:#2C2C2A; margin:0 0 3px; font-family:'Montserrat',sans-serif;">Submit the candidate</p>
+          <p style="font-size:12px; color:#8A8780; margin:0; line-height:1.6; font-family:'Montserrat',sans-serif;">Fill out the Add Candidate form with their info, store, position, and availability. A welcome email goes straight to your new hire.</p>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:14px; align-items:stretch;">
+        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:28px;">
+          <div style="width:28px; height:28px; border-radius:50%; background:#4A1B5C; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <span style="font-size:12px; font-weight:700; color:#fff; font-family:'Montserrat',sans-serif;">2</span>
+          </div>
+          <div style="width:2px; flex:1; background:#D9C5E0; margin:4px 0;"></div>
+        </div>
+        <div style="padding-bottom:18px;">
+          <p style="font-size:13px; font-weight:600; color:#2C2C2A; margin:0 0 3px; font-family:'Montserrat',sans-serif;">HR handles onboarding</p>
+          <p style="font-size:12px; color:#8A8780; margin:0; line-height:1.6; font-family:'Montserrat',sans-serif;">Human Resources tracks every task — ID verification, offer letter, NTID, paperwork, Brinks credentials — and keeps progress updated in real time.</p>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:14px; align-items:stretch;">
+        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:28px;">
+          <div style="width:28px; height:28px; border-radius:50%; background:#E20074; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <span style="font-size:12px; font-weight:700; color:#fff; font-family:'Montserrat',sans-serif;">3</span>
+          </div>
+          <div style="width:2px; flex:1; background:#F0D0DA; margin:4px 0;"></div>
+        </div>
+        <div style="padding-bottom:18px;">
+          <p style="font-size:13px; font-weight:600; color:#2C2C2A; margin:0 0 3px; font-family:'Montserrat',sans-serif;">Track progress anytime</p>
+          <p style="font-size:12px; color:#8A8780; margin:0; line-height:1.6; font-family:'Montserrat',sans-serif;">Check the Candidates tab for live status on every step. You'll get email notifications when tasks complete or need your attention.</p>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:14px; align-items:flex-start;">
+        <div style="width:28px; height:28px; border-radius:50%; background:#4A1B5C; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <span style="font-size:12px; font-weight:700; color:#fff; font-family:'Montserrat',sans-serif;">4</span>
+        </div>
+        <div>
+          <p style="font-size:13px; font-weight:600; color:#2C2C2A; margin:0 0 3px; font-family:'Montserrat',sans-serif;">Day One — they're ready!</p>
+          <p style="font-size:12px; color:#8A8780; margin:0; line-height:1.6; font-family:'Montserrat',sans-serif;">Once all steps clear, your new hire is officially ready to start their EdgeLink journey. You'll receive a final confirmation with everything you need.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="background:#F3E9F6; border-radius:12px; padding:14px 16px; margin-bottom:22px; border-left:3px solid #4A1B5C;">
+      <p style="font-size:12px; color:#4A1B5C; margin:0; line-height:1.6; font-family:'Montserrat',sans-serif;"><strong>Sign in with your Edgelink Microsoft 365 account</strong> — the same email and password you use for Teams, Outlook, and SharePoint.</p>
+    </div>
+
+    <button id="signin-btn" onclick="signIn()" style="width:100%; background:#E20074; color:#fff; border:none; border-radius:12px; padding:16px; font-size:15px; font-weight:700; cursor:pointer; font-family:'Montserrat',sans-serif; letter-spacing:0.3px;">Sign in to get started</button>
+    <div id="signin-error" style="color:#A32D2D; font-size:12px; margin-top:14px; display:none; text-align:center; font-family:'Montserrat',sans-serif;">Sign-in failed. Check your connection and try again.</div>
+    <p style="font-size:11px; color:#B4B2A9; text-align:center; margin:14px 0 0; font-family:'Montserrat',sans-serif;">Questions? Contact HR at hr@edgelinkinc.com</p>
+  </div>
 </div>
 
 <div id="app" style="display:none;">
