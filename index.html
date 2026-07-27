@@ -1054,6 +1054,43 @@
     { email: "yanna.soriano@edgelinkinc.com", stores: ["RI-HARTFORD AVE"] }
   ];
 
+  // Turn "alex.correa@edgelinkinc.com" into "Alex Correa". Only a fallback for
+  // when the Store Roster list can't be read - the roster is the real source.
+  function managerNameFromEmail(email) {
+    var local = String(email || '').split('@')[0];
+    if (!local) return 'TBD';
+    var parts = local.split('.');
+    var out = [];
+    for (var i = 0; i < parts.length; i++) {
+      if (!parts[i]) continue;
+      out.push(parts[i].charAt(0).toUpperCase() + parts[i].slice(1));
+    }
+    return out.length ? out.join(' ') : 'TBD';
+  }
+
+  // STORE_MANAGER_MAP was referenced by onStoreChange but never defined, which
+  // threw a ReferenceError for anyone whose roster fetch failed. Built here.
+  var STORE_MANAGER_MAP = (function () {
+    var map = {};
+    for (var i = 0; i < MANAGER_ROSTER.length; i++) {
+      var m = MANAGER_ROSTER[i];
+      for (var s = 0; s < m.stores.length; s++) {
+        map[m.stores[s].toUpperCase()] = managerNameFromEmail(m.email);
+      }
+    }
+    return map;
+  })();
+
+  function lookupStoreMap(map, store) {
+    if (!map || !store) return null;
+    var key = String(store).trim().toUpperCase();
+    if (map[key]) return map[key];
+    for (var k in map) {
+      if (k.toUpperCase() === key) return map[k];
+    }
+    return null;
+  }
+
   function getManagerStores(email) {
     // Try live roster data first
     if (storeRosterData.length > 0) {
@@ -1289,9 +1326,15 @@
       return;
     }
 
-    var entry = getStoreRosterEntry(store);
-    var manager = entry ? entry.manager : (STORE_MANAGER_MAP[store] || "TBD");
-    var coach = entry ? entry.coach : (STORE_COACH_MAP[store] || "TBD");
+    var entry = null, manager = "TBD", coach = "TBD";
+    try {
+      entry = getStoreRosterEntry(store);
+      manager = (entry && entry.manager) || lookupStoreMap(STORE_MANAGER_MAP, store) || "TBD";
+      coach = (entry && entry.coach) || lookupStoreMap(STORE_COACH_MAP, store) || "TBD";
+    } catch (err) {
+      // never leave the selects empty - a blank required field blocks submission
+      console.error('Coach/manager lookup failed for "' + store + '":', err);
+    }
 
     var mOpt = document.createElement('option');
     mOpt.value = manager;
@@ -2450,12 +2493,20 @@
     }).then(function (data) {
       storeRosterData = data.value || [];
       populateStoreDropdowns();
+      reapplyStoreSelection();
     }).catch(function (err) {
       console.warn('Store Roster load failed, falling back to static list:', err);
       // Falls back gracefully - store dropdown still populates from STORE_LIST
       // but coach/manager won't auto-fill until roster loads
       populateStoreDropdowns();
     });
+  }
+
+  // the roster loads async - if someone already picked a store, redo the
+  // coach/manager lookup now that real data is here
+  function reapplyStoreSelection() {
+    var sel = document.getElementById('f-location');
+    if (sel && sel.value) onStoreChange(sel.value);
   }
 
   function getStoreRosterEntry(storeName) {
