@@ -298,61 +298,166 @@
 
   /* ===== ADMIN ===== */
   .admin-tabs {
-    display: flex; gap: 4px; padding: 0 16px; background: #fff;
+    display: flex; gap: 6px; padding: 12px 14px; background: #fff;
     border-bottom: 0.5px solid var(--gray-border); overflow-x: auto;
   }
   .admin-tab {
     font-size: 12px; font-weight: 600; color: var(--gray-muted);
-    padding: 12px 10px; cursor: pointer; border-bottom: 2px solid transparent;
-    white-space: nowrap;
+    padding: 7px 14px; cursor: pointer; border-radius: 999px;
+    white-space: nowrap; transition: background 0.12s, color 0.12s;
   }
-  .admin-tab.active { color: var(--magenta); border-bottom-color: var(--magenta); }
+  .admin-tab:hover { background: var(--purple-light); color: var(--purple); }
+  .admin-tab.active { color: #fff; background: var(--magenta); }
 
   .admin-panel { display: none; flex: 1; overflow-y: auto; }
   .admin-panel.active { display: flex; flex-direction: column; }
 
+  .admin-toolbar {
+    display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 14px;
+    background: #fff; border-bottom: 0.5px solid var(--gray-border);
+  }
+  .admin-search {
+    flex: 1; min-width: 150px; font-family: 'Montserrat', sans-serif;
+    font-size: 12px; padding: 9px 11px; border-radius: 9px;
+    border: 1px solid var(--gray-border); background: #fff; color: var(--gray-text);
+  }
+  .admin-search::placeholder { color: #B4B2A9; }
+  .admin-filter-select {
+    font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 600;
+    padding: 9px 11px; border-radius: 9px; border: 1px solid var(--gray-border);
+    background: #fff; color: var(--purple); cursor: pointer; max-width: 190px;
+  }
+  .admin-filter-select.filtered {
+    border-color: var(--magenta); background: var(--magenta-light); color: #993556;
+  }
+  .admin-filter-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 13px; background: var(--magenta-light);
+    border: 0.5px solid #F4C0D1; border-radius: 10px; margin-bottom: 12px;
+  }
+  .admin-filter-count { font-size: 11.5px; color: #993556; }
+  .admin-clear-filters {
+    font-size: 11.5px; font-weight: 600; color: #993556; cursor: pointer;
+    background: none; border: none; font-family: 'Montserrat', sans-serif;
+  }
+
+  .admin-list-wrap {
+    flex: 1; overflow-y: auto; padding: 14px; background: var(--bg-page);
+  }
+
+  .mkt-group { margin-bottom: 12px; }
+  .mkt-head {
+    display: flex; align-items: center; gap: 9px; padding: 9px 11px;
+    background: #fff; border: 0.5px solid var(--gray-border);
+    border-radius: 10px; cursor: pointer; margin-bottom: 8px;
+  }
+  .mkt-chev {
+    font-size: 15px; color: var(--purple); flex-shrink: 0;
+    transition: transform 0.15s; transform: rotate(90deg);
+  }
+  .mkt-group.collapsed .mkt-chev { transform: rotate(0deg); }
+  .mkt-group.collapsed .mkt-body { display: none; }
+  .mkt-name {
+    font-family: 'Bebas Neue', sans-serif; letter-spacing: 1.4px;
+    font-size: 15px; color: var(--purple);
+  }
+  .mkt-pill {
+    font-size: 11px; font-weight: 600; color: var(--purple);
+    background: var(--purple-light); padding: 2px 8px; border-radius: 999px;
+    white-space: nowrap;
+  }
+
   .admin-candidate-card {
-    background: #fff; border-radius: 16px;
-    border: 0.5px solid var(--gray-border); margin-bottom: 10px;
+    background: #fff; border-radius: 12px;
+    border: 0.5px solid var(--gray-border); margin-bottom: 8px;
     overflow: hidden;
   }
   .admin-candidate-summary {
-    display: flex; align-items: center; gap: 10px;
-    padding: 14px; cursor: pointer;
+    display: flex; align-items: center; gap: 11px;
+    padding: 12px 13px; cursor: pointer;
   }
-  .admin-candidate-summary .candidate-name { margin: 0; }
-  .admin-candidate-summary .candidate-meta { margin-top: 1px; }
+  .admin-avatar {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+  }
   .admin-summary-info { flex: 1; min-width: 0; }
-  .admin-chevron { font-size: 16px; color: var(--gray-muted); transition: transform 0.15s; flex-shrink: 0; }
-  .admin-candidate-card.expanded .admin-chevron { transform: rotate(90deg); }
-  .admin-candidate-detail { display: none; padding: 0 14px 14px; border-top: 0.5px solid var(--gray-border); }
-  .admin-candidate-card.expanded .admin-candidate-detail { display: block; padding-top: 10px; }
-  .admin-mini-progress { display: flex; gap: 3px; margin-top: 8px; }
-  .admin-mini-seg { flex: 1; height: 4px; border-radius: 2px; background: #EEEEEE; }
-  .admin-order-info {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-    padding: 12px; background: var(--purple-light); border-radius: 12px; margin-bottom: 10px;
+  .admin-summary-name {
+    font-size: 14px; font-weight: 600; line-height: 1.3; color: var(--gray-text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .admin-order-field { display: flex; flex-direction: column; gap: 3px; }
-  .admin-order-field label { font-size: 10px; font-weight: 600; color: var(--purple); }
-  .admin-order-field input {
-    font-family: 'Montserrat', sans-serif; font-size: 12px; padding: 6px 8px;
-    border-radius: 6px; border: 1.5px solid var(--gray-border);
+  .admin-summary-meta {
+    font-size: 11.5px; color: var(--gray-muted); margin-top: 1px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .admin-count-chip {
+    font-size: 11px; font-weight: 700; padding: 3px 9px;
+    border-radius: 999px; white-space: nowrap; flex-shrink: 0;
+  }
+  .admin-chevron {
+    font-size: 17px; color: #B4B2A9; transition: transform 0.15s; flex-shrink: 0;
+  }
+  .admin-candidate-card.expanded .admin-chevron { transform: rotate(90deg); }
+  .admin-mini-progress { display: flex; gap: 3px; padding: 0 13px 12px; }
+  .admin-mini-seg { flex: 1; height: 5px; border-radius: 3px; background: #EDE9E0; }
+  .admin-candidate-detail {
+    display: none; padding: 13px; border-top: 0.5px solid var(--gray-border);
+  }
+  .admin-candidate-card.expanded .admin-candidate-detail { display: block; }
+  .admin-section-label {
+    font-size: 11px; font-weight: 700; color: var(--gray-muted);
+    letter-spacing: 0.6px; margin-bottom: 7px;
+  }
+  .admin-order-info {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 11px 14px; margin-bottom: 16px;
+  }
+  .admin-order-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .admin-order-field label {
+    font-size: 11px; font-weight: 700; color: var(--gray-muted); letter-spacing: 0.6px;
+  }
+  .admin-order-field input, .admin-order-field select {
+    font-family: 'Montserrat', sans-serif; font-size: 12.5px; width: 100%;
+    padding: 4px 0 5px; border: none; border-bottom: 1px solid var(--gray-border);
+    border-radius: 0; background: transparent; color: var(--gray-text);
+  }
+  .admin-order-field input:focus, .admin-order-field select:focus {
+    outline: none; border-bottom-color: var(--magenta);
   }
   .admin-task-row {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 10px; padding: 8px 0; border-top: 0.5px solid var(--gray-border);
+    gap: 10px; padding: 7px 0; border-bottom: 0.5px solid #EDE9E0;
   }
-  .admin-task-row:first-of-type { border-top: none; margin-top: 8px; padding-top: 10px; }
-  .admin-task-label { font-size: 12px; color: var(--gray-text); flex: 1; }
+  .admin-task-label {
+    font-size: 12.5px; color: var(--gray-text); flex: 1;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .admin-task-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
   .admin-task-select {
-    font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 600;
-    padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--gray-border);
-    background: #fff; color: var(--gray-text);
+    font-family: 'Montserrat', sans-serif; font-size: 11.5px; font-weight: 600;
+    padding: 4px 9px; border-radius: 7px; border: 1px solid transparent;
+    cursor: pointer; appearance: none; -webkit-appearance: none; text-align: center;
+  }
+  .admin-note-row { display: flex; gap: 8px; margin-top: 12px; }
+  .admin-note-input {
+    flex: 1; font-family: 'Montserrat', sans-serif; font-size: 12px;
+    padding: 9px 11px; border: 1px solid var(--gray-border); border-radius: 9px;
+  }
+  .admin-note-btn {
+    background: var(--magenta); color: #fff; border: none; border-radius: 9px;
+    padding: 9px 15px; font-size: 12px; font-weight: 600; cursor: pointer;
+    font-family: 'Montserrat', sans-serif; white-space: nowrap;
+  }
+  .admin-note-log {
+    background: #FAF7F1; border-radius: 9px; padding: 10px 11px; margin-top: 8px;
+    font-size: 11.5px; color: #5F5E5A; line-height: 1.65;
+    max-height: 130px; overflow-y: auto; white-space: pre-wrap;
   }
   .brinks-send-btn {
-    margin-top: 10px; width: 100%; padding: 10px; border-radius: 10px;
-    border: 1.5px solid #378ADD; background: #EAF2FC; color: #1C5EA8;
+    margin-top: 12px; width: 100%; padding: 10px; border-radius: 9px;
+    border: 1px solid #B5D4F4; background: #E6F1FB; color: #185FA5;
     font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Montserrat', sans-serif;
   }
   .brinks-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -802,7 +907,19 @@
 
       <!-- Candidates tab: editable task statuses -->
       <div class="admin-panel active" id="admin-panel-candidates">
-        <div class="candidates-list" id="admin-candidates-list">
+        <div class="admin-toolbar">
+          <input type="text" class="admin-search" id="admin-search" placeholder="Search name, store, or NTID" oninput="setAdminFilter('search', this.value)">
+          <select class="admin-filter-select" id="admin-coach-filter" onchange="setAdminFilter('coach', this.value)">
+            <option value="">All coaches</option>
+          </select>
+          <select class="admin-filter-select" id="admin-status-filter" onchange="setAdminFilter('status', this.value)">
+            <option value="all">All statuses</option>
+            <option value="active">Active only</option>
+            <option value="started">Started</option>
+            <option value="declined">Declined / no show</option>
+          </select>
+        </div>
+        <div class="admin-list-wrap" id="admin-candidates-list">
           <div class="loading">Loading candidates...</div>
         </div>
       </div>
@@ -1698,110 +1815,326 @@
   }
 
   // ---------------- ADMIN: CANDIDATE TASK EDITING ----------------
+  // ---------------- ADMIN: FILTERS + COLLAPSE STATE ----------------
+  var ADMIN_COLLAPSE_KEY = "newhirehub_admin_collapsed_v1";
+  var adminFilters = { search: "", coach: "", status: "all" };
+
+  function loadCollapsedMarkets() {
+    try {
+      var raw = localStorage.getItem(ADMIN_COLLAPSE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+  }
+
+  function saveCollapsedMarkets() {
+    try { localStorage.setItem(ADMIN_COLLAPSE_KEY, JSON.stringify(collapsedMarkets)); } catch (e) {}
+  }
+
+  var collapsedMarkets = loadCollapsedMarkets();
+
+  function toggleMarket(marketName) {
+    collapsedMarkets[marketName] = !collapsedMarkets[marketName];
+    saveCollapsedMarkets();
+    renderAdminCandidates();
+  }
+
+  function setAdminFilter(kind, value) {
+    adminFilters[kind] = value;
+    renderAdminCandidates();
+  }
+
+  function clearAdminFilters() {
+    adminFilters = { search: "", coach: "", status: "all" };
+    var s = document.getElementById('admin-search');
+    var cf = document.getElementById('admin-coach-filter');
+    var sf = document.getElementById('admin-status-filter');
+    if (s) s.value = '';
+    if (cf) cf.value = '';
+    if (sf) sf.value = 'all';
+    renderAdminCandidates();
+  }
+
+  function adminFiltersActive() {
+    return adminFilters.search !== '' || adminFilters.coach !== '' || adminFilters.status !== 'all';
+  }
+
+  function candidateCoach(c) {
+    var v = (c.coach || '').trim();
+    if (!v || v.toUpperCase() === 'TBD') return '';
+    return v;
+  }
+
+  function matchesAdminFilters(c) {
+    if (adminFilters.status === 'active' && (isDeclined(c) || hasStarted(c))) return false;
+    if (adminFilters.status === 'started' && !hasStarted(c)) return false;
+    if (adminFilters.status === 'declined' && !isDeclined(c)) return false;
+
+    if (adminFilters.coach === '__unassigned') {
+      if (candidateCoach(c) !== '') return false;
+    } else if (adminFilters.coach !== '') {
+      if (candidateCoach(c) !== adminFilters.coach) return false;
+    }
+
+    var q = adminFilters.search.trim().toLowerCase();
+    if (q) {
+      var hay = [c.name, c.position, c.market, c.homeLocation, c.trainingStore, c.ntid, candidateCoach(c)]
+        .join(' ').toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  }
+
+  function populateCoachFilter() {
+    var sel = document.getElementById('admin-coach-filter');
+    if (!sel) return;
+    var names = [], hasUnassigned = false;
+    for (var i = 0; i < allCandidates.length; i++) {
+      var cn = candidateCoach(allCandidates[i]);
+      if (!cn) { hasUnassigned = true; continue; }
+      if (names.indexOf(cn) === -1) names.push(cn);
+    }
+    names.sort();
+
+    var signature = names.join('|') + (hasUnassigned ? '|__u' : '');
+    if (sel.getAttribute('data-sig') === signature) return;
+    sel.setAttribute('data-sig', signature);
+
+    var current = adminFilters.coach;
+    var html = '<option value="">All coaches</option>';
+    for (var n = 0; n < names.length; n++) {
+      html += '<option value="' + escapeAttr(names[n]) + '">' + escapeHtml(names[n]) + '</option>';
+    }
+    if (hasUnassigned) html += '<option value="__unassigned">Unassigned / TBD</option>';
+    sel.innerHTML = html;
+    sel.value = current;
+    if (sel.value !== current) { adminFilters.coach = ''; sel.value = ''; }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function escapeAttr(s) {
+    return escapeHtml(s).replace(/"/g, '&quot;');
+  }
+
+  function jsStr(s) {
+    return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  }
+
+  function candidateInitials(name) {
+    var parts = String(name || '').trim().split(/\s+/);
+    if (!parts[0]) return '?';
+    var a = parts[0].charAt(0);
+    var b = parts.length > 1 ? parts[parts.length - 1].charAt(0) : '';
+    return (a + b).toUpperCase();
+  }
+
+  function daysUntilStart(c) {
+    var parts = String(c.startDate || '').split('/');
+    if (parts.length !== 3) return null;
+    var d = new Date(parseInt(parts[2], 10), parseInt(parts[0], 10) - 1, parseInt(parts[1], 10));
+    if (isNaN(d.getTime())) return null;
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return Math.round((d - today) / 86400000);
+  }
+
+  // overdueDays is still hardcoded to 0 upstream, so "behind" is derived from
+  // the start date instead: starting within a week and not day-one ready.
+  function needsAttention(c) {
+    if (isDeclined(c) || hasStarted(c) || isReady(c)) return false;
+    if (isOverdue(c)) return true;
+    var d = daysUntilStart(c);
+    return d !== null && d <= 7;
+  }
+
+  function taskPillStyle(val) {
+    if (val === 'Complete' || val === 'Started') return 'background:#EAF3DE;color:#3B6D11;border-color:#C0DD97;';
+    if (val === 'Sent' || val === 'Requested Creation') return 'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4;';
+    return 'background:#FAEEDA;color:#854F0B;border-color:#FAC775;';
+  }
+
+  function countChipStyle(done, total) {
+    if (done >= total) return 'background:#EAF3DE;color:#3B6D11;';
+    if (done >= Math.ceil(total / 2)) return 'background:#FAEEDA;color:#854F0B;';
+    return 'background:#FCEBEB;color:#A32D2D;';
+  }
+
+  // ---------------- ADMIN: CANDIDATE TASK EDITING ----------------
   function renderAdminCandidates() {
     var container = document.getElementById('admin-candidates-list');
+    if (!container) return;
+
+    populateCoachFilter();
+
+    var coachSel = document.getElementById('admin-coach-filter');
+    var statusSel = document.getElementById('admin-status-filter');
+    if (coachSel) coachSel.className = 'admin-filter-select' + (adminFilters.coach ? ' filtered' : '');
+    if (statusSel) statusSel.className = 'admin-filter-select' + (adminFilters.status !== 'all' ? ' filtered' : '');
+
     if (allCandidates.length === 0) {
       container.innerHTML = '<div class="empty-state">No candidates yet.</div>';
       return;
     }
 
-    // remember which card(s) were expanded before re-render
     var expandedIds = {};
     var existingCards = document.querySelectorAll('.admin-candidate-card.expanded');
     for (var e = 0; e < existingCards.length; e++) {
       expandedIds[existingCards[e].id] = true;
     }
 
-    // Group candidates by market
-    var markets = {};
-    var MARKET_ORDER = ['Rhode Island','Mass','Connecticut','Tennessee','Knoxville','Arkansas','Chattanooga'];
-    for (var i = 0; i < allCandidates.length; i++) {
-      var mkt = allCandidates[i].market || 'Other';
-      if (!markets[mkt]) markets[mkt] = [];
-      markets[mkt].push(allCandidates[i]);
+    var filtering = adminFiltersActive();
+    var visible = [];
+    for (var v = 0; v < allCandidates.length; v++) {
+      if (matchesAdminFilters(allCandidates[v])) visible.push(allCandidates[v]);
     }
 
     var html = '';
-    var marketKeys = Object.keys(markets).sort(function(a,b) {
+    if (filtering) {
+      html += '<div class="admin-filter-bar">';
+      html += '<span class="admin-filter-count">Showing ' + visible.length + ' of ' + allCandidates.length + ' candidates</span>';
+      html += '<button class="admin-clear-filters" onclick="clearAdminFilters()">Clear filters</button>';
+      html += '</div>';
+    }
+
+    if (visible.length === 0) {
+      html += '<div class="empty-state">No candidates match these filters.</div>';
+      container.innerHTML = html;
+      return;
+    }
+
+    var markets = {};
+    var MARKET_ORDER = ['Rhode Island', 'Mass', 'Connecticut', 'Tennessee', 'Knoxville', 'Arkansas', 'Chattanooga'];
+    for (var g = 0; g < visible.length; g++) {
+      var mkt = visible[g].market || 'Other';
+      if (!markets[mkt]) markets[mkt] = [];
+      markets[mkt].push(visible[g]);
+    }
+
+    var marketKeys = Object.keys(markets).sort(function (a, b) {
       var ai = MARKET_ORDER.indexOf(a), bi = MARKET_ORDER.indexOf(b);
-      if (ai === -1) ai = 99; if (bi === -1) bi = 99;
-      return ai - bi;
+      if (ai === -1) ai = 99;
+      if (bi === -1) bi = 99;
+      if (ai !== bi) return ai - bi;
+      return a.localeCompare(b);
     });
 
-    for (var m = 0; m < marketKeys.length; m++) {
-      var marketName = marketKeys[m];
+    for (var mk = 0; mk < marketKeys.length; mk++) {
+      var marketName = marketKeys[mk];
       var marketCandidates = markets[marketName];
-      var activeCount = 0;
+
+      var activeCount = 0, behindCount = 0;
       for (var mc = 0; mc < marketCandidates.length; mc++) {
-        if (!isDeclined(marketCandidates[mc]) && !hasStarted(marketCandidates[mc])) activeCount++;
+        var mcand = marketCandidates[mc];
+        if (!isDeclined(mcand) && !hasStarted(mcand)) activeCount++;
+        if (needsAttention(mcand)) behindCount++;
       }
-      html += '<div style="margin-bottom:16px;">';
-      html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--purple);border-radius:12px;margin-bottom:8px;">';
-      html += '<span style="font-family:Bebas Neue,sans-serif;letter-spacing:1px;font-size:16px;color:#fff;">' + marketName + '</span>';
-      html += '<span style="font-size:11px;color:#D9C5E0;">' + activeCount + ' active</span>';
-      html += '</div>';
 
-    for (var ci = 0; ci < marketCandidates.length; ci++) {
-      var c = marketCandidates[ci];
-      var doneCount = taskCompleteCount(c);
-      var cardStyle = isDeclined(c) ? ' style="opacity:0.5;"' : hasStarted(c) ? ' style="border-left:4px solid #3B6D11;"' : '';
+      // filters force every matching group open, so results are never hidden
+      var isCollapsed = !filtering && !!collapsedMarkets[marketName];
 
-      html += '<div class="admin-candidate-card' + (expandedIds['admin-card-' + c.id] ? ' expanded' : '') + '" id="admin-card-' + c.id + '"' + cardStyle + '>';
-
-      html += '<div class="admin-candidate-summary" onclick="toggleAdminCard(\'' + c.id + '\')">';
-      html += '<div class="admin-summary-info">';
-      html += '<div class="candidate-name">' + c.name + '</div>';
-      html += '<div class="candidate-meta">' + c.position + ' &middot; ' + c.market + (hasStarted(c) ? ' &middot; <span style="color:#3B6D11; font-weight:600;">Started</span>' : '') + '</div>';
-      html += '<div class="admin-mini-progress">';
-      for (var p = 0; p < TASKS.length; p++) {
-        html += '<div class="admin-mini-seg" style="background:' + segColor(c.tasks[TASKS[p].key]) + ';"></div>';
+      html += '<div class="mkt-group' + (isCollapsed ? ' collapsed' : '') + '">';
+      html += '<div class="mkt-head" onclick="toggleMarket(\'' + jsStr(marketName) + '\')">';
+      html += '<span class="mkt-chev">&#8250;</span>';
+      html += '<span class="mkt-name">' + escapeHtml(marketName).toUpperCase() + '</span>';
+      html += '<span class="mkt-pill">' + activeCount + ' active</span>';
+      html += '<div style="flex:1;"></div>';
+      if (behindCount > 0) {
+        html += '<span class="mkt-pill" style="background:#FCEBEB;color:#A32D2D;">' + behindCount + ' behind</span>';
+      } else {
+        html += '<span class="mkt-pill" style="background:#EAF3DE;color:#3B6D11;">on track</span>';
       }
       html += '</div>';
-      html += '</div>';
-      html += '<div class="admin-chevron">&#8250;</div>';
-      html += '</div>';
 
-      html += '<div class="admin-candidate-detail">';
+      html += '<div class="mkt-body">';
 
-      html += '<div class="admin-order-info">';
-      html += '<div class="admin-order-field" style="grid-column:1/-1;"><label>Candidate status</label><select onchange="updateOrderField(\'' + c.id + '\', \'CandidateStatus\', \'candidateStatus\', this.value)" style="font-family:Montserrat,sans-serif;font-size:12px;padding:6px 8px;border-radius:6px;border:1.5px solid var(--gray-border);width:100%;"><option value="Active"' + (c.candidateStatus==="Active"?" selected":"") + '>Active</option><option value="Declined"' + (c.candidateStatus==="Declined"?" selected":"") + '>Declined</option><option value="No Show"' + (c.candidateStatus==="No Show"?" selected":"") + '>No Show</option><option value="Started"' + (c.candidateStatus==="Started"?" selected":"") + '>Started</option></select></div>';
-      html += '<div class="admin-order-field"><label>Start date</label><input type="text" value="' + (c.startDate || '') + '" placeholder="e.g. 07/27/2026" onchange="updateOrderField(\'' + c.id + '\', \'StartDate\', \'startDate\', this.value)"></div>';
-      html += '<div class="admin-order-field"><label>Shirt size</label><input type="text" value="' + (c.shirtSize || '') + '" onchange="updateOrderField(\'' + c.id + '\', \'UniformShirtSize\', \'shirtSize\', this.value)"></div>';
-      html += '<div class="admin-order-field"><label>Name tag</label><input type="text" value="' + (c.nameTag || '') + '" onchange="updateOrderField(\'' + c.id + '\', \'NameTag\', \'nameTag\', this.value)"></div>';
-      html += '<div class="admin-order-field"><label>NTID</label><input type="text" value="' + (c.ntid || '') + '" onchange="updateOrderField(\'' + c.id + '\', \'NTID\', \'ntid\', this.value)"></div>';
-      html += '<div class="admin-order-field"><label>T-Mobile email</label><input type="text" value="' + (c.tmobileEmail || '') + '" onchange="updateOrderField(\'' + c.id + '\', \'TMobileEmail\', \'tmobileEmail\', this.value)"></div>';
-      html += '</div>';
-      html += '<div style="margin-top:12px;">';
-      html += '<label style="font-size:10px;font-weight:600;color:var(--purple);letter-spacing:0.5px;">NOTES LOG</label>';
-      html += '<div style="background:var(--purple-light);border-radius:8px;padding:10px;font-size:11px;color:var(--gray-text);max-height:120px;overflow-y:auto;margin:6px 0;white-space:pre-wrap;line-height:1.6;">' + (c.notes ? c.notes.replace(/</g,"&lt;").replace(/>/g,"&gt;") : 'No notes yet.') + '</div>';
-      html += '<div style="display:flex;gap:6px;margin-top:4px;">';
-      html += '<input type="text" id="note-' + c.id + '" placeholder="Add a note..." style="font-family:Montserrat,sans-serif;font-size:12px;padding:8px 10px;border:1.5px solid var(--gray-border);border-radius:8px;flex:1;">';
-      html += '<button onclick="addNote(\'' + c.id + '\')" style="background:var(--magenta);color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap;">+ Note</button>';
-      html += '</div></div>';
+      for (var ci = 0; ci < marketCandidates.length; ci++) {
+        var c = marketCandidates[ci];
+        var doneCount = taskCompleteCount(c);
+        var av = avatarColors(c);
+        var declined = isDeclined(c);
+        var cardStyle = declined ? ' style="border-left:3px solid #E24B4A;"'
+                      : hasStarted(c) ? ' style="border-left:3px solid #639922;"' : '';
 
-      for (var k = 0; k < TASKS.length; k++) {
-        var task = TASKS[k];
-        var currentVal = c.tasks[task.key];
-        html += '<div class="admin-task-row">';
-        html += '<div class="admin-task-label">' + task.label + '</div>';
-        html += '<select class="admin-task-select" onchange="updateTaskStatus(\'' + c.id + '\', \'' + task.key + '\', this.value)">';
-        for (var tc = 0; tc < task.choices.length; tc++) {
-          var sel = (task.choices[tc] === currentVal) ? ' selected' : '';
-          html += '<option value="' + task.choices[tc] + '"' + sel + '>' + task.choices[tc] + '</option>';
+        html += '<div class="admin-candidate-card' + (expandedIds['admin-card-' + c.id] ? ' expanded' : '') + '" id="admin-card-' + c.id + '"' + cardStyle + '>';
+
+        html += '<div class="admin-candidate-summary" onclick="toggleAdminCard(\'' + jsStr(c.id) + '\')">';
+        html += '<div class="admin-avatar" style="background:' + av.bg + ';color:' + av.color + ';">' + escapeHtml(c.initials || candidateInitials(c.name)) + '</div>';
+        html += '<div class="admin-summary-info">';
+        html += '<div class="admin-summary-name"' + (declined ? ' style="color:#8A8780;"' : '') + '>' + escapeHtml(c.name) + '</div>';
+
+        var metaBits = [];
+        if (c.position) metaBits.push(escapeHtml(c.position));
+        if (declined) metaBits.push(escapeHtml(c.candidateStatus));
+        else if (hasStarted(c)) metaBits.push('Started');
+        else if (c.startDate) metaBits.push('Starts ' + escapeHtml(c.startDate));
+        var coachName = candidateCoach(c);
+        if (coachName) metaBits.push(escapeHtml(coachName));
+        html += '<div class="admin-summary-meta">' + metaBits.join(' &middot; ') + '</div>';
+
+        html += '</div>';
+        if (declined) {
+          html += '<span class="admin-count-chip" style="background:#FCEBEB;color:#A32D2D;">' + escapeHtml(c.candidateStatus) + '</span>';
+        } else {
+          html += '<span class="admin-count-chip" style="' + countChipStyle(doneCount, TASKS.length) + '">' + doneCount + ' of ' + TASKS.length + '</span>';
         }
-        html += '</select>';
+        html += '<span class="admin-chevron">&#8250;</span>';
+        html += '</div>';
+
+        if (!declined) {
+          html += '<div class="admin-mini-progress">';
+          for (var p = 0; p < TASKS.length; p++) {
+            html += '<div class="admin-mini-seg" style="background:' + segColor(c.tasks[TASKS[p].key]) + ';"></div>';
+          }
+          html += '</div>';
+        }
+
+        html += '<div class="admin-candidate-detail">';
+
+        html += '<div class="admin-order-info">';
+        html += '<div class="admin-order-field"><label>STATUS</label><select onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidateStatus\', \'candidateStatus\', this.value)"><option value="Active"' + (c.candidateStatus === "Active" ? " selected" : "") + '>Active</option><option value="Declined"' + (c.candidateStatus === "Declined" ? " selected" : "") + '>Declined</option><option value="No Show"' + (c.candidateStatus === "No Show" ? " selected" : "") + '>No Show</option><option value="Started"' + (c.candidateStatus === "Started" ? " selected" : "") + '>Started</option></select></div>';
+        html += '<div class="admin-order-field"><label>START DATE</label><input type="text" value="' + escapeAttr(c.startDate || '') + '" placeholder="07/27/2026" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'StartDate\', \'startDate\', this.value)"></div>';
+        html += '<div class="admin-order-field"><label>SHIRT SIZE</label><input type="text" value="' + escapeAttr(c.shirtSize || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'UniformShirtSize\', \'shirtSize\', this.value)"></div>';
+        html += '<div class="admin-order-field"><label>NAME TAG</label><input type="text" value="' + escapeAttr(c.nameTag || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'NameTag\', \'nameTag\', this.value)"></div>';
+        html += '<div class="admin-order-field"><label>NTID</label><input type="text" value="' + escapeAttr(c.ntid || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'NTID\', \'ntid\', this.value)"></div>';
+        html += '<div class="admin-order-field"><label>T-MOBILE EMAIL</label><input type="text" value="' + escapeAttr(c.tmobileEmail || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'TMobileEmail\', \'tmobileEmail\', this.value)"></div>';
+        html += '</div>';
+
+        html += '<div class="admin-section-label">ONBOARDING TASKS</div>';
+        for (var k = 0; k < TASKS.length; k++) {
+          var task = TASKS[k];
+          var currentVal = c.tasks[task.key];
+          html += '<div class="admin-task-row">';
+          html += '<div class="admin-task-label"><span class="admin-task-dot" style="background:' + segColor(currentVal) + ';"></span>' + escapeHtml(task.label) + '</div>';
+          html += '<select class="admin-task-select" style="' + taskPillStyle(currentVal) + '" onchange="updateTaskStatus(\'' + jsStr(c.id) + '\', \'' + task.key + '\', this.value)">';
+          for (var tc = 0; tc < task.choices.length; tc++) {
+            var sel = (task.choices[tc] === currentVal) ? ' selected' : '';
+            html += '<option value="' + escapeAttr(task.choices[tc]) + '"' + sel + '>' + escapeHtml(task.choices[tc]) + '</option>';
+          }
+          html += '</select>';
+          html += '</div>';
+        }
+
+        if (c.tasks.BrinksCredentials !== 'Complete') {
+          html += '<button class="brinks-send-btn" onclick="sendBrinksRequest(\'' + jsStr(c.id) + '\', \'' + jsStr(c.name) + '\')">Send Brinks request</button>';
+        }
+
+        html += '<div class="admin-section-label" style="margin-top:16px;">NOTES LOG</div>';
+        html += '<div class="admin-note-row">';
+        html += '<input type="text" class="admin-note-input" id="note-' + escapeAttr(c.id) + '" placeholder="Add a note...">';
+        html += '<button class="admin-note-btn" onclick="addNote(\'' + jsStr(c.id) + '\')">+ Note</button>';
+        html += '</div>';
+        html += '<div class="admin-note-log">' + (c.notes ? escapeHtml(c.notes) : 'No notes yet.') + '</div>';
+
+        html += '</div>';
         html += '</div>';
       }
 
-      if (c.tasks.BrinksCredentials !== 'Complete') {
-        html += '<button class="brinks-send-btn" onclick="sendBrinksRequest(\'' + c.id + '\', \'' + c.name.replace(/'/g, "\\'") + '\')">Send Brinks request</button>';
-      }
-      html += '</div>'; // detail
+      html += '</div>';
+      html += '</div>';
+    }
 
-      html += '</div>'; // card
-    }
-    html += '</div>'; // market group
-    }
     container.innerHTML = html;
   }
 
