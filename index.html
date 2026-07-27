@@ -867,7 +867,7 @@
   // adding a matching Choice column on the SharePoint list.
   // 'choices' documents the valid values for reference / validation only.
   var TASKS = [
-    { key: "ClearIdentification", label: "Clear identification", choices: ["Pending", "Sent", "Complete"] },
+    { key: "ClearIdentification", label: "Clear identification", choices: ["Pending", "Complete"] },
     { key: "OfferLetter", label: "Offer letter", choices: ["Sent", "Pending", "Complete"] },
     { key: "NTIDCreated", label: "NTID created", choices: ["Pending", "Complete"] },
     { key: "OnboardingStatus", label: "Onboarding (paperwork)", choices: ["Sent", "Pending", "Complete"] },
@@ -978,7 +978,8 @@
     UniformShirtSize: "UniformShirtSize",
     NameTag: "NameTag",
     BiLingual: "Bi_x002d_Lingual",
-    Availability: "Availability"
+    Availability: "Availability",
+    CandidateStatus: "CandidateStatus"
   };
 
   function toRealFields(friendlyFields) {
@@ -1340,6 +1341,8 @@
       homeLocation: f[FIELD_MAP.HomeLocationAssigned] || "",
       trainingStore: f[FIELD_MAP.TrainingStore] || "",
       startDate: f[FIELD_MAP.StartDate] || "",
+      candidateStatus: f[FIELD_MAP.CandidateStatus] || "Active",
+      notes: f[FIELD_MAP.NotesUpdates] || "",
       coach: f[FIELD_MAP.CoachAssigned] || "",
       manager: f[FIELD_MAP.ManagerAssigned] || "",
       shirtSize: f[FIELD_MAP.UniformShirtSize] || "",
@@ -1399,7 +1402,11 @@
   }
 
   function hasStarted(c) {
-    return c.tasks.ReadyForDayOne === 'Started';
+    return c.candidateStatus === 'Started';
+  }
+
+  function isDeclined(c) {
+    return c.candidateStatus === 'Declined' || c.candidateStatus === 'No Show';
   }
 
   function isOverdue(c) {
@@ -1448,6 +1455,7 @@
     for (var i = 0; i < allCandidates.length; i++) {
       var c = allCandidates[i];
       if (hasStarted(c)) continue;
+      if (isDeclined(c)) continue;
 
       if (isCheryl) {
         active.push(c);
@@ -1704,12 +1712,41 @@
       expandedIds[existingCards[e].id] = true;
     }
 
-    var html = '';
+    // Group candidates by market
+    var markets = {};
+    var MARKET_ORDER = ['Rhode Island','Mass','Connecticut','Tennessee','Knoxville','Arkansas','Chattanooga'];
     for (var i = 0; i < allCandidates.length; i++) {
-      var c = allCandidates[i];
-      var doneCount = taskCompleteCount(c);
+      var mkt = allCandidates[i].market || 'Other';
+      if (!markets[mkt]) markets[mkt] = [];
+      markets[mkt].push(allCandidates[i]);
+    }
 
-      html += '<div class="admin-candidate-card' + (expandedIds['admin-card-' + c.id] ? ' expanded' : '') + '" id="admin-card-' + c.id + '">';
+    var html = '';
+    var marketKeys = Object.keys(markets).sort(function(a,b) {
+      var ai = MARKET_ORDER.indexOf(a), bi = MARKET_ORDER.indexOf(b);
+      if (ai === -1) ai = 99; if (bi === -1) bi = 99;
+      return ai - bi;
+    });
+
+    for (var m = 0; m < marketKeys.length; m++) {
+      var marketName = marketKeys[m];
+      var marketCandidates = markets[marketName];
+      var activeCount = 0;
+      for (var mc = 0; mc < marketCandidates.length; mc++) {
+        if (!isDeclined(marketCandidates[mc]) && !hasStarted(marketCandidates[mc])) activeCount++;
+      }
+      html += '<div style="margin-bottom:16px;">';
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--purple);border-radius:12px;margin-bottom:8px;">';
+      html += '<span style="font-family:Bebas Neue,sans-serif;letter-spacing:1px;font-size:16px;color:#fff;">' + marketName + '</span>';
+      html += '<span style="font-size:11px;color:#D9C5E0;">' + activeCount + ' active</span>';
+      html += '</div>';
+
+    for (var i = 0; i < marketCandidates.length; i++) {
+      var c = marketCandidates[i];
+      var doneCount = taskCompleteCount(c);
+      var cardStyle = isDeclined(c) ? ' style="opacity:0.5;"' : hasStarted(c) ? ' style="border-left:4px solid #3B6D11;"' : '';
+
+      html += '<div class="admin-candidate-card' + (expandedIds['admin-card-' + c.id] ? ' expanded' : '') + '" id="admin-card-' + c.id + '"' + cardStyle + '>';
 
       html += '<div class="admin-candidate-summary" onclick="toggleAdminCard(\'' + c.id + '\')">';
       html += '<div class="admin-summary-info">';
@@ -1727,12 +1764,20 @@
       html += '<div class="admin-candidate-detail">';
 
       html += '<div class="admin-order-info">';
+      html += '<div class="admin-order-field" style="grid-column:1/-1;"><label>Candidate status</label><select onchange="updateOrderField(\'' + c.id + '\', \'CandidateStatus\', \'candidateStatus\', this.value)" style="font-family:Montserrat,sans-serif;font-size:12px;padding:6px 8px;border-radius:6px;border:1.5px solid var(--gray-border);width:100%;"><option value="Active"' + (c.candidateStatus==="Active"?" selected":"") + '>Active</option><option value="Declined"' + (c.candidateStatus==="Declined"?" selected":"") + '>Declined</option><option value="No Show"' + (c.candidateStatus==="No Show"?" selected":"") + '>No Show</option><option value="Started"' + (c.candidateStatus==="Started"?" selected":"") + '>Started</option></select></div>';
       html += '<div class="admin-order-field"><label>Start date</label><input type="text" value="' + (c.startDate || '') + '" placeholder="e.g. 07/27/2026" onchange="updateOrderField(\'' + c.id + '\', \'StartDate\', \'startDate\', this.value)"></div>';
       html += '<div class="admin-order-field"><label>Shirt size</label><input type="text" value="' + (c.shirtSize || '') + '" onchange="updateOrderField(\'' + c.id + '\', \'UniformShirtSize\', \'shirtSize\', this.value)"></div>';
       html += '<div class="admin-order-field"><label>Name tag</label><input type="text" value="' + (c.nameTag || '') + '" onchange="updateOrderField(\'' + c.id + '\', \'NameTag\', \'nameTag\', this.value)"></div>';
       html += '<div class="admin-order-field"><label>NTID</label><input type="text" value="' + (c.ntid || '') + '" onchange="updateOrderField(\'' + c.id + '\', \'NTID\', \'ntid\', this.value)"></div>';
       html += '<div class="admin-order-field"><label>T-Mobile email</label><input type="text" value="' + (c.tmobileEmail || '') + '" onchange="updateOrderField(\'' + c.id + '\', \'TMobileEmail\', \'tmobileEmail\', this.value)"></div>';
       html += '</div>';
+      html += '<div style="margin-top:12px;">';
+      html += '<label style="font-size:10px;font-weight:600;color:var(--purple);letter-spacing:0.5px;">NOTES LOG</label>';
+      html += '<div style="background:var(--purple-light);border-radius:8px;padding:10px;font-size:11px;color:var(--gray-text);max-height:120px;overflow-y:auto;margin:6px 0;white-space:pre-wrap;line-height:1.6;">' + (c.notes ? c.notes.replace(/</g,"&lt;").replace(/>/g,"&gt;") : 'No notes yet.') + '</div>';
+      html += '<div style="display:flex;gap:6px;margin-top:4px;">';
+      html += '<input type="text" id="note-' + c.id + '" placeholder="Add a note..." style="font-family:Montserrat,sans-serif;font-size:12px;padding:8px 10px;border:1.5px solid var(--gray-border);border-radius:8px;flex:1;">';
+      html += '<button onclick="addNote(\'' + c.id + '\')" style="background:var(--magenta);color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap;">+ Note</button>';
+      html += '</div></div>';
 
       for (var k = 0; k < TASKS.length; k++) {
         var task = TASKS[k];
@@ -1754,6 +1799,8 @@
       html += '</div>'; // detail
 
       html += '</div>'; // card
+    }
+    html += '</div>'; // market group
     }
     container.innerHTML = html;
   }
@@ -2023,6 +2070,45 @@
     document.getElementById('f-manager').innerHTML = '<option value="">Select home store first</option>';
     document.getElementById('shirtsize-other-group').style.display = 'none';
     buildAvailabilityGrid(); // reset availability selections
+  }
+
+  function addNote(itemId) {
+    var input = document.getElementById('note-' + itemId);
+    if (!input || !input.value.trim()) return;
+    var noteText = input.value.trim();
+    var now = new Date();
+    var timestamp = (now.getMonth()+1) + '/' + now.getDate() + '/' + now.getFullYear() + ' ' +
+      now.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
+    var newEntry = '[' + timestamp + '] ' + noteText;
+
+    // Find current notes for this candidate
+    var candidate = null;
+    for (var i = 0; i < allCandidates.length; i++) {
+      if (allCandidates[i].id === itemId) { candidate = allCandidates[i]; break; }
+    }
+    var existingNotes = candidate ? candidate.notes || '' : '';
+    var updatedNotes = existingNotes ? existingNotes + '\n' + newEntry : newEntry;
+
+    var friendlyFields = { NotesUpdates: updatedNotes };
+    var realFields = toRealFields(friendlyFields);
+
+    getSiteId().then(function(siteId) {
+      return getListId(siteId).then(function(listId) {
+        return fetch("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items/" + itemId + "/fields", {
+          method: "PATCH",
+          headers: { Authorization: "Bearer " + graphToken, "Content-Type": "application/json" },
+          body: JSON.stringify(realFields)
+        });
+      });
+    }).then(function(res) {
+      if (!res.ok) throw new Error("Note save failed: " + res.status);
+      if (candidate) candidate.notes = updatedNotes;
+      input.value = '';
+      renderAdminCandidates();
+    }).catch(function(err) {
+      console.error(err);
+      alert('Could not save note. Please try again.');
+    });
   }
 
   function setupShirtSizeToggle() {
