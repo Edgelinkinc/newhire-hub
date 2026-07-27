@@ -988,7 +988,7 @@
   // adding a matching Choice column on the SharePoint list.
   // 'choices' documents the valid values for reference / validation only.
   var TASKS = [
-    { key: "ClearIdentification", label: "Clear identification", choices: ["Pending", "Complete"] },
+    { key: "ClearIdentification", label: "Clear identification", choices: ["Sent", "Pending", "Complete"] },
     { key: "OfferLetter", label: "Offer letter", choices: ["Sent", "Pending", "Complete"] },
     { key: "NTIDCreated", label: "NTID created", choices: ["Pending", "Complete"] },
     { key: "OnboardingStatus", label: "Onboarding (paperwork)", choices: ["Sent", "Pending", "Complete"] },
@@ -1975,7 +1975,8 @@
 
   function taskPillStyle(val) {
     if (val === 'Complete' || val === 'Started') return 'background:#EAF3DE;color:#3B6D11;border-color:#C0DD97;';
-    if (val === 'Sent' || val === 'Requested Creation') return 'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4;';
+    if (val === 'Requested Creation') return 'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4;';
+    if (val === 'Sent') return 'background:#FAEEDA;color:#854F0B;border-color:#FAC775;';
     return 'background:#FAEEDA;color:#854F0B;border-color:#FAC775;';
   }
 
@@ -2133,8 +2134,12 @@
           html += '<div class="admin-task-label"><span class="admin-task-dot" style="background:' + segColor(currentVal) + ';"></span>' + escapeHtml(task.label) + '</div>';
           html += '<select class="admin-task-select" style="' + taskPillStyle(currentVal) + '" onchange="updateTaskStatus(\'' + jsStr(c.id) + '\', \'' + task.key + '\', this.value)">';
           var blockers = brinksBlockers(c);
-          for (var tc = 0; tc < task.choices.length; tc++) {
-            var choice = task.choices[tc];
+          // if SharePoint holds a value this task doesn't list, show it anyway -
+          // otherwise the select silently displays the wrong status
+          var choiceList = task.choices.slice();
+          if (currentVal && choiceList.indexOf(currentVal) === -1) choiceList.unshift(currentVal);
+          for (var tc = 0; tc < choiceList.length; tc++) {
+            var choice = choiceList[tc];
             var sel = (choice === currentVal) ? ' selected' : '';
             var lock = (task.key === 'BrinksCredentials' && choice === 'Requested Creation'
                         && blockers.length > 0 && choice !== currentVal) ? ' disabled' : '';
