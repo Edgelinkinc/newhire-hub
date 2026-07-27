@@ -2537,10 +2537,7 @@
     output.textContent = 'Loading ' + listName + '...';
 
     getSiteId().then(function (siteId) {
-      var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists?$filter=displayName eq '" + encodeURIComponent(listName) + "'";
-      return graphFetch(url).then(function (data) {
-        if (!data.value || data.value.length === 0) throw new Error("List not found: " + listName);
-        var listId = data.value[0].id;
+      return findListIdByName(siteId, listName).then(function (listId) {
         return graphFetch("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/columns");
       });
     }).then(function (data) {
