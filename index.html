@@ -1590,12 +1590,51 @@
     });
   }
 
+  // Normalize so "EdgeLink Store Roster", "EdgeLink_Store_Roster" and
+  // "edgelink-store-roster" all compare equal. SharePoint keeps the original
+  // name in the URL after a rename, and Graph is inconsistent about which one
+  // displayName reports - filtering on an exact string silently returns zero.
+  function normalizeListName(s) {
+    return String(s || "").toLowerCase().replace(/[\s_\-]+/g, "");
+  }
+
+  var cachedAllLists = null;
+
+  function getAllLists(siteId) {
+    if (cachedAllLists) return Promise.resolve(cachedAllLists);
+    var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists?$top=200";
+    return graphFetch(url).then(function (data) {
+      cachedAllLists = data.value || [];
+      return cachedAllLists;
+    });
+  }
+
+  function findListIdByName(siteId, wantedName) {
+    return getAllLists(siteId).then(function (lists) {
+      var want = normalizeListName(wantedName);
+      for (var i = 0; i < lists.length; i++) {
+        if (normalizeListName(lists[i].displayName) === want) return lists[i].id;
+      }
+      // fall back to the URL-derived name, which survives renames
+      for (var j = 0; j < lists.length; j++) {
+        if (normalizeListName(lists[j].name) === want) return lists[j].id;
+      }
+      var visible = [];
+      for (var k = 0; k < lists.length; k++) {
+        visible.push(lists[k].displayName || lists[k].name);
+      }
+      var e = new Error("No list matching '" + wantedName + "'. This account can see: " +
+                        (visible.length ? visible.join(", ") : "(none)"));
+      e.notVisible = true;
+      e.visibleLists = visible;
+      throw e;
+    });
+  }
+
   function getListId(siteId) {
     if (cachedListId) return Promise.resolve(cachedListId);
-    var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists?$filter=displayName eq '" + encodeURIComponent(CONFIG.listName) + "'";
-    return graphFetch(url).then(function (data) {
-      if (!data.value || data.value.length === 0) throw new Error("List not found: " + CONFIG.listName);
-      cachedListId = data.value[0].id;
+    return findListIdByName(siteId, CONFIG.listName).then(function (id) {
+      cachedListId = id;
       console.log("Onboarding Tracker list ID cached:", cachedListId);
       return cachedListId;
     });
@@ -2534,10 +2573,8 @@
 
   function getRosterListId(siteId) {
     if (cachedRosterListId) return Promise.resolve(cachedRosterListId);
-    var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists?$filter=displayName eq '" + encodeURIComponent(CONFIG.rosterListName) + "'";
-    return graphFetch(url).then(function (data) {
-      if (!data.value || data.value.length === 0) throw new Error("Store Roster list not found");
-      cachedRosterListId = data.value[0].id;
+    return findListIdByName(siteId, CONFIG.rosterListName).then(function (id) {
+      cachedRosterListId = id;
       return cachedRosterListId;
     });
   }
@@ -2564,6 +2601,7 @@
         state: "failed",
         message: err.message || String(err),
         status: err.status || 0,
+        notVisible: !!err.notVisible,
         url: err.url || ""
       };
       console.warn('Store Roster load failed, falling back to static list:', err);
@@ -2574,7 +2612,8 @@
 
   // the roster loads async - if someone already picked a store, redo the
   // coach/manager lookup now that real data is here
-  function rosterFailureHint(s) {
+  function rosterFailureHint(s, notVisible) {
+    if (notVisible) return "This account could not find a list matching that name. The details below show every list this account can actually see - if the roster is missing from that list it is a permission problem, and if it appears under a different spelling the name in CONFIG needs updating.";
     if (s === 403) return "Access denied. This account can read the site but not the Store Roster list - check that list's permissions in SharePoint.";
     if (s === 401) return "Sign-in expired or not consented. Try Switch account and sign in again.";
     if (s === 404) return "The Store Roster list was not found under this site.";
@@ -2597,7 +2636,7 @@
     el.className = 'roster-banner';
     var title = rosterStatus.state === 'empty'
       ? 'The Store Roster list loaded but is empty.'
-      : rosterFailureHint(rosterStatus.status);
+      : rosterFailureHint(rosterStatus.status, rosterStatus.notVisible);
     el.innerHTML =
       '<div class="roster-banner-title">Coach and manager may show TBD</div>' +
       '<div class="roster-banner-body">' + escapeHtml(title) + '</div>' +
@@ -2607,7 +2646,10 @@
       '</div>' +
       '<div class="roster-banner-detail" id="roster-banner-detail" style="display:none;">' +
         'Signed in as: ' + escapeHtml(getCurrentUserEmail() || 'unknown') + '\n' +
-        'HTTP status: ' + (rosterStatus.status || 'n/a') + '\n' +
+        'HTTP status: ' + (rosterStatus.status || 'n/a (no HTTP error - see above)') + '\n' +
+        'Tracker list: ' + (allCandidates.length > 0
+            ? 'OK - ' + allCandidates.length + ' candidates loaded'
+            : 'also failed or empty') + '\n' +
         'List: ' + escapeHtml(CONFIG.rosterListName) + '\n' +
         'Site: ' + escapeHtml(CONFIG.sitePath) + '\n' +
         'Error: ' + escapeHtml(rosterStatus.message) +
