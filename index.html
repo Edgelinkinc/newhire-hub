@@ -1741,8 +1741,8 @@
       html += '<span style="font-size:11px;color:#D9C5E0;">' + activeCount + ' active</span>';
       html += '</div>';
 
-    for (var i = 0; i < marketCandidates.length; i++) {
-      var c = marketCandidates[i];
+    for (var ci = 0; ci < marketCandidates.length; ci++) {
+      var c = marketCandidates[ci];
       var doneCount = taskCompleteCount(c);
       var cardStyle = isDeclined(c) ? ' style="opacity:0.5;"' : hasStarted(c) ? ' style="border-left:4px solid #3B6D11;"' : '';
 
