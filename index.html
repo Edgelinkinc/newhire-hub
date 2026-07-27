@@ -460,7 +460,11 @@
     border: 1px solid #B5D4F4; background: #E6F1FB; color: #185FA5;
     font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Montserrat', sans-serif;
   }
-  .brinks-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .brinks-send-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .brinks-blocked-note {
+    font-size: 11px; color: #854F0B; background: #FAEEDA;
+    border-radius: 8px; padding: 8px 10px; margin-top: 6px; line-height: 1.5;
+  }
 
   .backsheet-row {
     background: #fff; border-radius: 16px; padding: 14px;
@@ -1949,6 +1953,26 @@
     return d !== null && d <= 7;
   }
 
+  function findCandidate(itemId) {
+    for (var i = 0; i < allCandidates.length; i++) {
+      if (allCandidates[i].id === itemId) return allCandidates[i];
+    }
+    return null;
+  }
+
+  // Brinks can only be requested once the NTID and T-Mobile email exist -
+  // the Brinks department needs both to create the credentials.
+  function brinksBlockers(c) {
+    var missing = [];
+    if (!c || !String(c.ntid || '').trim()) missing.push('NTID');
+    if (!c || !String(c.tmobileEmail || '').trim()) missing.push('T-Mobile email');
+    return missing;
+  }
+
+  function brinksReady(c) {
+    return brinksBlockers(c).length === 0;
+  }
+
   function taskPillStyle(val) {
     if (val === 'Complete' || val === 'Started') return 'background:#EAF3DE;color:#3B6D11;border-color:#C0DD97;';
     if (val === 'Sent' || val === 'Requested Creation') return 'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4;';
@@ -2108,16 +2132,26 @@
           html += '<div class="admin-task-row">';
           html += '<div class="admin-task-label"><span class="admin-task-dot" style="background:' + segColor(currentVal) + ';"></span>' + escapeHtml(task.label) + '</div>';
           html += '<select class="admin-task-select" style="' + taskPillStyle(currentVal) + '" onchange="updateTaskStatus(\'' + jsStr(c.id) + '\', \'' + task.key + '\', this.value)">';
+          var blockers = brinksBlockers(c);
           for (var tc = 0; tc < task.choices.length; tc++) {
-            var sel = (task.choices[tc] === currentVal) ? ' selected' : '';
-            html += '<option value="' + escapeAttr(task.choices[tc]) + '"' + sel + '>' + escapeHtml(task.choices[tc]) + '</option>';
+            var choice = task.choices[tc];
+            var sel = (choice === currentVal) ? ' selected' : '';
+            var lock = (task.key === 'BrinksCredentials' && choice === 'Requested Creation'
+                        && blockers.length > 0 && choice !== currentVal) ? ' disabled' : '';
+            html += '<option value="' + escapeAttr(choice) + '"' + sel + lock + '>' + escapeHtml(choice) + '</option>';
           }
           html += '</select>';
           html += '</div>';
         }
 
         if (c.tasks.BrinksCredentials !== 'Complete') {
-          html += '<button class="brinks-send-btn" onclick="sendBrinksRequest(\'' + jsStr(c.id) + '\', \'' + jsStr(c.name) + '\')">Send Brinks request</button>';
+          var bBlock = brinksBlockers(c);
+          if (bBlock.length > 0) {
+            html += '<button class="brinks-send-btn" disabled>Send Brinks request</button>';
+            html += '<div class="brinks-blocked-note">Add the ' + escapeHtml(bBlock.join(' and ')) + ' above before requesting Brinks credentials.</div>';
+          } else {
+            html += '<button class="brinks-send-btn" onclick="sendBrinksRequest(\'' + jsStr(c.id) + '\', \'' + jsStr(c.name) + '\')">Send Brinks request</button>';
+          }
         }
 
         html += '<div class="admin-section-label" style="margin-top:16px;">NOTES LOG</div>';
@@ -2149,6 +2183,15 @@
   }
 
   function updateTaskStatus(itemId, taskKey, newValue) {
+    if (taskKey === 'BrinksCredentials' && newValue === 'Requested Creation') {
+      var blockers = brinksBlockers(findCandidate(itemId));
+      if (blockers.length > 0) {
+        alert('Add the ' + blockers.join(' and ') + ' before requesting Brinks credentials.');
+        renderAdminCandidates();
+        return;
+      }
+    }
+
     var friendlyFields = {};
     friendlyFields[taskKey] = newValue;
     var realFields = toRealFields(friendlyFields);
@@ -2231,6 +2274,12 @@
   }
 
   function sendBrinksRequest(itemId, candidateName) {
+    var brinksMissing = brinksBlockers(findCandidate(itemId));
+    if (brinksMissing.length > 0) {
+      alert('Add the ' + brinksMissing.join(' and ') + ' before requesting Brinks credentials.');
+      return;
+    }
+
     // NOTE: this flips the field to "Requested Creation" which the future
     // Power Automate flow watches for to email the Brinks department.
     // Actual email sending is not yet wired - that's a later phase.
