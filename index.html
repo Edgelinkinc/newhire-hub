@@ -1785,9 +1785,9 @@
         html += '<div class="admin-task-row">';
         html += '<div class="admin-task-label">' + task.label + '</div>';
         html += '<select class="admin-task-select" onchange="updateTaskStatus(\'' + c.id + '\', \'' + task.key + '\', this.value)">';
-        for (var m = 0; m < task.choices.length; m++) {
-          var sel = (task.choices[m] === currentVal) ? ' selected' : '';
-          html += '<option value="' + task.choices[m] + '"' + sel + '>' + task.choices[m] + '</option>';
+        for (var tc = 0; tc < task.choices.length; tc++) {
+          var sel = (task.choices[tc] === currentVal) ? ' selected' : '';
+          html += '<option value="' + task.choices[tc] + '"' + sel + '>' + task.choices[tc] + '</option>';
         }
         html += '</select>';
         html += '</div>';
