@@ -296,6 +296,22 @@
     padding: 12px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; text-align: center;
   }
 
+  #signed-in-as {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 7px 14px; background: #FAF7F1;
+    border-bottom: 0.5px solid var(--gray-border); flex-shrink: 0;
+  }
+  .signed-in-text {
+    font-size: 11px; color: var(--gray-muted); overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+  .signed-in-text.unknown { color: #A32D2D; font-weight: 600; }
+  .switch-account-btn {
+    font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600;
+    color: var(--purple); background: none; border: none; cursor: pointer;
+    padding: 2px 4px; white-space: nowrap;
+  }
+
   /* ===== ADMIN ===== */
   .admin-tabs {
     display: flex; gap: 6px; padding: 12px 14px; background: #fff;
@@ -582,6 +598,8 @@
 </div>
 
 <div id="app" style="display:none;">
+
+  <div id="signed-in-as" style="display:none;"></div>
 
   <!-- ================= HOME VIEW ================= -->
   <div class="view active" id="view-home">
@@ -1148,9 +1166,16 @@
       document.getElementById('signin-error').style.display = 'block';
       return;
     }
-    var loginRequest = { scopes: ["Sites.ReadWrite.All", "User.Read"] };
+    // prompt:"select_account" stops MSAL from silently reusing whatever
+    // Microsoft session the browser already has - on a shared store machine
+    // that signed people in as someone else without ever asking.
+    var loginRequest = {
+      scopes: ["Sites.ReadWrite.All", "User.Read"],
+      prompt: "select_account"
+    };
     msalInstance.loginPopup(loginRequest).then(function (response) {
       graphToken = response.accessToken;
+      if (response.account) msalInstance.setActiveAccount(response.account);
       onSignedIn();
     }).catch(function (err) {
       console.error(err);
@@ -1158,20 +1183,45 @@
     });
   }
 
-  function getTokenSilent() {
+  function getSignedInAccount() {
+    if (!msalInstance) return null;
+    var active = msalInstance.getActiveAccount();
+    if (active) return active;
     var accounts = msalInstance.getAllAccounts();
-    if (accounts.length === 0) return Promise.reject("no account");
-    var request = { scopes: ["Sites.ReadWrite.All", "User.Read"], account: accounts[0] };
+    // more than one cached account means we can't know which person is sitting
+    // here - make them pick rather than guessing with accounts[0]
+    if (accounts.length === 1) {
+      msalInstance.setActiveAccount(accounts[0]);
+      return accounts[0];
+    }
+    return null;
+  }
+
+  function getTokenSilent() {
+    var account = getSignedInAccount();
+    if (!account) return Promise.reject("no account");
+    var request = { scopes: ["Sites.ReadWrite.All", "User.Read"], account: account };
     return msalInstance.acquireTokenSilent(request).then(function (response) {
       graphToken = response.accessToken;
       return graphToken;
     });
   }
 
+  function signOut() {
+    try { sessionStorage.clear(); } catch (e) {}
+    var account = getSignedInAccount();
+    if (msalInstance && account) {
+      msalInstance.logoutPopup({ account: account }).catch(function () { location.reload(); });
+    } else {
+      location.reload();
+    }
+  }
+
   function onSignedIn() {
     document.getElementById('signin-screen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
     buildAvailabilityGrid();
+    renderSignedInAs();
     loadStoreRoster();
     applyPositionFilterForCurrentUser();
     loadCandidates();
@@ -1286,9 +1336,22 @@
   }
 
   function getCurrentUserEmail() {
-    var accounts = msalInstance.getAllAccounts();
-    if (accounts.length === 0) return "";
-    return (accounts[0].username || "").toLowerCase();
+    var account = getSignedInAccount();
+    if (!account) return "";
+    return (account.username || "").toLowerCase();
+  }
+
+  function renderSignedInAs() {
+    var bar = document.getElementById('signed-in-as');
+    if (!bar) return;
+    var email = getCurrentUserEmail();
+    if (!email) { bar.style.display = 'none'; return; }
+    var known = COACH_EMAILS.indexOf(email) !== -1 || getManagerStores(email) !== null;
+    bar.style.display = 'flex';
+    bar.innerHTML =
+      '<span class="signed-in-text' + (known ? '' : ' unknown') + '">' +
+      (known ? 'Signed in as ' : 'Not recognized: ') + escapeHtml(email) + '</span>' +
+      '<button class="switch-account-btn" onclick="signOut()">Switch account</button>';
   }
 
   function applyPositionFilterForCurrentUser() {
