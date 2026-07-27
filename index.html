@@ -296,6 +296,26 @@
     padding: 12px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; text-align: center;
   }
 
+  .roster-banner {
+    background: #FAEEDA; border: 1px solid #FAC775; border-radius: 10px;
+    padding: 11px 12px; margin-bottom: 14px;
+  }
+  .roster-banner.loading { background: #FAF7F1; border-color: var(--gray-border); }
+  .roster-banner-title { font-size: 12px; font-weight: 700; color: #854F0B; }
+  .roster-banner-body { font-size: 11.5px; color: #7A5B22; margin-top: 4px; line-height: 1.5; }
+  .roster-banner-actions { display: flex; gap: 8px; margin-top: 9px; }
+  .roster-retry, .roster-detail-toggle {
+    font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600;
+    padding: 5px 11px; border-radius: 7px; cursor: pointer;
+  }
+  .roster-retry { background: #854F0B; color: #fff; border: none; }
+  .roster-detail-toggle { background: transparent; color: #854F0B; border: 1px solid #E0B25E; }
+  .roster-banner-detail {
+    margin-top: 9px; font-family: monospace; font-size: 10.5px; color: #5F4A22;
+    background: #fff; border-radius: 7px; padding: 9px; white-space: pre-wrap;
+    word-break: break-word;
+  }
+
   #signed-in-as {
     display: flex; align-items: center; justify-content: space-between; gap: 10px;
     padding: 7px 14px; background: #FAF7F1;
@@ -791,6 +811,8 @@
         </select>
       </div>
 
+      <div id="roster-banner" style="display:none;"></div>
+
       <div class="form-group">
         <label class="form-label">Home store assigned *</label>
         <select class="form-input" id="f-location" required onchange="onStoreChange(this.value)">
@@ -1016,6 +1038,7 @@
 
   // Full 34-store list, used for Home Store and Training Store dropdowns
   var STORE_LIST = [
+    "TN-BRISTOL",
     "AR-COLONEL GLENN", "AR-RADIO GEYER",
     "CT-BUCKLAND HILLS MALL", "CT-NEW LONDON", "CT-NORWICH",
     "MA-CAPE CODE MALL", "MA-COGGESHALL", "MA-EXCHANGE ST.", "MA-FALLRIVER",
@@ -1024,7 +1047,7 @@
     "RI-751BROAD", "RI-BALD HILL", "RI-BROAD ST", "RI-BROADWAY",
     "RI-COVENTRY", "RI-DOUGLAS", "RI-EAST PROVIDENCE", "RI-HARTFORD AVE",
     "RI-NEWPORT AVE", "RI-PROVIDENCE PLACE MALL", "RI-RESERVOIR AVE",
-    "TN-KEITH ST", "TN-MAGNOLIA", "TN-MORRISTOWN", "TN-NORTH BROARDWAY",
+    "TN-KEITH ST", "TN-MAGNOLIA", "TN-MORRISTOWN", "TN-NORTH BROADWAY",
     "TN-SHALLOWFORD RD", "TN-WEST MARKET", "TN-WESTERN AVE"
   ];
 
@@ -1040,7 +1063,7 @@
     { email: "charisma.heggie@edgelinkinc.com", stores: ["TN-WEST MARKET"] },
     { email: "chris.paul@edgelinkinc.com", stores: ["RI-DOUGLAS", "RI-COVENTRY"] },
     { email: "danielrosales@edgelinkinc.com", stores: ["RI-RESERVOIR AVE"] },
-    { email: "franchesca.rader@edgelinkinc.com", stores: ["TN-MORRISTOWN", "TN-NORTH BROARDWAY"] },
+    { email: "franchesca.rader@edgelinkinc.com", stores: ["TN-MORRISTOWN", "TN-NORTH BROADWAY"] },
     { email: "jazmine.heredia@edgelinkinc.com", stores: ["MA-EXCHANGE ST."] },
     { email: "jessica.retamar@edgelinkinc.com", stores: ["MA-STATE STREET"] },
     { email: "josh.landry@edgelinkinc.com", stores: ["CT-NEW LONDON", "CT-NORWICH"] },
@@ -1070,6 +1093,23 @@
 
   // STORE_MANAGER_MAP was referenced by onStoreChange but never defined, which
   // threw a ReferenceError for anyone whose roster fetch failed. Built here.
+  // Verified against the EdgeLink Store Roster list. These win over the names
+  // derived from email addresses, which were only ever a guess at spelling.
+  var STORE_MANAGER_NAMES = {
+    "RI-COVENTRY": "Chris Paul Pierre",
+    "RI-DOUGLAS": "Chris Paul Pierre",
+    "RI-EAST PROVIDENCE": "Saimary Hernandez",
+    "RI-HARTFORD AVE": "Yanna Soriano",
+    "RI-NEWPORT AVE": "Saimary Hernandez",
+    "RI-RESERVOIR AVE": "Daniel Rosales",
+    "TN-KEITH ST": "Marquesha Jones",
+    "TN-MAGNOLIA": "Mel Mcallister",
+    "TN-MORRISTOWN": "Franchesca Rader",
+    "TN-NORTH BROADWAY": "Franchesca Rader",
+    "TN-SHALLOWFORD RD": "Marquesha Jones",
+    "TN-WEST MARKET": "Charisma Heggie"
+  };
+
   var STORE_MANAGER_MAP = (function () {
     var map = {};
     for (var i = 0; i < MANAGER_ROSTER.length; i++) {
@@ -1077,6 +1117,9 @@
       for (var s = 0; s < m.stores.length; s++) {
         map[m.stores[s].toUpperCase()] = managerNameFromEmail(m.email);
       }
+    }
+    for (var key in STORE_MANAGER_NAMES) {
+      map[key.toUpperCase()] = STORE_MANAGER_NAMES[key];
     }
     return map;
   })();
@@ -1419,7 +1462,20 @@
     return fetch(url, {
       headers: { Authorization: "Bearer " + graphToken }
     }).then(function (res) {
-      if (!res.ok) throw new Error("Graph request failed: " + res.status);
+      if (!res.ok) {
+        return res.text().then(function (body) {
+          var detail = "";
+          try {
+            var parsed = JSON.parse(body);
+            if (parsed.error) detail = (parsed.error.code || "") + ": " + (parsed.error.message || "");
+          } catch (e) { detail = String(body).slice(0, 300); }
+          var err = new Error("Graph request failed: " + res.status + (detail ? " - " + detail : ""));
+          err.status = res.status;
+          err.detail = detail;
+          err.url = url;
+          throw err;
+        });
+      }
       return res.json();
     });
   }
@@ -2474,6 +2530,7 @@
 
   var cachedRosterListId = null;
   var storeRosterData = [];
+  var rosterStatus = { state: "loading", message: "", status: 0, url: "" };
 
   function getRosterListId(siteId) {
     if (cachedRosterListId) return Promise.resolve(cachedRosterListId);
@@ -2486,24 +2543,82 @@
   }
 
   function loadStoreRoster() {
+    rosterStatus = { state: "loading", message: "", status: 0, url: "" };
+    renderRosterBanner();
     getSiteId().then(function (siteId) {
       return getRosterListId(siteId).then(function (listId) {
         return graphFetch("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items?expand=fields&$top=200");
       });
     }).then(function (data) {
       storeRosterData = data.value || [];
+      rosterStatus = {
+        state: storeRosterData.length > 0 ? "ok" : "empty",
+        message: storeRosterData.length + " stores loaded",
+        status: 200, url: ""
+      };
       populateStoreDropdowns();
       reapplyStoreSelection();
+      renderRosterBanner();
     }).catch(function (err) {
+      rosterStatus = {
+        state: "failed",
+        message: err.message || String(err),
+        status: err.status || 0,
+        url: err.url || ""
+      };
       console.warn('Store Roster load failed, falling back to static list:', err);
-      // Falls back gracefully - store dropdown still populates from STORE_LIST
-      // but coach/manager won't auto-fill until roster loads
       populateStoreDropdowns();
+      renderRosterBanner();
     });
   }
 
   // the roster loads async - if someone already picked a store, redo the
   // coach/manager lookup now that real data is here
+  function rosterFailureHint(s) {
+    if (s === 403) return "Access denied. This account can read the site but not the Store Roster list - check that list's permissions in SharePoint.";
+    if (s === 401) return "Sign-in expired or not consented. Try Switch account and sign in again.";
+    if (s === 404) return "The Store Roster list was not found under this site.";
+    if (s === 429) return "Microsoft is rate limiting requests. Wait a minute and retry.";
+    if (s >= 500) return "Microsoft Graph is having trouble. Retry shortly.";
+    return "Could not reach the Store Roster list.";
+  }
+
+  function renderRosterBanner() {
+    var el = document.getElementById('roster-banner');
+    if (!el) return;
+    if (rosterStatus.state === 'ok') { el.style.display = 'none'; return; }
+    if (rosterStatus.state === 'loading') {
+      el.style.display = 'block';
+      el.className = 'roster-banner loading';
+      el.innerHTML = '<div class="roster-banner-title">Loading store roster...</div>';
+      return;
+    }
+    el.style.display = 'block';
+    el.className = 'roster-banner';
+    var title = rosterStatus.state === 'empty'
+      ? 'The Store Roster list loaded but is empty.'
+      : rosterFailureHint(rosterStatus.status);
+    el.innerHTML =
+      '<div class="roster-banner-title">Coach and manager may show TBD</div>' +
+      '<div class="roster-banner-body">' + escapeHtml(title) + '</div>' +
+      '<div class="roster-banner-actions">' +
+        '<button type="button" class="roster-retry" onclick="loadStoreRoster()">Retry</button>' +
+        '<button type="button" class="roster-detail-toggle" onclick="toggleRosterDetail()">Show details</button>' +
+      '</div>' +
+      '<div class="roster-banner-detail" id="roster-banner-detail" style="display:none;">' +
+        'Signed in as: ' + escapeHtml(getCurrentUserEmail() || 'unknown') + '\n' +
+        'HTTP status: ' + (rosterStatus.status || 'n/a') + '\n' +
+        'List: ' + escapeHtml(CONFIG.rosterListName) + '\n' +
+        'Site: ' + escapeHtml(CONFIG.sitePath) + '\n' +
+        'Error: ' + escapeHtml(rosterStatus.message) +
+      '</div>';
+  }
+
+  function toggleRosterDetail() {
+    var d = document.getElementById('roster-banner-detail');
+    if (d) d.style.display = (d.style.display === 'none') ? 'block' : 'none';
+  }
+
   function reapplyStoreSelection() {
     var sel = document.getElementById('f-location');
     if (sel && sel.value) onStoreChange(sel.value);
@@ -2532,11 +2647,12 @@
     "MA-WESTERN AVE": "Rose Perez",
     "MA-HOLYOKE": "Joel Montero",
     "TN-WEST MARKET": "Cheryl",
+    "TN-BRISTOL": "Cheryl",
     "RI-DOUGLAS": "Ambulai Sheku",
     "RI-COVENTRY": "Ambulai Sheku",
     "RI-RESERVOIR AVE": "Ambulai Sheku",
     "TN-MORRISTOWN": "Mr. Watts",
-    "TN-NORTH BROARDWAY": "Mr. Watts",
+    "TN-NORTH BROADWAY": "Mr. Watts",
     "MA-EXCHANGE ST.": "Joel Montero",
     "MA-STATE STREET": "Joel Montero",
     "CT-NEW LONDON": "TBD",
