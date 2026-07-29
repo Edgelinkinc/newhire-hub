@@ -332,6 +332,100 @@
     padding: 2px 4px; white-space: nowrap;
   }
 
+  .header-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .refresh-wrap { display: flex; align-items: center; gap: 8px; }
+  .refresh-stamp { font-size: 10.5px; color: var(--gray-muted); white-space: nowrap; }
+  .refresh-btn {
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    border: 1px solid var(--gray-border); background: #fff; color: var(--purple);
+    font-size: 16px; line-height: 1; cursor: pointer; font-family: inherit;
+  }
+  .refresh-btn:disabled { opacity: 0.5; cursor: default; }
+  .refresh-btn.spinning { animation: refresh-spin 0.8s linear infinite; }
+  @keyframes refresh-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  /* ===== START CALENDAR ===== */
+  .cal-monthbar {
+    display: flex; align-items: center; gap: 8px; padding: 12px 14px;
+    background: #fff; border-bottom: 0.5px solid var(--gray-border); flex-shrink: 0;
+  }
+  .cal-nav-btn {
+    width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--gray-border);
+    background: #fff; color: var(--purple); font-size: 17px; line-height: 1;
+    cursor: pointer; flex-shrink: 0;
+  }
+  .cal-month-select {
+    flex: 1; min-width: 0; font-family: 'Montserrat', sans-serif;
+    font-size: 12.5px; font-weight: 600; color: var(--purple);
+    padding: 7px 8px; border-radius: 8px; border: 1px solid var(--gray-border);
+    background: #fff; cursor: pointer; text-align: center;
+  }
+  #cal-year-select { flex: 0 0 78px; }
+  .cal-filterbar {
+    display: flex; align-items: center; gap: 8px; padding: 0 14px 12px;
+    background: #fff; border-bottom: 0.5px solid var(--gray-border); flex-shrink: 0;
+  }
+  .cal-filter-select {
+    flex: 1; min-width: 0; font-family: 'Montserrat', sans-serif;
+    font-size: 12px; font-weight: 600; color: var(--purple);
+    padding: 8px 10px; border-radius: 9px; border: 1px solid var(--gray-border);
+    background: #fff; cursor: pointer;
+  }
+  .cal-filter-select.filtered {
+    border-color: var(--magenta); background: var(--magenta-light); color: #993556;
+  }
+  .cal-readonly-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.5px; color: var(--gray-muted);
+    background: #F1EEE7; border-radius: 999px; padding: 4px 9px; white-space: nowrap;
+  }
+  .cal-today-btn {
+    font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600;
+    padding: 7px 12px; border-radius: 8px; border: 1px solid var(--gray-border);
+    background: #fff; color: var(--purple); cursor: pointer; flex-shrink: 0;
+  }
+  .cal-scroll { flex: 1; overflow-y: auto; background: var(--bg-page); padding: 12px; }
+  .cal-weekdays {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 6px;
+  }
+  .cal-weekdays div {
+    text-align: center; font-size: 10.5px; font-weight: 700;
+    color: var(--gray-muted); letter-spacing: 0.4px;
+  }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-day {
+    aspect-ratio: 1 / 1; background: #fff; border: 0.5px solid var(--gray-border);
+    border-radius: 9px; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 3px; cursor: default; padding: 2px;
+  }
+  .cal-day.blank { background: transparent; border-color: transparent; }
+  .cal-day-num { font-size: 12px; font-weight: 600; color: var(--gray-text); line-height: 1; }
+  .cal-day.past .cal-day-num { color: #C2BFB6; }
+  .cal-day.today { border: 2px solid var(--magenta); }
+  .cal-day.has-starts { background: var(--purple-light); border-color: #D9C5E0; cursor: pointer; }
+  .cal-day.selected { background: var(--purple); border-color: var(--purple); }
+  .cal-day.selected .cal-day-num { color: #fff; }
+  .cal-day-count {
+    font-size: 9.5px; font-weight: 700; color: var(--purple);
+    background: #fff; border-radius: 999px; padding: 0 5px; line-height: 14px; min-width: 14px;
+  }
+  .cal-day.selected .cal-day-count { background: #fff; color: var(--purple); }
+  .cal-day-panel-head {
+    font-family: 'Bebas Neue', sans-serif; letter-spacing: 1.2px;
+    font-size: 15px; color: var(--purple); margin: 16px 0 8px;
+  }
+  .cal-person {
+    display: flex; align-items: center; gap: 11px; background: #fff;
+    border: 0.5px solid var(--gray-border); border-radius: 12px;
+    padding: 11px 12px; margin-bottom: 7px;
+  }
+  .cal-person-info { flex: 1; min-width: 0; }
+  .cal-person-name { font-size: 13.5px; font-weight: 600; color: var(--gray-text); }
+  .cal-person-meta {
+    font-size: 11px; color: var(--gray-muted); margin-top: 1px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .cal-daycount-note { font-size: 11.5px; color: var(--gray-muted); margin-bottom: 10px; }
+
   /* ===== ADMIN ===== */
   .admin-tabs {
     display: flex; gap: 6px; padding: 12px 14px; background: #fff;
@@ -657,6 +751,14 @@
         </div>
         <div class="action-chevron">&#8250;</div>
       </button>
+      <button class="action-tile secondary" onclick="goToView('calendar')">
+        <div class="action-icon">&#128197;</div>
+        <div class="action-text">
+          <div class="action-title">Start calendar</div>
+          <div class="action-desc">See upcoming start dates</div>
+        </div>
+        <div class="action-chevron">&#8250;</div>
+      </button>
       <button class="action-tile tertiary" onclick="goToView('admin')">
         <div class="action-icon">&#128274;</div>
         <div class="action-text">
@@ -670,6 +772,7 @@
     <div class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
       <button class="nav-item active" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
       <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
     </div>
@@ -723,6 +826,7 @@
     <div class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
       <button class="nav-item active" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
       <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
     </div>
@@ -739,6 +843,7 @@
     <div class="bottom-nav">
       <button class="nav-item active" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
       <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
       <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
     </div>
@@ -747,7 +852,13 @@
   <!-- ================= CANDIDATES VIEW ================= -->
   <div class="view" id="view-candidates">
     <div class="candidates-header">
-      <h2>Candidates</h2>
+      <div class="header-row">
+        <h2>Candidates</h2>
+        <div class="refresh-wrap">
+          <span class="refresh-stamp"></span>
+          <button class="refresh-btn" onclick="refreshCandidates()" title="Refresh">&#8635;</button>
+        </div>
+      </div>
       <div class="filter-pills">
         <div class="pill active all" data-filter="all" onclick="setFilter('all')">All <span id="count-all">0</span></div>
         <div class="pill" data-filter="overdue" onclick="setFilter('overdue')">Overdue <span id="count-overdue">0</span></div>
@@ -760,6 +871,54 @@
     <div class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
       <button class="nav-item active" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
+      <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
+      <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
+    </div>
+  </div>
+
+
+  <!-- ================= CALENDAR VIEW ================= -->
+  <div class="view" id="view-calendar">
+    <div class="header">
+      <div>
+        <h1>START CALENDAR</h1>
+        <div class="sub">Who starts when</div>
+      </div>
+    </div>
+
+    <div class="cal-monthbar">
+      <button class="cal-nav-btn" onclick="calShiftMonth(-1)">&#8249;</button>
+      <select class="cal-month-select" id="cal-month-select" onchange="calJumpTo('month', this.value)"></select>
+      <select class="cal-month-select" id="cal-year-select" onchange="calJumpTo('year', this.value)"></select>
+      <button class="cal-nav-btn" onclick="calShiftMonth(1)">&#8250;</button>
+      <button class="cal-today-btn" onclick="calGoToday()">Today</button>
+    </div>
+
+    <div class="cal-filterbar">
+      <select class="cal-filter-select" id="cal-market-filter" onchange="setCalFilter('market', this.value)">
+        <option value="">All markets</option>
+      </select>
+      <select class="cal-filter-select" id="cal-coach-filter" onchange="setCalFilter('coach', this.value)">
+        <option value="">All coaches</option>
+      </select>
+      <span class="cal-readonly-tag">Read only</span>
+      <button class="refresh-btn" onclick="refreshCandidates()" title="Refresh">&#8635;</button>
+    </div>
+
+    <div class="cal-scroll">
+      <div class="cal-weekdays">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div id="cal-day-panel"></div>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
+      <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item active" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
+      <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
       <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
     </div>
@@ -907,6 +1066,7 @@
     <div class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
       <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
       <button class="nav-item active" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
     </div>
@@ -931,6 +1091,7 @@
       <div class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
       <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
       <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item active" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
     </div>
@@ -1498,8 +1659,64 @@
     });
   }
 
+  // Digits only, so (413) 777-1175 and 4137771175 compare equal.
+  function normalizePhone(p) {
+    return String(p || '').replace(/\D/g, '');
+  }
+
+  // Looks for an existing candidate with the same phone, email, or name+store.
+  // Read-only - it inspects the list already in memory and writes nothing.
+  function findPossibleDuplicates(name, phone, email, store) {
+    var nName = titleCaseName(name).toLowerCase();
+    var nPhone = normalizePhone(phone);
+    var nEmail = String(email || '').trim().toLowerCase();
+    var nStore = String(store || '').trim().toUpperCase();
+    var hits = [];
+
+    for (var i = 0; i < allCandidates.length; i++) {
+      var c = allCandidates[i];
+      var reason = null;
+
+      if (nPhone && nPhone.length >= 10 && normalizePhone(c.phone) === nPhone) {
+        reason = 'same phone number';
+      } else if (nEmail && String(c.email || '').trim().toLowerCase() === nEmail) {
+        reason = 'same email address';
+      } else if (nName && String(c.name || '').trim().toLowerCase() === nName &&
+                 (!nStore || String(c.homeLocation || '').toUpperCase() === nStore)) {
+        reason = 'same name and store';
+      }
+
+      if (reason) hits.push({ cand: c, reason: reason });
+    }
+    return hits;
+  }
+
   function submitCandidate(evt) {
     evt.preventDefault();
+
+    var dupName = document.getElementById('f-name').value;
+    var dupes = findPossibleDuplicates(
+      dupName,
+      document.getElementById('f-phone').value,
+      document.getElementById('f-email').value,
+      document.getElementById('f-location').value
+    );
+
+    if (dupes.length > 0) {
+      var lines = [];
+      for (var d = 0; d < dupes.length && d < 3; d++) {
+        var dc = dupes[d].cand;
+        lines.push('  \u2022 ' + dc.name + ' (' + dupes[d].reason + ')' +
+                   (dc.homeLocation ? ' - ' + dc.homeLocation : '') +
+                   (dc.startDate ? ', starts ' + dc.startDate : ''));
+      }
+      var msg = 'This looks like someone already in the tracker:\n\n' + lines.join('\n') +
+                '\n\nSubmitting again creates a second record and sends the onboarding ' +
+                'emails a second time.\n\nAdd ' + titleCaseName(dupName) + ' anyway?';
+      if (!confirm(msg)) {
+        return;
+      }
+    }
 
     var btn = document.getElementById('add-submit-btn');
     var successEl = document.getElementById('add-success');
@@ -1514,8 +1731,10 @@
       shirtSizeVal = 'Other: ' + document.getElementById('f-shirtsize-other').value;
     }
 
+    var cleanName = titleCaseName(document.getElementById('f-name').value);
+
     var fields = {
-      CandidateName: document.getElementById('f-name').value,
+      CandidateName: cleanName,
       CandidatePhone: document.getElementById('f-phone').value,
       CandidateEmail: document.getElementById('f-email').value,
       Position: document.getElementById('f-position').value,
@@ -1525,7 +1744,7 @@
       CoachAssigned: document.getElementById('f-coach').value,
       ManagerAssigned: document.getElementById('f-manager').value,
       UniformShirtSize: shirtSizeVal,
-      NameTag: document.getElementById('f-name').value.split(' ')[0],
+      NameTag: cleanName.split(' ')[0],
       BiLingual: document.getElementById('f-bilingual').value,
       Availability: getAvailabilityValue(),
       NotesUpdates: document.getElementById('f-notes').value
@@ -1658,6 +1877,8 @@
       id: item.id,
       name: name,
       initials: initials,
+      phone: f[FIELD_MAP.CandidatePhone] || "",
+      email: f[FIELD_MAP.CandidateEmail] || "",
       position: f[FIELD_MAP.Position] || "",
       market: f[FIELD_MAP.Market] || "",
       homeLocation: f[FIELD_MAP.HomeLocationAssigned] || "",
@@ -1688,9 +1909,39 @@
     return "";
   }
 
-  function loadCandidates() {
+  var isRefreshing = false;
+
+  function refreshCandidates() {
+    if (isRefreshing) return;
+    isRefreshing = true;
+    var btns = document.querySelectorAll('.refresh-btn');
+    for (var b = 0; b < btns.length; b++) {
+      btns[b].classList.add('spinning');
+      btns[b].disabled = true;
+    }
+    loadCandidates(true);
+  }
+
+  function refreshDone() {
+    isRefreshing = false;
+    var btns = document.querySelectorAll('.refresh-btn');
+    for (var b = 0; b < btns.length; b++) {
+      btns[b].classList.remove('spinning');
+      btns[b].disabled = false;
+    }
+    var stamps = document.querySelectorAll('.refresh-stamp');
+    var now = new Date();
+    var hh = now.getHours(), mm = ('0' + now.getMinutes()).slice(-2);
+    var ampm = hh >= 12 ? 'pm' : 'am';
+    hh = hh % 12; if (hh === 0) hh = 12;
+    for (var s = 0; s < stamps.length; s++) {
+      stamps[s].textContent = 'Updated ' + hh + ':' + mm + ampm;
+    }
+  }
+
+  function loadCandidates(isRefresh) {
     var list = document.getElementById('candidates-list');
-    if (list) list.innerHTML = '<div class="loading">Loading candidates...</div>';
+    if (list && !isRefresh) list.innerHTML = '<div class="loading">Loading candidates...</div>';
 
     getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
@@ -1701,12 +1952,19 @@
       renderStats();
       renderCounts();
       renderCandidates();
+      if (document.getElementById('view-calendar').className.indexOf('active') !== -1) {
+        renderCalendar();
+      }
       if (document.getElementById('admin-content').style.display === 'flex') {
         renderAdminCandidates();
       }
+      refreshDone();
     }).catch(function (err) {
       console.error(err);
-      if (list) list.innerHTML = '<div class="empty-state">Could not load candidates. Check sign-in and list configuration.</div>';
+      refreshDone();
+      if (list && !isRefresh) {
+        list.innerHTML = '<div class="empty-state">Could not load candidates. Check sign-in and list configuration.</div>';
+      }
     });
   }
 
@@ -1766,35 +2024,44 @@
     return '#EEEEEE';
   }
 
-  function getActiveCandidates() {
+  // Who this signed-in user is allowed to see, independent of status.
+  function isVisibleToCurrentUser(c) {
     var email = getCurrentUserEmail();
-    var isCheryl = (email === "cheryl@edgelinkinc.com");
-    var managerStores = getManagerStores(email);
-    var coachName = getCoachNameFromEmail(email);
-    var isCoach = coachName !== null && !isCheryl;
+    if (email === "cheryl@edgelinkinc.com") return true;
 
+    var coachName = getCoachNameFromEmail(email);
+    if (coachName) {
+      return !!(c.coach && c.coach.toLowerCase().indexOf(coachName.toLowerCase()) !== -1);
+    }
+
+    var managerStores = getManagerStores(email);
+    if (managerStores) {
+      for (var s = 0; s < managerStores.length; s++) {
+        if (c.homeLocation && c.homeLocation.toUpperCase() === managerStores[s].toUpperCase()) return true;
+      }
+    }
+    return false;
+  }
+
+  function getActiveCandidates() {
     var active = [];
     for (var i = 0; i < allCandidates.length; i++) {
       var c = allCandidates[i];
-      if (hasStarted(c)) continue;
-      if (isDeclined(c)) continue;
-
-      if (isCheryl) {
-        active.push(c);
-      } else if (isCoach) {
-        if (c.coach && coachName && c.coach.toLowerCase().indexOf(coachName.toLowerCase()) !== -1) {
-          active.push(c);
-        }
-      } else if (managerStores) {
-        for (var s = 0; s < managerStores.length; s++) {
-          if (c.homeLocation && c.homeLocation.toUpperCase() === managerStores[s].toUpperCase()) {
-            active.push(c);
-            break;
-          }
-        }
-      }
+      if (hasStarted(c) || isDeclined(c)) continue;
+      if (isVisibleToCurrentUser(c)) active.push(c);
     }
     return active;
+  }
+
+  // The calendar is deliberately company-wide and read-only: every signed-in
+  // user sees every market's start dates, regardless of coach or manager scope.
+  // Keeps people who already started so past days aren't blank.
+  function getCalendarCandidates() {
+    var out = [];
+    for (var i = 0; i < allCandidates.length; i++) {
+      if (!isDeclined(allCandidates[i])) out.push(allCandidates[i]);
+    }
+    return out;
   }
 
   function getCoachNameFromEmail(email) {
@@ -2125,6 +2392,24 @@
 
   function jsStr(s) {
     return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  }
+
+  // "joel montero" -> "Joel Montero". Leaves words that already carry internal
+  // capitals alone so McCoy, DeSoto and O'Brien survive untouched.
+  function titleCaseName(str) {
+    var s = String(str || '').trim().replace(/\s+/g, ' ');
+    if (!s) return '';
+    return s.split(' ').map(function (word) {
+      // preserve deliberate mixed case (McCoy, DeSoto) but fix caps lock
+      var isAllCaps = word === word.toUpperCase();
+      if (!isAllCaps && /[A-Z]/.test(word.slice(1))) return word;
+      return word.split('-').map(function (part) {
+        return part.split("'").map(function (bit) {
+          if (!bit) return bit;
+          return bit.charAt(0).toUpperCase() + bit.slice(1).toLowerCase();
+        }).join("'");
+      }).join('-');
+    }).join(' ');
   }
 
   function candidateInitials(name) {
@@ -2599,6 +2884,7 @@
         message: err.message || String(err),
         status: err.status || 0,
         notVisible: !!err.notVisible,
+        detail: err.detail || "",
         url: err.url || ""
       };
       console.warn('Store Roster load failed, falling back to static list:', err);
@@ -2611,7 +2897,7 @@
   // coach/manager lookup now that real data is here
   function rosterFailureHint(s, notVisible) {
     if (notVisible) return "This account could not find a list matching that name. The details below show every list this account can actually see - if the roster is missing from that list it is a permission problem, and if it appears under a different spelling the name in CONFIG needs updating.";
-    if (s === 403) return "Access denied. This account can read the site but not the Store Roster list - check that list's permissions in SharePoint.";
+    if (s === 403) return "Microsoft denied this request. See Failed request below for which call was refused - the site itself, or the list enumeration.";
     if (s === 401) return "Sign-in expired or not consented. Try Switch account and sign in again.";
     if (s === 404) return "The Store Roster list was not found under this site.";
     if (s === 429) return "Microsoft is rate limiting requests. Wait a minute and retry.";
@@ -2649,6 +2935,8 @@
             : 'also failed or empty') + '\n' +
         'List: ' + escapeHtml(CONFIG.rosterListName) + '\n' +
         'Site: ' + escapeHtml(CONFIG.sitePath) + '\n' +
+        'Failed request: ' + escapeHtml(rosterStatus.url || 'n/a') + '\n' +
+        'Graph said: ' + escapeHtml(rosterStatus.detail || 'n/a') + '\n' +
         'Error: ' + escapeHtml(rosterStatus.message) +
       '</div>';
   }
@@ -2788,12 +3076,293 @@
     renderCandidates();
   }
 
+
+  // ---------------- START CALENDAR ----------------
+  var CAL_MONTHS = ['January','February','March','April','May','June',
+                    'July','August','September','October','November','December'];
+  var calState = { year: 0, month: 0, selected: null };
+  var calFilters = { market: "", coach: "" };
+
+  function setCalFilter(kind, value) {
+    calFilters[kind] = value;
+    calState.selected = null;
+    renderCalendar();
+  }
+
+  function calMatchesFilters(c) {
+    if (calFilters.market && (c.market || "") !== calFilters.market) return false;
+    if (calFilters.coach) {
+      if (calFilters.coach === "__unassigned") {
+        if (candidateCoach(c) !== "") return false;
+      } else if (candidateCoach(c) !== calFilters.coach) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function calPopulateFilters() {
+    var all = getCalendarCandidates();
+    var markets = [], coaches = [], hasUnassigned = false, years = [];
+
+    for (var i = 0; i < all.length; i++) {
+      var mk = all[i].market || "";
+      if (mk && markets.indexOf(mk) === -1) markets.push(mk);
+      var cn = candidateCoach(all[i]);
+      if (!cn) hasUnassigned = true;
+      else if (coaches.indexOf(cn) === -1) coaches.push(cn);
+      var d = calParseStart(all[i].startDate);
+      if (d && years.indexOf(d.getFullYear()) === -1) years.push(d.getFullYear());
+    }
+    markets.sort(); coaches.sort();
+
+    var now = new Date().getFullYear();
+    if (years.indexOf(now) === -1) years.push(now);
+    if (years.indexOf(calState.year) === -1) years.push(calState.year);
+    years.sort();
+
+    var mSel = document.getElementById('cal-market-filter');
+    if (mSel) {
+      var mSig = markets.join('|');
+      if (mSel.getAttribute('data-sig') !== mSig) {
+        mSel.setAttribute('data-sig', mSig);
+        var mh = '<option value="">All markets</option>';
+        for (var m = 0; m < markets.length; m++) {
+          mh += '<option value="' + escapeAttr(markets[m]) + '">' + escapeHtml(markets[m]) + '</option>';
+        }
+        mSel.innerHTML = mh;
+      }
+      mSel.value = calFilters.market;
+      mSel.className = 'cal-filter-select' + (calFilters.market ? ' filtered' : '');
+    }
+
+    var cSel = document.getElementById('cal-coach-filter');
+    if (cSel) {
+      var cSig = coaches.join('|') + (hasUnassigned ? '|__u' : '');
+      if (cSel.getAttribute('data-sig') !== cSig) {
+        cSel.setAttribute('data-sig', cSig);
+        var ch = '<option value="">All coaches</option>';
+        for (var k = 0; k < coaches.length; k++) {
+          ch += '<option value="' + escapeAttr(coaches[k]) + '">' + escapeHtml(coaches[k]) + '</option>';
+        }
+        if (hasUnassigned) ch += '<option value="__unassigned">Unassigned / TBD</option>';
+        cSel.innerHTML = ch;
+      }
+      cSel.value = calFilters.coach;
+      cSel.className = 'cal-filter-select' + (calFilters.coach ? ' filtered' : '');
+    }
+
+    var moSel = document.getElementById('cal-month-select');
+    if (moSel) {
+      if (!moSel.getAttribute('data-built')) {
+        moSel.setAttribute('data-built', '1');
+        var oh = '';
+        for (var mo = 0; mo < 12; mo++) oh += '<option value="' + mo + '">' + CAL_MONTHS[mo] + '</option>';
+        moSel.innerHTML = oh;
+      }
+      moSel.value = String(calState.month);
+    }
+
+    var ySel = document.getElementById('cal-year-select');
+    if (ySel) {
+      var ySig = years.join('|');
+      if (ySel.getAttribute('data-sig') !== ySig) {
+        ySel.setAttribute('data-sig', ySig);
+        var yh = '';
+        for (var y = 0; y < years.length; y++) yh += '<option value="' + years[y] + '">' + years[y] + '</option>';
+        ySel.innerHTML = yh;
+      }
+      ySel.value = String(calState.year);
+    }
+  }
+
+  function calJumpTo(kind, value) {
+    if (kind === 'month') calState.month = parseInt(value, 10);
+    else calState.year = parseInt(value, 10);
+    calState.selected = null;
+    renderCalendar();
+  }
+
+  function calDateKey(y, m, d) {
+    return y + '-' + ('0' + (m + 1)).slice(-2) + '-' + ('0' + d).slice(-2);
+  }
+
+  // start dates are stored as MM/DD/YYYY strings
+  function calParseStart(str) {
+    var p = String(str || '').split('/');
+    if (p.length !== 3) return null;
+    var mo = parseInt(p[0], 10), da = parseInt(p[1], 10), yr = parseInt(p[2], 10);
+    if (!mo || !da || !yr) return null;
+    var d = new Date(yr, mo - 1, da);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  function calBuildIndex() {
+    var index = {};
+    var list = getCalendarCandidates();
+    for (var i = 0; i < list.length; i++) {
+      if (!calMatchesFilters(list[i])) continue;
+      var d = calParseStart(list[i].startDate);
+      if (!d) continue;
+      var key = calDateKey(d.getFullYear(), d.getMonth(), d.getDate());
+      if (!index[key]) index[key] = [];
+      index[key].push(list[i]);
+    }
+    return index;
+  }
+
+  function calShiftMonth(delta) {
+    calState.month += delta;
+    while (calState.month < 0) { calState.month += 12; calState.year--; }
+    while (calState.month > 11) { calState.month -= 12; calState.year++; }
+    calState.selected = null;
+    renderCalendar();
+  }
+
+  function calGoToday() {
+    var now = new Date();
+    calState.year = now.getFullYear();
+    calState.month = now.getMonth();
+    calState.selected = calDateKey(now.getFullYear(), now.getMonth(), now.getDate());
+    renderCalendar();
+  }
+
+  function calSelectDay(key) {
+    calState.selected = (calState.selected === key) ? null : key;
+    renderCalendar();
+  }
+
+  function renderCalendar() {
+    var grid = document.getElementById('cal-grid');
+    if (!grid) return;
+
+    if (!calState.year) {
+      var n = new Date();
+      calState.year = n.getFullYear();
+      calState.month = n.getMonth();
+    }
+
+    calPopulateFilters();
+
+    var index = calBuildIndex();
+    var y = calState.year, m = calState.month;
+
+    var today = new Date();
+    var todayKey = calDateKey(today.getFullYear(), today.getMonth(), today.getDate());
+    var firstDay = new Date(y, m, 1).getDay();
+    var daysInMonth = new Date(y, m + 1, 0).getDate();
+
+    var html = '';
+    for (var b = 0; b < firstDay; b++) html += '<div class="cal-day blank"></div>';
+
+    var monthTotal = 0;
+    for (var d = 1; d <= daysInMonth; d++) {
+      var key = calDateKey(y, m, d);
+      var people = index[key] || [];
+      monthTotal += people.length;
+
+      var cls = 'cal-day';
+      if (people.length > 0) cls += ' has-starts';
+      if (key === todayKey) cls += ' today';
+      if (key === calState.selected) cls += ' selected';
+      if (new Date(y, m, d) < new Date(today.getFullYear(), today.getMonth(), today.getDate())) cls += ' past';
+
+      var click = people.length > 0 ? ' onclick="calSelectDay(\'' + key + '\')"' : '';
+      html += '<div class="' + cls + '"' + click + '>';
+      html += '<div class="cal-day-num">' + d + '</div>';
+      if (people.length > 0) html += '<div class="cal-day-count">' + people.length + '</div>';
+      html += '</div>';
+    }
+    grid.innerHTML = html;
+
+    renderCalDayPanel(index, monthTotal);
+  }
+
+  function renderCalDayPanel(index, monthTotal) {
+    var panel = document.getElementById('cal-day-panel');
+    if (!panel) return;
+
+    var html = '';
+
+    if (calState.selected && index[calState.selected]) {
+      var parts = calState.selected.split('-');
+      var dt = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+      var people = index[calState.selected];
+      html += '<div class="cal-day-panel-head">' + CAL_MONTHS[dt.getMonth()].toUpperCase() +
+              ' ' + dt.getDate() + ' &middot; ' + people.length +
+              (people.length === 1 ? ' START' : ' STARTS') + '</div>';
+      html += calPeopleHtml(people);
+    } else {
+      var upcoming = calUpcoming(index);
+      html += '<div class="cal-day-panel-head">NEXT 30 DAYS</div>';
+      if (monthTotal === 0 && upcoming.length === 0) {
+        html += '<div class="cal-daycount-note">No start dates entered yet. Once a start date is set on a candidate, they appear here.</div>';
+      } else if (upcoming.length === 0) {
+        html += '<div class="cal-daycount-note">Nobody starts in the next 30 days.</div>';
+      } else {
+        html += calPeopleHtml(upcoming, true);
+      }
+    }
+    panel.innerHTML = html;
+  }
+
+  function calUpcoming(index) {
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var limit = new Date(today.getTime() + 30 * 86400000);
+    var out = [];
+    for (var key in index) {
+      var p = key.split('-');
+      var d = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+      if (d >= today && d <= limit) {
+        for (var i = 0; i < index[key].length; i++) {
+          out.push({ date: d, cand: index[key][i] });
+        }
+      }
+    }
+    out.sort(function (a, b) { return a.date - b.date; });
+    var flat = [];
+    for (var j = 0; j < out.length; j++) {
+      out[j].cand._calDate = out[j].date;
+      flat.push(out[j].cand);
+    }
+    return flat;
+  }
+
+  function calPeopleHtml(people, showDate) {
+    var html = '';
+    for (var i = 0; i < people.length; i++) {
+      var c = people[i];
+      var av = avatarColors(c);
+      var bits = [];
+      if (c.position) bits.push(escapeHtml(c.position));
+      if (c.homeLocation) bits.push(escapeHtml(c.homeLocation));
+      if (showDate && c._calDate) {
+        bits.unshift(CAL_MONTHS[c._calDate.getMonth()].slice(0, 3) + ' ' + c._calDate.getDate());
+      }
+      html += '<div class="cal-person">';
+      html += '<div class="admin-avatar" style="background:' + av.bg + ';color:' + av.color + ';">' +
+              escapeHtml(c.initials || candidateInitials(c.name)) + '</div>';
+      html += '<div class="cal-person-info">';
+      html += '<div class="cal-person-name">' + escapeHtml(c.name) + '</div>';
+      html += '<div class="cal-person-meta">' + bits.join(' &middot; ') + '</div>';
+      html += '</div>';
+      html += '<span class="admin-count-chip" style="' +
+              countChipStyle(taskCompleteCount(c), TASKS.length) + '">' +
+              taskCompleteCount(c) + ' of ' + TASKS.length + '</span>';
+      html += '</div>';
+    }
+    return html;
+  }
+
   function goToView(viewName) {
     var views = document.querySelectorAll('.view');
     for (var i = 0; i < views.length; i++) {
       views[i].className = 'view';
     }
     document.getElementById('view-' + viewName).className = 'view active';
+
+    if (viewName === 'calendar') renderCalendar();
 
     var navItems = document.querySelectorAll('.nav-item');
     for (var j = 0; j < navItems.length; j++) {
