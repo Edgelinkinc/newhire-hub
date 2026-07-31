@@ -1000,8 +1000,8 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Uniform shirt size *</label>
-        <select class="form-input" id="f-shirtsize" required>
+        <label class="form-label">Uniform shirt size</label>
+        <select class="form-input" id="f-shirtsize">
           <option value="">Select size</option>
           <optgroup label="Men's">
             <option>Men's XS</option>
@@ -1468,7 +1468,7 @@
   }
 
   var DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-  var SHIFTS = ['Opening','Mid','Closing','Off'];
+  var SHIFTS = ['Open','Opening','Mid','Closing','Off'];
 
   function buildAvailabilityGrid() {
     var container = document.getElementById('availability-rows');
@@ -2534,6 +2534,13 @@
       var marketName = marketKeys[mk];
       var marketCandidates = markets[marketName];
 
+      // Keep active/in-process candidates on top; Started candidates sink to
+      // the bottom of their market group. Array.sort is stable in modern JS
+      // engines, so relative order within each group (active vs started) is preserved.
+      marketCandidates = marketCandidates.slice().sort(function (a, b) {
+        return (hasStarted(a) ? 1 : 0) - (hasStarted(b) ? 1 : 0);
+      });
+
       var activeCount = 0, behindCount = 0;
       for (var mc = 0; mc < marketCandidates.length; mc++) {
         var mcand = marketCandidates[mc];
@@ -2603,6 +2610,8 @@
         html += '<div class="admin-candidate-detail">';
 
         html += '<div class="admin-order-info">';
+        html += '<div class="admin-order-field"><label>PHONE</label><input type="text" value="' + escapeAttr(c.phone || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidatePhone\', \'phone\', this.value)"></div>';
+        html += '<div class="admin-order-field"><label>EMAIL</label><input type="text" value="' + escapeAttr(c.email || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidateEmail\', \'email\', this.value)"></div>';
         html += '<div class="admin-order-field"><label>STATUS</label><select onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidateStatus\', \'candidateStatus\', this.value)"><option value="Active"' + (c.candidateStatus === "Active" ? " selected" : "") + '>Active</option><option value="Declined"' + (c.candidateStatus === "Declined" ? " selected" : "") + '>Declined</option><option value="No Show"' + (c.candidateStatus === "No Show" ? " selected" : "") + '>No Show</option><option value="Started"' + (c.candidateStatus === "Started" ? " selected" : "") + '>Started</option></select></div>';
         html += '<div class="admin-order-field"><label>START DATE</label><input type="text" value="' + escapeAttr(c.startDate || '') + '" placeholder="07/27/2026" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'StartDate\', \'startDate\', this.value)"></div>';
         html += '<div class="admin-order-field"><label>SHIRT SIZE</label><input type="text" value="' + escapeAttr(c.shirtSize || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'UniformShirtSize\', \'shirtSize\', this.value)"></div>';
