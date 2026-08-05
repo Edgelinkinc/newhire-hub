@@ -487,6 +487,11 @@
   }
   .mkt-group.collapsed .mkt-chev { transform: rotate(0deg); }
   .mkt-group.collapsed .mkt-body { display: none; }
+  .stage-num {
+    width: 19px; height: 19px; border-radius: 50%; flex-shrink: 0;
+    background: var(--purple); color: #fff; font-size: 10.5px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
   .mkt-name {
     font-family: 'Bebas Neue', sans-serif; letter-spacing: 1.4px;
     font-size: 15px; color: var(--purple);
@@ -1000,8 +1005,8 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Uniform shirt size</label>
-        <select class="form-input" id="f-shirtsize">
+        <label class="form-label">Uniform shirt size *</label>
+        <select class="form-input" id="f-shirtsize" required>
           <option value="">Select size</option>
           <optgroup label="Men's">
             <option>Men's XS</option>
@@ -1115,6 +1120,9 @@
           <input type="text" class="admin-search" id="admin-search" placeholder="Search name, store, or NTID" oninput="setAdminFilter('search', this.value)">
           <select class="admin-filter-select" id="admin-coach-filter" onchange="setAdminFilter('coach', this.value)">
             <option value="">All coaches</option>
+          </select>
+          <select class="admin-filter-select" id="admin-market-filter" onchange="setAdminFilter('market', this.value)">
+            <option value="">All markets</option>
           </select>
           <select class="admin-filter-select" id="admin-status-filter" onchange="setAdminFilter('status', this.value)">
             <option value="all">All statuses</option>
@@ -1468,7 +1476,7 @@
   }
 
   var DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-  var SHIFTS = ['Open','Opening','Mid','Closing','Off'];
+  var SHIFTS = ['Opening','Mid','Closing','Off'];
 
   function buildAvailabilityGrid() {
     var container = document.getElementById('availability-rows');
@@ -2288,7 +2296,7 @@
   // ---------------- ADMIN: CANDIDATE TASK EDITING ----------------
   // ---------------- ADMIN: FILTERS + COLLAPSE STATE ----------------
   var ADMIN_COLLAPSE_KEY = "newhirehub_admin_collapsed_v1";
-  var adminFilters = { search: "", coach: "", status: "all" };
+  var adminFilters = { search: "", coach: "", market: "", status: "all" };
 
   function loadCollapsedMarkets() {
     try {
@@ -2315,18 +2323,21 @@
   }
 
   function clearAdminFilters() {
-    adminFilters = { search: "", coach: "", status: "all" };
+    adminFilters = { search: "", coach: "", market: "", status: "all" };
     var s = document.getElementById('admin-search');
     var cf = document.getElementById('admin-coach-filter');
+    var mf = document.getElementById('admin-market-filter');
     var sf = document.getElementById('admin-status-filter');
     if (s) s.value = '';
     if (cf) cf.value = '';
+    if (mf) mf.value = '';
     if (sf) sf.value = 'all';
     renderAdminCandidates();
   }
 
   function adminFiltersActive() {
-    return adminFilters.search !== '' || adminFilters.coach !== '' || adminFilters.status !== 'all';
+    return adminFilters.search !== '' || adminFilters.coach !== '' ||
+           adminFilters.market !== '' || adminFilters.status !== 'all';
   }
 
   function candidateCoach(c) {
@@ -2336,6 +2347,7 @@
   }
 
   function matchesAdminFilters(c) {
+    if (adminFilters.market && (c.market || '') !== adminFilters.market) return false;
     if (adminFilters.status === 'active' && (isDeclined(c) || hasStarted(c))) return false;
     if (adminFilters.status === 'started' && !hasStarted(c)) return false;
     if (adminFilters.status === 'declined' && !isDeclined(c)) return false;
@@ -2353,6 +2365,29 @@
       if (hay.indexOf(q) === -1) return false;
     }
     return true;
+  }
+
+  function populateMarketFilter() {
+    var sel = document.getElementById('admin-market-filter');
+    if (!sel) return;
+    var markets = [];
+    for (var i = 0; i < allCandidates.length; i++) {
+      var mk = allCandidates[i].market || '';
+      if (mk && markets.indexOf(mk) === -1) markets.push(mk);
+    }
+    markets.sort();
+    var sig = markets.join('|');
+    if (sel.getAttribute('data-sig') !== sig) {
+      sel.setAttribute('data-sig', sig);
+      var html = '<option value="">All markets</option>';
+      for (var m = 0; m < markets.length; m++) {
+        html += '<option value="' + escapeAttr(markets[m]) + '">' + escapeHtml(markets[m]) + '</option>';
+      }
+      sel.innerHTML = html;
+    }
+    sel.value = adminFilters.market;
+    if (sel.value !== adminFilters.market) { adminFilters.market = ''; sel.value = ''; }
+    sel.className = 'admin-filter-select' + (adminFilters.market ? ' filtered' : '');
   }
 
   function populateCoachFilter() {
@@ -2458,6 +2493,37 @@
     return brinksBlockers(c).length === 0;
   }
 
+  // Group keys, in the order they appear in the admin list.
+  var STAGE_META = (function () {
+    var meta = {
+      "__started": { label: "Already started", step: 0 },
+      "__ready": { label: "Day one ready", step: 0 },
+      "__declined": { label: "Declined / no show", step: 0 }
+    };
+    for (var i = 0; i < TASKS.length; i++) {
+      meta["task:" + TASKS[i].key] = { label: TASKS[i].label, step: i + 1 };
+    }
+    return meta;
+  })();
+
+  function stageOrder() {
+    var order = [];
+    for (var i = 0; i < TASKS.length; i++) order.push("task:" + TASKS[i].key);
+    order.push("__ready");
+    order.push("__started");
+    order.push("__declined");
+    return order;
+  }
+
+  function candidateStageKey(c) {
+    if (isDeclined(c)) return "__declined";
+    if (hasStarted(c)) return "__started";
+    for (var i = 0; i < TASKS.length; i++) {
+      if (c.tasks[TASKS[i].key] !== "Complete") return "task:" + TASKS[i].key;
+    }
+    return "__ready";
+  }
+
   function taskPillStyle(val) {
     if (val === 'Complete' || val === 'Started') return 'background:#EAF3DE;color:#3B6D11;border-color:#C0DD97;';
     if (val === 'Requested Creation') return 'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4;';
@@ -2477,6 +2543,7 @@
     if (!container) return;
 
     populateCoachFilter();
+    populateMarketFilter();
 
     var coachSel = document.getElementById('admin-coach-filter');
     var statusSel = document.getElementById('admin-status-filter');
@@ -2514,60 +2581,58 @@
       return;
     }
 
-    var markets = {};
-    var MARKET_ORDER = ['Rhode Island', 'Mass', 'Connecticut', 'Tennessee', 'Knoxville', 'Arkansas', 'Chattanooga'];
+    // Grouped by the step each candidate is stuck on. TASKS is in sequence, so
+    // a candidate's stage is simply their first task that isn't Complete.
+    var buckets = {};
     for (var g = 0; g < visible.length; g++) {
-      var mkt = visible[g].market || 'Other';
-      if (!markets[mkt]) markets[mkt] = [];
-      markets[mkt].push(visible[g]);
+      var key = candidateStageKey(visible[g]);
+      if (!buckets[key]) buckets[key] = [];
+      buckets[key].push(visible[g]);
     }
 
-    var marketKeys = Object.keys(markets).sort(function (a, b) {
-      var ai = MARKET_ORDER.indexOf(a), bi = MARKET_ORDER.indexOf(b);
-      if (ai === -1) ai = 99;
-      if (bi === -1) bi = 99;
-      if (ai !== bi) return ai - bi;
-      return a.localeCompare(b);
-    });
+    var stageKeys = stageOrder();
 
-    for (var mk = 0; mk < marketKeys.length; mk++) {
-      var marketName = marketKeys[mk];
-      var marketCandidates = markets[marketName];
+    for (var mk = 0; mk < stageKeys.length; mk++) {
+      var stageKey = stageKeys[mk];
+      var groupCandidates = buckets[stageKey];
+      if (!groupCandidates || groupCandidates.length === 0) continue;
 
-      // Keep active/in-process candidates on top; Started candidates sink to
-      // the bottom of their market group. Array.sort is stable in modern JS
-      // engines, so relative order within each group (active vs started) is preserved.
-      marketCandidates = marketCandidates.slice().sort(function (a, b) {
-        return (hasStarted(a) ? 1 : 0) - (hasStarted(b) ? 1 : 0);
+      // soonest start date first - whoever is closest to day one is most urgent
+      groupCandidates.sort(function (a, b) {
+        var da = daysUntilStart(a), db = daysUntilStart(b);
+        if (da === null && db === null) return String(a.name).localeCompare(b.name);
+        if (da === null) return 1;
+        if (db === null) return -1;
+        return da - db;
       });
 
-      var activeCount = 0, behindCount = 0;
-      for (var mc = 0; mc < marketCandidates.length; mc++) {
-        var mcand = marketCandidates[mc];
-        if (!isDeclined(mcand) && !hasStarted(mcand)) activeCount++;
-        if (needsAttention(mcand)) behindCount++;
+      var behindCount = 0;
+      for (var mc = 0; mc < groupCandidates.length; mc++) {
+        if (needsAttention(groupCandidates[mc])) behindCount++;
       }
 
+      var meta = STAGE_META[stageKey];
       // filters force every matching group open, so results are never hidden
-      var isCollapsed = !filtering && !!collapsedMarkets[marketName];
+      var isCollapsed = !filtering && !!collapsedMarkets[stageKey];
 
       html += '<div class="mkt-group' + (isCollapsed ? ' collapsed' : '') + '">';
-      html += '<div class="mkt-head" onclick="toggleMarket(\'' + jsStr(marketName) + '\')">';
+      html += '<div class="mkt-head" onclick="toggleMarket(\'' + jsStr(stageKey) + '\')">';
       html += '<span class="mkt-chev">&#8250;</span>';
-      html += '<span class="mkt-name">' + escapeHtml(marketName).toUpperCase() + '</span>';
-      html += '<span class="mkt-pill">' + activeCount + ' active</span>';
+      if (meta.step) {
+        html += '<span class="stage-num">' + meta.step + '</span>';
+      }
+      html += '<span class="mkt-name">' + escapeHtml(meta.label).toUpperCase() + '</span>';
+      html += '<span class="mkt-pill">' + groupCandidates.length + '</span>';
       html += '<div style="flex:1;"></div>';
       if (behindCount > 0) {
         html += '<span class="mkt-pill" style="background:#FCEBEB;color:#A32D2D;">' + behindCount + ' behind</span>';
-      } else {
-        html += '<span class="mkt-pill" style="background:#EAF3DE;color:#3B6D11;">on track</span>';
       }
       html += '</div>';
 
       html += '<div class="mkt-body">';
 
-      for (var ci = 0; ci < marketCandidates.length; ci++) {
-        var c = marketCandidates[ci];
+      for (var ci = 0; ci < groupCandidates.length; ci++) {
+        var c = groupCandidates[ci];
         var doneCount = taskCompleteCount(c);
         var av = avatarColors(c);
         var declined = isDeclined(c);
@@ -2582,6 +2647,8 @@
         html += '<div class="admin-summary-name"' + (declined ? ' style="color:#8A8780;"' : '') + '>' + escapeHtml(c.name) + '</div>';
 
         var metaBits = [];
+        if (c.homeLocation) metaBits.push(escapeHtml(c.homeLocation));
+        else if (c.market) metaBits.push(escapeHtml(c.market));
         if (c.position) metaBits.push(escapeHtml(c.position));
         if (declined) metaBits.push(escapeHtml(c.candidateStatus));
         else if (hasStarted(c)) metaBits.push('Started');
@@ -2610,8 +2677,6 @@
         html += '<div class="admin-candidate-detail">';
 
         html += '<div class="admin-order-info">';
-        html += '<div class="admin-order-field"><label>PHONE</label><input type="text" value="' + escapeAttr(c.phone || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidatePhone\', \'phone\', this.value)"></div>';
-        html += '<div class="admin-order-field"><label>EMAIL</label><input type="text" value="' + escapeAttr(c.email || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidateEmail\', \'email\', this.value)"></div>';
         html += '<div class="admin-order-field"><label>STATUS</label><select onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidateStatus\', \'candidateStatus\', this.value)"><option value="Active"' + (c.candidateStatus === "Active" ? " selected" : "") + '>Active</option><option value="Declined"' + (c.candidateStatus === "Declined" ? " selected" : "") + '>Declined</option><option value="No Show"' + (c.candidateStatus === "No Show" ? " selected" : "") + '>No Show</option><option value="Started"' + (c.candidateStatus === "Started" ? " selected" : "") + '>Started</option></select></div>';
         html += '<div class="admin-order-field"><label>START DATE</label><input type="text" value="' + escapeAttr(c.startDate || '') + '" placeholder="07/27/2026" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'StartDate\', \'startDate\', this.value)"></div>';
         html += '<div class="admin-order-field"><label>SHIRT SIZE</label><input type="text" value="' + escapeAttr(c.shirtSize || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'UniformShirtSize\', \'shirtSize\', this.value)"></div>';
