@@ -487,6 +487,15 @@
   }
   .mkt-group.collapsed .mkt-chev { transform: rotate(0deg); }
   .mkt-group.collapsed .mkt-body { display: none; }
+  .view-stage-head {
+    display: flex; align-items: center; gap: 9px;
+    margin: 14px 0 2px; padding: 0 2px;
+  }
+  .view-stage-head:first-child { margin-top: 0; }
+  .view-stage-name {
+    font-family: 'Bebas Neue', sans-serif; letter-spacing: 1.4px;
+    font-size: 14px; color: var(--purple);
+  }
   .stage-num {
     width: 19px; height: 19px; border-radius: 50%; flex-shrink: 0;
     background: var(--purple); color: #fff; font-size: 10.5px; font-weight: 700;
@@ -1128,6 +1137,7 @@
             <option value="all">All statuses</option>
             <option value="active">Active only</option>
             <option value="started">Started</option>
+            <option value="didnotstart">Did not start</option>
             <option value="declined">Declined / no show</option>
           </select>
         </div>
@@ -1988,12 +1998,26 @@
     return c.tasks.ReadyForDayOne === 'Complete';
   }
 
+  // "Started" lives in two places: the Candidate Status field and the
+  // Ready for day one task. Either one counts, so a candidate lands in the
+  // right group whichever field the person happened to set.
   function hasStarted(c) {
-    return c.candidateStatus === 'Started';
+    return c.candidateStatus === 'Started' || c.tasks.ReadyForDayOne === 'Started';
   }
 
   function isDeclined(c) {
     return c.candidateStatus === 'Declined' || c.candidateStatus === 'No Show';
+  }
+
+  // Accepted the offer but never made it to day one - tracked separately from
+  // Declined (turned the offer down) so the two can be reported apart.
+  function didNotStart(c) {
+    return c.candidateStatus === 'Did Not Start';
+  }
+
+  // Anyone no longer moving toward a start date, for stats and the calendar.
+  function outOfPipeline(c) {
+    return isDeclined(c) || didNotStart(c);
   }
 
   function isOverdue(c) {
@@ -2050,11 +2074,24 @@
     return false;
   }
 
+  // Board pool: everything this user may see except declined. Keeps people
+  // who have started so they appear under "Already started" rather than
+  // silently vanishing off the coach and manager view.
+  function getBoardCandidates() {
+    var out = [];
+    for (var i = 0; i < allCandidates.length; i++) {
+      var c = allCandidates[i];
+      if (isDeclined(c)) continue;   // did-not-start stays, in its own group
+      if (isVisibleToCurrentUser(c)) out.push(c);
+    }
+    return out;
+  }
+
   function getActiveCandidates() {
     var active = [];
     for (var i = 0; i < allCandidates.length; i++) {
       var c = allCandidates[i];
-      if (hasStarted(c) || isDeclined(c)) continue;
+      if (hasStarted(c) || outOfPipeline(c)) continue;
       if (isVisibleToCurrentUser(c)) active.push(c);
     }
     return active;
@@ -2066,7 +2103,7 @@
   function getCalendarCandidates() {
     var out = [];
     for (var i = 0; i < allCandidates.length; i++) {
-      if (!isDeclined(allCandidates[i])) out.push(allCandidates[i]);
+      if (!outOfPipeline(allCandidates[i])) out.push(allCandidates[i]);
     }
     return out;
   }
@@ -2125,7 +2162,7 @@
   }
 
   function renderCounts() {
-    var pool = getActiveCandidates();
+    var pool = getBoardCandidates();
     var overdueCount = 0, readyCount = 0;
     for (var i = 0; i < pool.length; i++) {
       if (isOverdue(pool[i])) overdueCount++;
@@ -2138,7 +2175,7 @@
 
   function renderCandidates() {
     var list = document.getElementById('candidates-list');
-    var pool = getActiveCandidates();
+    var pool = getBoardCandidates();
     var filtered = [];
     for (var i = 0; i < pool.length; i++) {
       var c = pool[i];
@@ -2159,12 +2196,51 @@
       return;
     }
 
+    // Same stage grouping the admin tab uses, so coaches and managers see
+    // their people organised by the step each one is on.
+    var vBuckets = {};
+    for (var vb = 0; vb < filtered.length; vb++) {
+      var vKey = candidateStageKey(filtered[vb]);
+      if (!vBuckets[vKey]) vBuckets[vKey] = [];
+      vBuckets[vKey].push(filtered[vb]);
+    }
+
+    var vOrder = stageOrder();
+    var ordered = [];
+    for (var vo = 0; vo < vOrder.length; vo++) {
+      var vGroup = vBuckets[vOrder[vo]];
+      if (!vGroup || vGroup.length === 0) continue;
+
+      vGroup.sort(function (a, b) {
+        var da = daysUntilStart(a), db = daysUntilStart(b);
+        if (da === null && db === null) return String(a.name).localeCompare(b.name);
+        if (da === null) return 1;
+        if (db === null) return -1;
+        return da - db;
+      });
+
+      ordered.push({ header: STAGE_META[vOrder[vo]], count: vGroup.length });
+      for (var vg = 0; vg < vGroup.length; vg++) ordered.push({ cand: vGroup[vg] });
+    }
+
     var html = '';
-    for (var j = 0; j < filtered.length; j++) {
-      var cand = filtered[j];
-      var chip = statusChip(cand);
-      var av = avatarColors(cand);
-      var stripe = stripeColor(cand);
+    for (var j = 0; j < ordered.length; j++) {
+      if (ordered[j].header) {
+        var vh = ordered[j].header;
+        html += '<div class="view-stage-head">';
+        if (vh.step) html += '<span class="stage-num">' + vh.step + '</span>';
+        html += '<span class="view-stage-name">' + escapeHtml(vh.label).toUpperCase() + '</span>';
+        html += '<span class="mkt-pill">' + ordered[j].count + '</span>';
+        html += '</div>';
+        continue;
+      }
+      var cand = ordered[j].cand;
+      var flagged = didNotStart(cand);
+      var chip = flagged
+        ? { text: 'Did not start', bg: '#FBEEDC', color: '#8A5A00' }
+        : statusChip(cand);
+      var av = flagged ? { bg: '#FBEEDC', color: '#8A5A00' } : avatarColors(cand);
+      var stripe = flagged ? '#C77800' : stripeColor(cand);
 
       html += '<div class="candidate-card" id="view-card-' + cand.id + '">';
       html += '<div class="stripe" style="background:' + stripe + ';"></div>';
@@ -2173,7 +2249,7 @@
       html += '<div class="candidate-top" onclick="toggleViewCard(\'' + cand.id + '\')" style="cursor:pointer;">';
       html += '<div class="avatar" style="background:' + av.bg + '; color:' + av.color + ';">' + cand.initials + '</div>';
       html += '<div class="candidate-info">';
-      html += '<div class="candidate-name">' + cand.name + '</div>';
+      html += '<div class="candidate-name"' + (flagged ? ' style="color:#8A8780;"' : '') + '>' + cand.name + '</div>';
       html += '<div class="candidate-meta">' + cand.position + ' &middot; ' + cand.market + '</div>';
       html += '</div>';
       html += '<div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">';
@@ -2348,7 +2424,8 @@
 
   function matchesAdminFilters(c) {
     if (adminFilters.market && (c.market || '') !== adminFilters.market) return false;
-    if (adminFilters.status === 'active' && (isDeclined(c) || hasStarted(c))) return false;
+    if (adminFilters.status === 'active' && (outOfPipeline(c) || hasStarted(c))) return false;
+    if (adminFilters.status === 'didnotstart' && !didNotStart(c)) return false;
     if (adminFilters.status === 'started' && !hasStarted(c)) return false;
     if (adminFilters.status === 'declined' && !isDeclined(c)) return false;
 
@@ -2467,7 +2544,7 @@
   // overdueDays is still hardcoded to 0 upstream, so "behind" is derived from
   // the start date instead: starting within a week and not day-one ready.
   function needsAttention(c) {
-    if (isDeclined(c) || hasStarted(c) || isReady(c)) return false;
+    if (outOfPipeline(c) || hasStarted(c) || isReady(c)) return false;
     if (isOverdue(c)) return true;
     var d = daysUntilStart(c);
     return d !== null && d <= 7;
@@ -2498,6 +2575,7 @@
     var meta = {
       "__started": { label: "Already started", step: 0 },
       "__ready": { label: "Day one ready", step: 0 },
+      "__didnotstart": { label: "Did not start", step: 0 },
       "__declined": { label: "Declined / no show", step: 0 }
     };
     for (var i = 0; i < TASKS.length; i++) {
@@ -2511,12 +2589,14 @@
     for (var i = 0; i < TASKS.length; i++) order.push("task:" + TASKS[i].key);
     order.push("__ready");
     order.push("__started");
+    order.push("__didnotstart");
     order.push("__declined");
     return order;
   }
 
   function candidateStageKey(c) {
     if (isDeclined(c)) return "__declined";
+    if (didNotStart(c)) return "__didnotstart";
     if (hasStarted(c)) return "__started";
     for (var i = 0; i < TASKS.length; i++) {
       if (c.tasks[TASKS[i].key] !== "Complete") return "task:" + TASKS[i].key;
@@ -2636,7 +2716,10 @@
         var doneCount = taskCompleteCount(c);
         var av = avatarColors(c);
         var declined = isDeclined(c);
+        var dns = didNotStart(c);
+        var muted = declined || dns;
         var cardStyle = declined ? ' style="border-left:3px solid #E24B4A;"'
+                      : dns ? ' style="border-left:3px solid #C77800;"'
                       : hasStarted(c) ? ' style="border-left:3px solid #639922;"' : '';
 
         html += '<div class="admin-candidate-card' + (expandedIds['admin-card-' + c.id] ? ' expanded' : '') + '" id="admin-card-' + c.id + '"' + cardStyle + '>';
@@ -2644,13 +2727,13 @@
         html += '<div class="admin-candidate-summary" onclick="toggleAdminCard(\'' + jsStr(c.id) + '\')">';
         html += '<div class="admin-avatar" style="background:' + av.bg + ';color:' + av.color + ';">' + escapeHtml(c.initials || candidateInitials(c.name)) + '</div>';
         html += '<div class="admin-summary-info">';
-        html += '<div class="admin-summary-name"' + (declined ? ' style="color:#8A8780;"' : '') + '>' + escapeHtml(c.name) + '</div>';
+        html += '<div class="admin-summary-name"' + (muted ? ' style="color:#8A8780;"' : '') + '>' + escapeHtml(c.name) + '</div>';
 
         var metaBits = [];
         if (c.homeLocation) metaBits.push(escapeHtml(c.homeLocation));
         else if (c.market) metaBits.push(escapeHtml(c.market));
         if (c.position) metaBits.push(escapeHtml(c.position));
-        if (declined) metaBits.push(escapeHtml(c.candidateStatus));
+        if (muted) metaBits.push(escapeHtml(c.candidateStatus));
         else if (hasStarted(c)) metaBits.push('Started');
         else if (c.startDate) metaBits.push('Starts ' + escapeHtml(c.startDate));
         var coachName = candidateCoach(c);
@@ -2658,15 +2741,16 @@
         html += '<div class="admin-summary-meta">' + metaBits.join(' &middot; ') + '</div>';
 
         html += '</div>';
-        if (declined) {
-          html += '<span class="admin-count-chip" style="background:#FCEBEB;color:#A32D2D;">' + escapeHtml(c.candidateStatus) + '</span>';
+        if (muted) {
+          var mutedChip = declined ? 'background:#FCEBEB;color:#A32D2D;' : 'background:#FBEEDC;color:#8A5A00;';
+          html += '<span class="admin-count-chip" style="' + mutedChip + '">' + escapeHtml(c.candidateStatus) + '</span>';
         } else {
           html += '<span class="admin-count-chip" style="' + countChipStyle(doneCount, TASKS.length) + '">' + doneCount + ' of ' + TASKS.length + '</span>';
         }
         html += '<span class="admin-chevron">&#8250;</span>';
         html += '</div>';
 
-        if (!declined) {
+        if (!muted) {
           html += '<div class="admin-mini-progress">';
           for (var p = 0; p < TASKS.length; p++) {
             html += '<div class="admin-mini-seg" style="background:' + segColor(c.tasks[TASKS[p].key]) + ';"></div>';
@@ -2677,7 +2761,7 @@
         html += '<div class="admin-candidate-detail">';
 
         html += '<div class="admin-order-info">';
-        html += '<div class="admin-order-field"><label>STATUS</label><select onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidateStatus\', \'candidateStatus\', this.value)"><option value="Active"' + (c.candidateStatus === "Active" ? " selected" : "") + '>Active</option><option value="Declined"' + (c.candidateStatus === "Declined" ? " selected" : "") + '>Declined</option><option value="No Show"' + (c.candidateStatus === "No Show" ? " selected" : "") + '>No Show</option><option value="Started"' + (c.candidateStatus === "Started" ? " selected" : "") + '>Started</option></select></div>';
+        html += '<div class="admin-order-field"><label>STATUS</label><select onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidateStatus\', \'candidateStatus\', this.value)"><option value="Active"' + (c.candidateStatus === "Active" ? " selected" : "") + '>Active</option><option value="Declined"' + (c.candidateStatus === "Declined" ? " selected" : "") + '>Declined</option><option value="No Show"' + (c.candidateStatus === "No Show" ? " selected" : "") + '>No Show</option><option value="Did Not Start"' + (c.candidateStatus === "Did Not Start" ? " selected" : "") + '>Did Not Start</option><option value="Started"' + (c.candidateStatus === "Started" ? " selected" : "") + '>Started</option></select></div>';
         html += '<div class="admin-order-field"><label>START DATE</label><input type="text" value="' + escapeAttr(c.startDate || '') + '" placeholder="07/27/2026" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'StartDate\', \'startDate\', this.value)"></div>';
         html += '<div class="admin-order-field"><label>SHIRT SIZE</label><input type="text" value="' + escapeAttr(c.shirtSize || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'UniformShirtSize\', \'shirtSize\', this.value)"></div>';
         html += '<div class="admin-order-field"><label>NAME TAG</label><input type="text" value="' + escapeAttr(c.nameTag || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'NameTag\', \'nameTag\', this.value)"></div>';
