@@ -1211,7 +1211,7 @@
   // adding a matching Choice column on the SharePoint list.
   // 'choices' documents the valid values for reference / validation only.
   var TASKS = [
-    { key: "ClearIdentification", label: "Clear identification", choices: ["Sent", "Pending", "Complete"] },
+    { key: "ClearIdentification", label: "Clear identification", choices: ["Welcome sent", "Pending", "Complete"] },
     { key: "OfferLetter", label: "Offer letter", choices: ["Sent", "Pending", "Complete"] },
     { key: "NTIDCreated", label: "NTID created", choices: ["Pending", "Complete"] },
     { key: "OnboardingStatus", label: "Onboarding (paperwork)", choices: ["Sent", "Pending", "Complete"] },
@@ -2067,6 +2067,7 @@
     if (status === 'Pending') return '#FAC775';
     if (status === 'Requested Creation') return '#378ADD';
     if (status === 'Sent') return '#FAC775';
+    if (status === 'Welcome sent') return '#FAC775';
     return '#EEEEEE';
   }
 
@@ -2625,7 +2626,7 @@
   function taskPillStyle(val) {
     if (val === 'Complete' || val === 'Started') return 'background:#EAF3DE;color:#3B6D11;border-color:#C0DD97;';
     if (val === 'Requested Creation') return 'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4;';
-    if (val === 'Sent') return 'background:#FAEEDA;color:#854F0B;border-color:#FAC775;';
+    if (val === 'Sent' || val === 'Welcome sent') return 'background:#FAEEDA;color:#854F0B;border-color:#FAC775;';
     return 'background:#FAEEDA;color:#854F0B;border-color:#FAC775;';
   }
 
