@@ -2850,6 +2850,55 @@
     }
   }
 
+  // PATCH that reports what Microsoft actually said. A choice column rejects
+  // any value not in its choices list, and that comes back as a 400 with an
+  // "invalid" message rather than anything obvious in the UI.
+  function graphPatchFields(itemId, realFields) {
+    return getSiteId().then(function (siteId) {
+      return getListId(siteId).then(function (listId) {
+        var url = "https://graph.microsoft.com/v1.0/sites/" + siteId +
+                  "/lists/" + listId + "/items/" + itemId + "/fields";
+        return fetch(url, {
+          method: "PATCH",
+          headers: {
+            Authorization: "Bearer " + graphToken,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(realFields)
+        }).then(function (res) {
+          if (res.ok) return res.json();
+          return res.text().then(function (body) {
+            var detail = "";
+            try {
+              var p = JSON.parse(body);
+              if (p.error) detail = (p.error.code || "") + ": " + (p.error.message || "");
+            } catch (e) { detail = String(body).slice(0, 300); }
+            var err = new Error("HTTP " + res.status + (detail ? " - " + detail : ""));
+            err.status = res.status;
+            err.detail = detail;
+            throw err;
+          });
+        });
+      });
+    });
+  }
+
+  function writeFailureMessage(err, fieldLabel, value) {
+    var msg = 'Could not save ' + fieldLabel + '.\n\n';
+    if (err.status === 400) {
+      msg += 'SharePoint rejected the value "' + value + '".\n\n' +
+             'This usually means "' + value + '" is not one of the allowed ' +
+             'choices on that column in SharePoint. Open the list settings, ' +
+             'edit the column, and add it to the choices.\n\n';
+    } else if (err.status === 403) {
+      msg += 'Access denied - this account can read the list but not write to it.\n\n';
+    } else if (err.status === 401) {
+      msg += 'Sign-in expired. Use Switch account and sign in again.\n\n';
+    }
+    msg += 'Details: ' + (err.message || String(err));
+    return msg;
+  }
+
   function updateTaskStatus(itemId, taskKey, newValue) {
     if (taskKey === 'BrinksCredentials' && newValue === 'Requested Creation') {
       var blockers = brinksBlockers(findCandidate(itemId));
@@ -2870,20 +2919,12 @@
       return;
     }
 
-    getSiteId().then(function (siteId) {
-      return getListId(siteId).then(function (listId) {
-        var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items/" + itemId + "/fields";
-        return fetch(url, {
-          method: "PATCH",
-          headers: {
-            Authorization: "Bearer " + graphToken,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(realFields)
-        });
-      });
-    }).then(function (res) {
-      if (!res.ok) throw new Error("Update failed: " + res.status);
+    var taskLabel = taskKey;
+    for (var t = 0; t < TASKS.length; t++) {
+      if (TASKS[t].key === taskKey) taskLabel = TASKS[t].label;
+    }
+
+    graphPatchFields(itemId, realFields).then(function () {
       // update local cache so the UI reflects the change immediately
       for (var i = 0; i < allCandidates.length; i++) {
         if (allCandidates[i].id === itemId) {
@@ -2896,8 +2937,8 @@
       renderCandidates();
       renderAdminCandidates();
     }).catch(function (err) {
-      console.error(err);
-      alert('Could not update this task. Please try again.');
+      console.error('Task update failed:', realFields, err);
+      alert(writeFailureMessage(err, taskLabel, newValue));
       renderAdminCandidates(); // revert dropdown to last known state
     });
   }
@@ -2926,18 +2967,30 @@
       });
     }).then(function (res) {
       if (!res.ok) {
-        return res.text().then(function(t) { throw new Error("Update failed: " + res.status + " " + t); });
+        return res.text().then(function (body) {
+          var detail = "";
+          try {
+            var p = JSON.parse(body);
+            if (p.error) detail = (p.error.code || "") + ": " + (p.error.message || "");
+          } catch (e) { detail = String(body).slice(0, 300); }
+          var err = new Error("HTTP " + res.status + (detail ? " - " + detail : ""));
+          err.status = res.status;
+          throw err;
+        });
       }
       for (var i = 0; i < allCandidates.length; i++) {
         if (allCandidates[i].id === itemId) {
           allCandidates[i][localKey] = newValue;
         }
       }
+      renderStats();
+      renderCounts();
       renderCandidates();
-      console.log('Saved ' + friendlyKey + ' = ' + newValue);
+      renderAdminCandidates();
     }).catch(function (err) {
-      console.error('updateOrderField error:', err);
-      alert('Could not save ' + friendlyKey + ': ' + err.message);
+      console.error('updateOrderField error:', friendlyKey, newValue, err);
+      alert(writeFailureMessage(err, friendlyKey, newValue));
+      renderAdminCandidates();
     });
   }
 
