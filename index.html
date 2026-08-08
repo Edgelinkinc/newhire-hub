@@ -270,15 +270,31 @@
   .form-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
   /* Availability grid */
-  .avail-row { display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 8px; }
-  .avail-day { font-size: 12px; font-weight: 600; color: var(--gray-text); }
-  .avail-shifts { display: flex; gap: 6px; flex-wrap: wrap; }
-  .avail-shift-btn {
-    font-size: 11px; padding: 4px 10px; border-radius: 8px;
+  .avail-row {
+    display: grid; grid-template-columns: 84px 1fr; align-items: start; gap: 8px;
+    padding: 7px 0; border-bottom: 0.5px solid var(--gray-border);
+  }
+  .avail-row:last-child { border-bottom: none; }
+  .avail-day {
+    font-size: 12px; font-weight: 600; color: var(--gray-text);
+    display: flex; flex-direction: column; gap: 1px; padding-top: 4px;
+  }
+  .avail-hours { font-size: 9.5px; font-weight: 500; color: var(--gray-muted); white-space: nowrap; }
+  .avail-controls { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .avail-modes { display: flex; gap: 6px; flex-wrap: wrap; }
+  .avail-mode-btn {
+    font-size: 11px; padding: 5px 11px; border-radius: 8px;
     border: 1.5px solid var(--gray-border); background: #fff;
     color: var(--gray-text); cursor: pointer; font-family: 'Montserrat', sans-serif;
   }
-  .avail-shift-btn.selected { background: var(--purple); color: #fff; border-color: var(--purple); }
+  .avail-mode-btn.selected { background: var(--purple); color: #fff; border-color: var(--purple); }
+  .avail-times { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .avail-time-select {
+    font-family: 'Montserrat', sans-serif; font-size: 11.5px;
+    padding: 5px 8px; border-radius: 8px; border: 1.5px solid var(--gray-border);
+    background: #fff; color: var(--gray-text); cursor: pointer;
+  }
+  .avail-dash { font-size: 11px; color: var(--gray-muted); }
   .avail-off-btn {
     font-size: 11px; padding: 4px 10px; border-radius: 8px;
     border: 1.5px solid var(--gray-border); background: #fff;
@@ -1019,8 +1035,8 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Uniform shirt size *</label>
-        <select class="form-input" id="f-shirtsize" required>
+        <label class="form-label">Uniform shirt size</label>
+        <select class="form-input" id="f-shirtsize">
           <option value="">Select size</option>
           <optgroup label="Men's">
             <option>Men's XS</option>
@@ -1491,7 +1507,38 @@
   }
 
   var DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-  var SHIFTS = ['Opening','Mid','Closing','Off'];
+
+  // Store trading hours. Sunday runs later than 5pm at mall locations, so the
+  // Sunday range extends to 6:30pm and non-mall stores simply won't use the
+  // later slots. Times are in minutes from midnight.
+  var STORE_HOURS = {
+    Monday:    { open: 9 * 60 + 30,  close: 19 * 60 + 30 },
+    Tuesday:   { open: 9 * 60 + 30,  close: 19 * 60 + 30 },
+    Wednesday: { open: 9 * 60 + 30,  close: 19 * 60 + 30 },
+    Thursday:  { open: 9 * 60 + 30,  close: 19 * 60 + 30 },
+    Friday:    { open: 9 * 60 + 30,  close: 19 * 60 + 30 },
+    Saturday:  { open: 9 * 60 + 30,  close: 19 * 60 + 30 },
+    Sunday:    { open: 10 * 60 + 45, close: 18 * 60 + 30 }
+  };
+
+  function minutesToLabel(mins) {
+    var h = Math.floor(mins / 60), m = mins % 60;
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12; if (h12 === 0) h12 = 12;
+    return h12 + ':' + ('0' + m).slice(-2) + ' ' + ampm;
+  }
+
+  // Opening time first, then every half hour on the :00 / :30, and always the
+  // closing time - so Sunday reads 10:45, 11:00, 11:30 ... 6:00, 6:30.
+  function timeSlotsForDay(day) {
+    var hours = STORE_HOURS[day];
+    var slots = [hours.open];
+    var t = hours.open + (30 - (hours.open % 30)) % 30;
+    if (t === hours.open) t += 30;
+    while (t < hours.close) { slots.push(t); t += 30; }
+    if (slots[slots.length - 1] !== hours.close) slots.push(hours.close);
+    return slots;
+  }
 
   function buildAvailabilityGrid() {
     var container = document.getElementById('availability-rows');
@@ -1499,41 +1546,81 @@
     var html = '';
     for (var i = 0; i < DAYS.length; i++) {
       var day = DAYS[i];
-      html += '<div class="avail-row" id="avail-row-' + day + '">';
-      html += '<div class="avail-day">' + day.substring(0,3) + '</div>';
-      html += '<div class="avail-shifts">';
-      for (var j = 0; j < SHIFTS.length; j++) {
-        var shift = SHIFTS[j];
-        var cls = shift === 'Off' ? 'avail-off-btn' : 'avail-shift-btn';
-        html += '<button type="button" class="' + cls + '" data-day="' + day + '" data-shift="' + shift + '" onclick="toggleShift(this)">' + shift + '</button>';
+      var hours = STORE_HOURS[day];
+      var slots = timeSlotsForDay(day);
+
+      html += '<div class="avail-row" id="avail-row-' + day + '" data-mode="">';
+      html += '<div class="avail-day">' + day.substring(0, 3) +
+              '<span class="avail-hours">' + minutesToLabel(hours.open) + '&ndash;' +
+              minutesToLabel(hours.close) + '</span></div>';
+
+      html += '<div class="avail-controls">';
+      html += '<div class="avail-modes">';
+      html += '<button type="button" class="avail-mode-btn" data-day="' + day + '" data-mode="all" onclick="setAvailMode(this)">All day</button>';
+      html += '<button type="button" class="avail-mode-btn" data-day="' + day + '" data-mode="times" onclick="setAvailMode(this)">Set times</button>';
+      html += '<button type="button" class="avail-off-btn" data-day="' + day + '" data-mode="off" onclick="setAvailMode(this)">Off</button>';
+      html += '</div>';
+
+      html += '<div class="avail-times" id="avail-times-' + day + '" style="display:none;">';
+      html += '<select class="avail-time-select" id="avail-from-' + day + '">';
+      for (var s = 0; s < slots.length - 1; s++) {
+        html += '<option value="' + slots[s] + '">' + minutesToLabel(slots[s]) + '</option>';
       }
+      html += '</select>';
+      html += '<span class="avail-dash">to</span>';
+      html += '<select class="avail-time-select" id="avail-to-' + day + '">';
+      for (var t = 1; t < slots.length; t++) {
+        var selAttr = (t === slots.length - 1) ? ' selected' : '';
+        html += '<option value="' + slots[t] + '"' + selAttr + '>' + minutesToLabel(slots[t]) + '</option>';
+      }
+      html += '</select>';
+      html += '</div>';
+
       html += '</div></div>';
     }
     container.innerHTML = html;
   }
 
-  function toggleShift(btn) {
+  function setAvailMode(btn) {
     var day = btn.getAttribute('data-day');
-    // Clear other selections for this day
+    var mode = btn.getAttribute('data-mode');
     var row = document.getElementById('avail-row-' + day);
+    if (!row) return;
+
+    // tapping the active mode again clears the day back to unset
+    if (row.getAttribute('data-mode') === mode) mode = '';
+    row.setAttribute('data-mode', mode);
+
     var btns = row.querySelectorAll('button');
     for (var i = 0; i < btns.length; i++) {
-      btns[i].className = btns[i].getAttribute('data-shift') === 'Off' ? 'avail-off-btn' : 'avail-shift-btn';
+      var base = btns[i].getAttribute('data-mode') === 'off' ? 'avail-off-btn' : 'avail-mode-btn';
+      btns[i].className = (btns[i].getAttribute('data-mode') === mode) ? base + ' selected' : base;
     }
-    // Select this one
-    var isOff = btn.getAttribute('data-shift') === 'Off';
-    btn.className = (isOff ? 'avail-off-btn' : 'avail-shift-btn') + ' selected';
+
+    document.getElementById('avail-times-' + day).style.display =
+      (mode === 'times') ? 'flex' : 'none';
   }
 
+  // Written as "Mon: All day, Tue: 9:30 AM-2:00 PM, Wed: Off" so it stays
+  // readable in SharePoint and can still be parsed against the Store Roster.
   function getAvailabilityValue() {
     var parts = [];
     for (var i = 0; i < DAYS.length; i++) {
       var day = DAYS[i];
       var row = document.getElementById('avail-row-' + day);
       if (!row) continue;
-      var selected = row.querySelector('button.selected');
-      if (selected && selected.getAttribute('data-shift') !== 'Off') {
-        parts.push(day.substring(0,3) + ':' + selected.getAttribute('data-shift'));
+      var mode = row.getAttribute('data-mode');
+      var abbr = day.substring(0, 3);
+
+      if (mode === 'all') {
+        parts.push(abbr + ': All day');
+      } else if (mode === 'off') {
+        parts.push(abbr + ': Off');
+      } else if (mode === 'times') {
+        var from = parseInt(document.getElementById('avail-from-' + day).value, 10);
+        var to = parseInt(document.getElementById('avail-to-' + day).value, 10);
+        if (to <= from) continue;
+        parts.push(abbr + ': ' + minutesToLabel(from) + '-' + minutesToLabel(to));
       }
     }
     return parts.join(', ');
@@ -1750,7 +1837,8 @@
 
     var shirtSizeVal = document.getElementById('f-shirtsize').value;
     if (shirtSizeVal === 'Other (note size below)') {
-      shirtSizeVal = 'Other: ' + document.getElementById('f-shirtsize-other').value;
+      var otherSize = document.getElementById('f-shirtsize-other').value.trim();
+      shirtSizeVal = otherSize ? 'Other: ' + otherSize : '';
     }
 
     var cleanName = titleCaseName(document.getElementById('f-name').value);
