@@ -496,6 +496,11 @@
     background: var(--purple-light); padding: 2px 8px; border-radius: 999px;
     white-space: nowrap;
   }
+  .admin-submarket-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.6px; color: var(--gray-muted);
+    text-transform: uppercase; margin: 10px 2px 6px;
+  }
+  .admin-submarket-label:first-child { margin-top: 2px; }
 
   .admin-candidate-card {
     background: #fff; border-radius: 12px;
@@ -2526,32 +2531,41 @@
       return;
     }
 
-    var markets = {};
-    var MARKET_ORDER = ['Rhode Island', 'Mass', 'Connecticut', 'Tennessee', 'Knoxville', 'Arkansas', 'Chattanooga'];
-    for (var g = 0; g < visible.length; g++) {
-      var mkt = visible[g].market || 'Other';
-      if (!markets[mkt]) markets[mkt] = [];
-      markets[mkt].push(visible[g]);
+    // Group by onboarding stage first (the step each candidate is currently
+    // on), then by market within each stage - per Cheryl: view should be
+    // organized by step, with market as the breakdown inside each step.
+    var STAGE_ORDER = [];
+    for (var si = 0; si < TASKS.length; si++) STAGE_ORDER.push(TASKS[si].label);
+    STAGE_ORDER.push('Day one ready');
+    STAGE_ORDER.push('Started');
+    STAGE_ORDER.push('Declined / No show');
+
+    function stageForCandidate(sc) {
+      if (isDeclined(sc)) return 'Declined / No show';
+      if (hasStarted(sc)) return 'Started';
+      if (!sc.nextStep) return 'Day one ready';
+      return sc.nextStep;
     }
 
-    var marketKeys = Object.keys(markets).sort(function (a, b) {
-      var ai = MARKET_ORDER.indexOf(a), bi = MARKET_ORDER.indexOf(b);
+    var MARKET_ORDER = ['Rhode Island', 'Mass', 'Connecticut', 'Tennessee', 'Knoxville', 'Arkansas', 'Chattanooga'];
+
+    var stages = {};
+    for (var g = 0; g < visible.length; g++) {
+      var stg = stageForCandidate(visible[g]);
+      if (!stages[stg]) stages[stg] = [];
+      stages[stg].push(visible[g]);
+    }
+
+    var stageKeys = Object.keys(stages).sort(function (a, b) {
+      var ai = STAGE_ORDER.indexOf(a), bi = STAGE_ORDER.indexOf(b);
       if (ai === -1) ai = 99;
       if (bi === -1) bi = 99;
-      if (ai !== bi) return ai - bi;
-      return a.localeCompare(b);
+      return ai - bi;
     });
 
-    for (var mk = 0; mk < marketKeys.length; mk++) {
-      var marketName = marketKeys[mk];
-      var marketCandidates = markets[marketName];
-
-      // Keep active/in-process candidates on top; Started candidates sink to
-      // the bottom of their market group. Array.sort is stable in modern JS
-      // engines, so relative order within each group (active vs started) is preserved.
-      marketCandidates = marketCandidates.slice().sort(function (a, b) {
-        return (hasStarted(a) ? 1 : 0) - (hasStarted(b) ? 1 : 0);
-      });
+    for (var sk = 0; sk < stageKeys.length; sk++) {
+      var stageName = stageKeys[sk];
+      var marketCandidates = stages[stageName];
 
       var activeCount = 0, behindCount = 0;
       for (var mc = 0; mc < marketCandidates.length; mc++) {
@@ -2561,12 +2575,12 @@
       }
 
       // filters force every matching group open, so results are never hidden
-      var isCollapsed = !filtering && !!collapsedMarkets[marketName];
+      var isCollapsed = !filtering && !!collapsedMarkets[stageName];
 
       html += '<div class="mkt-group' + (isCollapsed ? ' collapsed' : '') + '">';
-      html += '<div class="mkt-head" onclick="toggleMarket(\'' + jsStr(marketName) + '\')">';
+      html += '<div class="mkt-head" onclick="toggleMarket(\'' + jsStr(stageName) + '\')">';
       html += '<span class="mkt-chev">&#8250;</span>';
-      html += '<span class="mkt-name">' + escapeHtml(marketName).toUpperCase() + '</span>';
+      html += '<span class="mkt-name">' + escapeHtml(stageName).toUpperCase() + '</span>';
       html += '<span class="mkt-pill">' + activeCount + ' active</span>';
       html += '<div style="flex:1;"></div>';
       if (behindCount > 0) {
@@ -2578,8 +2592,28 @@
 
       html += '<div class="mkt-body">';
 
-      for (var ci = 0; ci < marketCandidates.length; ci++) {
-        var c = marketCandidates[ci];
+      // Sub-group this stage's candidates by market
+      var subMarkets = {};
+      for (var sm = 0; sm < marketCandidates.length; sm++) {
+        var smkt = marketCandidates[sm].market || 'Other';
+        if (!subMarkets[smkt]) subMarkets[smkt] = [];
+        subMarkets[smkt].push(marketCandidates[sm]);
+      }
+      var subMarketKeys = Object.keys(subMarkets).sort(function (a, b) {
+        var ai = MARKET_ORDER.indexOf(a), bi = MARKET_ORDER.indexOf(b);
+        if (ai === -1) ai = 99;
+        if (bi === -1) bi = 99;
+        if (ai !== bi) return ai - bi;
+        return a.localeCompare(b);
+      });
+
+      for (var smk = 0; smk < subMarketKeys.length; smk++) {
+        var subMarketName = subMarketKeys[smk];
+        var subMarketCandidates = subMarkets[subMarketName];
+        html += '<div class="admin-submarket-label">' + escapeHtml(subMarketName) + '</div>';
+
+      for (var ci = 0; ci < subMarketCandidates.length; ci++) {
+        var c = subMarketCandidates[ci];
         var doneCount = taskCompleteCount(c);
         var av = avatarColors(c);
         var declined = isDeclined(c);
@@ -2674,6 +2708,7 @@
 
         html += '</div>';
         html += '</div>';
+      }
       }
 
       html += '</div>';
