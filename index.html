@@ -1906,7 +1906,7 @@
 
   function computeNextStep(tasks) {
     for (var i = 0; i < TASKS.length; i++) {
-      if (tasks[TASKS[i].key] !== "Complete") {
+      if (!isTaskDone(tasks[TASKS[i].key])) {
         return TASKS[i].label;
       }
     }
@@ -1973,10 +1973,17 @@
   }
 
   // ---------------- DISPLAY HELPERS ----------------
+  // "Welcome sent" is the automated write-back value for Clear Identification
+  // once the welcome email goes out - it's functionally the same as Complete
+  // for coloring, counting, and stage progression.
+  function isTaskDone(v) {
+    return v === 'Complete' || v === 'Welcome sent';
+  }
+
   function taskCompleteCount(c) {
     var count = 0;
     for (var i = 0; i < TASKS.length; i++) {
-      if (c.tasks[TASKS[i].key] === 'Complete') count++;
+      if (isTaskDone(c.tasks[TASKS[i].key])) count++;
     }
     return count;
   }
@@ -2020,7 +2027,7 @@
   }
 
   function segColor(status) {
-    if (status === 'Complete') return '#5DCAA5';
+    if (status === 'Complete' || status === 'Welcome sent') return '#5DCAA5';
     if (status === 'Started') return '#639922';
     if (status === 'Pending') return '#FAC775';
     if (status === 'Requested Creation') return '#378ADD';
@@ -2196,8 +2203,9 @@
       for (var k = 0; k < TASKS.length; k++) {
         var task = TASKS[k];
         var st = cand.tasks[task.key];
-        var tbg = st === 'Complete' ? '#E1F5EE' : st === 'Pending' ? '#FFF8E8' : st === 'Requested Creation' ? '#EAF2FC' : '#F3F3F3';
-        var tc = st === 'Complete' ? '#0F6E56' : st === 'Pending' ? '#854F0B' : st === 'Requested Creation' ? '#1C5EA8' : '#5F5E5A';
+        var isDone = st === 'Complete' || st === 'Welcome sent' || st === 'Started';
+        var tbg = isDone ? '#E1F5EE' : st === 'Pending' ? '#FFF8E8' : st === 'Requested Creation' ? '#EAF2FC' : '#F3F3F3';
+        var tc = isDone ? '#0F6E56' : st === 'Pending' ? '#854F0B' : st === 'Requested Creation' ? '#1C5EA8' : '#5F5E5A';
         html += '<div style="display:flex; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:0.5px solid var(--gray-border);">';
         html += '<span style="font-size:12px; color:var(--gray-text);">' + task.label + '</span>';
         html += '<span style="font-size:10px; font-weight:600; padding:3px 9px; border-radius:10px; background:' + tbg + '; color:' + tc + ';">' + st + '</span>';
@@ -2476,7 +2484,7 @@
   }
 
   function taskPillStyle(val) {
-    if (val === 'Complete' || val === 'Started') return 'background:#EAF3DE;color:#3B6D11;border-color:#C0DD97;';
+    if (val === 'Complete' || val === 'Started' || val === 'Welcome sent') return 'background:#EAF3DE;color:#3B6D11;border-color:#C0DD97;';
     if (val === 'Requested Creation') return 'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4;';
     if (val === 'Sent') return 'background:#FAEEDA;color:#854F0B;border-color:#FAC775;';
     return 'background:#FAEEDA;color:#854F0B;border-color:#FAC775;';
