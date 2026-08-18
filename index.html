@@ -2552,10 +2552,19 @@
 
     function stageForCandidate(sc) {
       if (isDeclined(sc)) return 'Declined / No show';
-      // A task still in progress (e.g. Brinks Credentials still Pending) keeps
-      // the candidate in that task's section, even if their overall Status
-      // was marked Started - the individual task isn't done yet.
-      if (sc.nextStep) return sc.nextStep;
+
+      // Walk tasks in pipeline order. The first task that isn't done decides
+      // the stage - except Ready for Day One's "Started" value gets its own
+      // dedicated section instead of being grouped with candidates who
+      // haven't been marked ready yet (still "Pending").
+      for (var ti = 0; ti < TASKS.length; ti++) {
+        var tval = sc.tasks[TASKS[ti].key];
+        if (isTaskDone(tval)) continue;
+        if (TASKS[ti].key === 'ReadyForDayOne' && tval === 'Started') return 'Started';
+        return TASKS[ti].label;
+      }
+
+      // Every task is Complete - fall back to overall candidate status.
       if (hasStarted(sc)) return 'Started';
       return 'Day one ready';
     }
