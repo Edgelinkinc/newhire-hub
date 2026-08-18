@@ -2028,7 +2028,7 @@
 
   function segColor(status) {
     if (status === 'Complete' || status === 'Welcome sent') return '#5DCAA5';
-    if (status === 'Started') return '#639922';
+    if (status === 'Started') return '#8B5FA3';
     if (status === 'Pending') return '#FAC775';
     if (status === 'Requested Creation') return '#378ADD';
     if (status === 'Sent') return '#FAC775';
@@ -2203,9 +2203,10 @@
       for (var k = 0; k < TASKS.length; k++) {
         var task = TASKS[k];
         var st = cand.tasks[task.key];
-        var isDone = st === 'Complete' || st === 'Welcome sent' || st === 'Started';
-        var tbg = isDone ? '#E1F5EE' : st === 'Pending' ? '#FFF8E8' : st === 'Requested Creation' ? '#EAF2FC' : '#F3F3F3';
-        var tc = isDone ? '#0F6E56' : st === 'Pending' ? '#854F0B' : st === 'Requested Creation' ? '#1C5EA8' : '#5F5E5A';
+        var isDone = st === 'Complete' || st === 'Welcome sent';
+        var isStartedTask = st === 'Started';
+        var tbg = isDone ? '#E1F5EE' : isStartedTask ? '#F3E9F6' : st === 'Pending' ? '#FFF8E8' : st === 'Requested Creation' ? '#EAF2FC' : '#F3F3F3';
+        var tc = isDone ? '#0F6E56' : isStartedTask ? '#4A1B5C' : st === 'Pending' ? '#854F0B' : st === 'Requested Creation' ? '#1C5EA8' : '#5F5E5A';
         html += '<div style="display:flex; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:0.5px solid var(--gray-border);">';
         html += '<span style="font-size:12px; color:var(--gray-text);">' + task.label + '</span>';
         html += '<span style="font-size:10px; font-weight:600; padding:3px 9px; border-radius:10px; background:' + tbg + '; color:' + tc + ';">' + st + '</span>';
@@ -2484,7 +2485,8 @@
   }
 
   function taskPillStyle(val) {
-    if (val === 'Complete' || val === 'Started' || val === 'Welcome sent') return 'background:#EAF3DE;color:#3B6D11;border-color:#C0DD97;';
+    if (val === 'Complete' || val === 'Welcome sent') return 'background:#EAF3DE;color:#3B6D11;border-color:#C0DD97;';
+    if (val === 'Started') return 'background:#F3E9F6;color:#4A1B5C;border-color:#D9BCE6;';
     if (val === 'Requested Creation') return 'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4;';
     if (val === 'Sent') return 'background:#FAEEDA;color:#854F0B;border-color:#FAC775;';
     return 'background:#FAEEDA;color:#854F0B;border-color:#FAC775;';
@@ -2550,9 +2552,12 @@
 
     function stageForCandidate(sc) {
       if (isDeclined(sc)) return 'Declined / No show';
+      // A task still in progress (e.g. Brinks Credentials still Pending) keeps
+      // the candidate in that task's section, even if their overall Status
+      // was marked Started - the individual task isn't done yet.
+      if (sc.nextStep) return sc.nextStep;
       if (hasStarted(sc)) return 'Started';
-      if (!sc.nextStep) return 'Day one ready';
-      return sc.nextStep;
+      return 'Day one ready';
     }
 
     var MARKET_ORDER = ['Rhode Island', 'Mass', 'Connecticut', 'Tennessee', 'Knoxville', 'Arkansas', 'Chattanooga'];
