@@ -270,31 +270,15 @@
   .form-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
   /* Availability grid */
-  .avail-row {
-    display: grid; grid-template-columns: 84px 1fr; align-items: start; gap: 8px;
-    padding: 7px 0; border-bottom: 0.5px solid var(--gray-border);
-  }
-  .avail-row:last-child { border-bottom: none; }
-  .avail-day {
-    font-size: 12px; font-weight: 600; color: var(--gray-text);
-    display: flex; flex-direction: column; gap: 1px; padding-top: 4px;
-  }
-  .avail-hours { font-size: 9.5px; font-weight: 500; color: var(--gray-muted); white-space: nowrap; }
-  .avail-controls { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-  .avail-modes { display: flex; gap: 6px; flex-wrap: wrap; }
-  .avail-mode-btn {
-    font-size: 11px; padding: 5px 11px; border-radius: 8px;
+  .avail-row { display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 8px; }
+  .avail-day { font-size: 12px; font-weight: 600; color: var(--gray-text); }
+  .avail-shifts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .avail-shift-btn {
+    font-size: 11px; padding: 4px 10px; border-radius: 8px;
     border: 1.5px solid var(--gray-border); background: #fff;
     color: var(--gray-text); cursor: pointer; font-family: 'Montserrat', sans-serif;
   }
-  .avail-mode-btn.selected { background: var(--purple); color: #fff; border-color: var(--purple); }
-  .avail-times { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .avail-time-select {
-    font-family: 'Montserrat', sans-serif; font-size: 11.5px;
-    padding: 5px 8px; border-radius: 8px; border: 1.5px solid var(--gray-border);
-    background: #fff; color: var(--gray-text); cursor: pointer;
-  }
-  .avail-dash { font-size: 11px; color: var(--gray-muted); }
+  .avail-shift-btn.selected { background: var(--purple); color: #fff; border-color: var(--purple); }
   .avail-off-btn {
     font-size: 11px; padding: 4px 10px; border-radius: 8px;
     border: 1.5px solid var(--gray-border); background: #fff;
@@ -503,25 +487,6 @@
   }
   .mkt-group.collapsed .mkt-chev { transform: rotate(0deg); }
   .mkt-group.collapsed .mkt-body { display: none; }
-  .view-stage-head {
-    display: flex; align-items: center; gap: 9px;
-    margin: 14px 0 2px; padding: 0 2px;
-  }
-  .view-stage-head:first-child { margin-top: 0; }
-  .view-stage-name {
-    font-family: 'Bebas Neue', sans-serif; letter-spacing: 1.4px;
-    font-size: 14px; color: var(--purple);
-  }
-  .stage-new {
-    flex-shrink: 0; background: var(--magenta); color: #fff;
-    font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px;
-    padding: 3px 7px; border-radius: 999px; line-height: 1;
-  }
-  .stage-num {
-    width: 19px; height: 19px; border-radius: 50%; flex-shrink: 0;
-    background: var(--purple); color: #fff; font-size: 10.5px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-  }
   .mkt-name {
     font-family: 'Bebas Neue', sans-serif; letter-spacing: 1.4px;
     font-size: 15px; color: var(--purple);
@@ -1151,14 +1116,10 @@
           <select class="admin-filter-select" id="admin-coach-filter" onchange="setAdminFilter('coach', this.value)">
             <option value="">All coaches</option>
           </select>
-          <select class="admin-filter-select" id="admin-market-filter" onchange="setAdminFilter('market', this.value)">
-            <option value="">All markets</option>
-          </select>
           <select class="admin-filter-select" id="admin-status-filter" onchange="setAdminFilter('status', this.value)">
             <option value="all">All statuses</option>
             <option value="active">Active only</option>
             <option value="started">Started</option>
-            <option value="didnotstart">Did not start</option>
             <option value="declined">Declined / no show</option>
           </select>
         </div>
@@ -1229,7 +1190,7 @@
   var TASKS = [
     { key: "ClearIdentification", label: "Clear identification", choices: ["Sent", "Pending", "Complete"] },
     { key: "OfferLetter", label: "Offer letter", choices: ["Sent", "Pending", "Complete"] },
-    { key: "NTIDCreated", label: "NTID created", choices: ["Pending", "Complete"] },
+    { key: "NTIDCreated", label: "NTID created", choices: ["Sent", "Pending", "Complete"] },
     { key: "OnboardingStatus", label: "Onboarding (paperwork)", choices: ["Sent", "Pending", "Complete"] },
     { key: "BrinksCredentials", label: "Brinks credentials", choices: ["Requested Creation", "Pending", "Complete"] },
     { key: "ReadyForDayOne", label: "Ready for day one", choices: ["Pending", "Complete", "Started"] }
@@ -1507,38 +1468,7 @@
   }
 
   var DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-
-  // Store trading hours. Sunday runs later than 5pm at mall locations, so the
-  // Sunday range extends to 6:30pm and non-mall stores simply won't use the
-  // later slots. Times are in minutes from midnight.
-  var STORE_HOURS = {
-    Monday:    { open: 9 * 60 + 30,  close: 19 * 60 + 30 },
-    Tuesday:   { open: 9 * 60 + 30,  close: 19 * 60 + 30 },
-    Wednesday: { open: 9 * 60 + 30,  close: 19 * 60 + 30 },
-    Thursday:  { open: 9 * 60 + 30,  close: 19 * 60 + 30 },
-    Friday:    { open: 9 * 60 + 30,  close: 19 * 60 + 30 },
-    Saturday:  { open: 9 * 60 + 30,  close: 19 * 60 + 30 },
-    Sunday:    { open: 10 * 60 + 45, close: 18 * 60 + 30 }
-  };
-
-  function minutesToLabel(mins) {
-    var h = Math.floor(mins / 60), m = mins % 60;
-    var ampm = h >= 12 ? 'PM' : 'AM';
-    var h12 = h % 12; if (h12 === 0) h12 = 12;
-    return h12 + ':' + ('0' + m).slice(-2) + ' ' + ampm;
-  }
-
-  // Opening time first, then every half hour on the :00 / :30, and always the
-  // closing time - so Sunday reads 10:45, 11:00, 11:30 ... 6:00, 6:30.
-  function timeSlotsForDay(day) {
-    var hours = STORE_HOURS[day];
-    var slots = [hours.open];
-    var t = hours.open + (30 - (hours.open % 30)) % 30;
-    if (t === hours.open) t += 30;
-    while (t < hours.close) { slots.push(t); t += 30; }
-    if (slots[slots.length - 1] !== hours.close) slots.push(hours.close);
-    return slots;
-  }
+  var SHIFTS = ['Open','Opening','Mid','Closing','Off'];
 
   function buildAvailabilityGrid() {
     var container = document.getElementById('availability-rows');
@@ -1546,81 +1476,41 @@
     var html = '';
     for (var i = 0; i < DAYS.length; i++) {
       var day = DAYS[i];
-      var hours = STORE_HOURS[day];
-      var slots = timeSlotsForDay(day);
-
-      html += '<div class="avail-row" id="avail-row-' + day + '" data-mode="">';
-      html += '<div class="avail-day">' + day.substring(0, 3) +
-              '<span class="avail-hours">' + minutesToLabel(hours.open) + '&ndash;' +
-              minutesToLabel(hours.close) + '</span></div>';
-
-      html += '<div class="avail-controls">';
-      html += '<div class="avail-modes">';
-      html += '<button type="button" class="avail-mode-btn" data-day="' + day + '" data-mode="all" onclick="setAvailMode(this)">All day</button>';
-      html += '<button type="button" class="avail-mode-btn" data-day="' + day + '" data-mode="times" onclick="setAvailMode(this)">Set times</button>';
-      html += '<button type="button" class="avail-off-btn" data-day="' + day + '" data-mode="off" onclick="setAvailMode(this)">Off</button>';
-      html += '</div>';
-
-      html += '<div class="avail-times" id="avail-times-' + day + '" style="display:none;">';
-      html += '<select class="avail-time-select" id="avail-from-' + day + '">';
-      for (var s = 0; s < slots.length - 1; s++) {
-        html += '<option value="' + slots[s] + '">' + minutesToLabel(slots[s]) + '</option>';
+      html += '<div class="avail-row" id="avail-row-' + day + '">';
+      html += '<div class="avail-day">' + day.substring(0,3) + '</div>';
+      html += '<div class="avail-shifts">';
+      for (var j = 0; j < SHIFTS.length; j++) {
+        var shift = SHIFTS[j];
+        var cls = shift === 'Off' ? 'avail-off-btn' : 'avail-shift-btn';
+        html += '<button type="button" class="' + cls + '" data-day="' + day + '" data-shift="' + shift + '" onclick="toggleShift(this)">' + shift + '</button>';
       }
-      html += '</select>';
-      html += '<span class="avail-dash">to</span>';
-      html += '<select class="avail-time-select" id="avail-to-' + day + '">';
-      for (var t = 1; t < slots.length; t++) {
-        var selAttr = (t === slots.length - 1) ? ' selected' : '';
-        html += '<option value="' + slots[t] + '"' + selAttr + '>' + minutesToLabel(slots[t]) + '</option>';
-      }
-      html += '</select>';
-      html += '</div>';
-
       html += '</div></div>';
     }
     container.innerHTML = html;
   }
 
-  function setAvailMode(btn) {
+  function toggleShift(btn) {
     var day = btn.getAttribute('data-day');
-    var mode = btn.getAttribute('data-mode');
+    // Clear other selections for this day
     var row = document.getElementById('avail-row-' + day);
-    if (!row) return;
-
-    // tapping the active mode again clears the day back to unset
-    if (row.getAttribute('data-mode') === mode) mode = '';
-    row.setAttribute('data-mode', mode);
-
     var btns = row.querySelectorAll('button');
     for (var i = 0; i < btns.length; i++) {
-      var base = btns[i].getAttribute('data-mode') === 'off' ? 'avail-off-btn' : 'avail-mode-btn';
-      btns[i].className = (btns[i].getAttribute('data-mode') === mode) ? base + ' selected' : base;
+      btns[i].className = btns[i].getAttribute('data-shift') === 'Off' ? 'avail-off-btn' : 'avail-shift-btn';
     }
-
-    document.getElementById('avail-times-' + day).style.display =
-      (mode === 'times') ? 'flex' : 'none';
+    // Select this one
+    var isOff = btn.getAttribute('data-shift') === 'Off';
+    btn.className = (isOff ? 'avail-off-btn' : 'avail-shift-btn') + ' selected';
   }
 
-  // Written as "Mon: All day, Tue: 9:30 AM-2:00 PM, Wed: Off" so it stays
-  // readable in SharePoint and can still be parsed against the Store Roster.
   function getAvailabilityValue() {
     var parts = [];
     for (var i = 0; i < DAYS.length; i++) {
       var day = DAYS[i];
       var row = document.getElementById('avail-row-' + day);
       if (!row) continue;
-      var mode = row.getAttribute('data-mode');
-      var abbr = day.substring(0, 3);
-
-      if (mode === 'all') {
-        parts.push(abbr + ': All day');
-      } else if (mode === 'off') {
-        parts.push(abbr + ': Off');
-      } else if (mode === 'times') {
-        var from = parseInt(document.getElementById('avail-from-' + day).value, 10);
-        var to = parseInt(document.getElementById('avail-to-' + day).value, 10);
-        if (to <= from) continue;
-        parts.push(abbr + ': ' + minutesToLabel(from) + '-' + minutesToLabel(to));
+      var selected = row.querySelector('button.selected');
+      if (selected && selected.getAttribute('data-shift') !== 'Off') {
+        parts.push(day.substring(0,3) + ':' + selected.getAttribute('data-shift'));
       }
     }
     return parts.join(', ');
@@ -1837,8 +1727,7 @@
 
     var shirtSizeVal = document.getElementById('f-shirtsize').value;
     if (shirtSizeVal === 'Other (note size below)') {
-      var otherSize = document.getElementById('f-shirtsize-other').value.trim();
-      shirtSizeVal = otherSize ? 'Other: ' + otherSize : '';
+      shirtSizeVal = 'Other: ' + document.getElementById('f-shirtsize-other').value;
     }
 
     var cleanName = titleCaseName(document.getElementById('f-name').value);
@@ -2091,36 +1980,12 @@
     return c.tasks.ReadyForDayOne === 'Complete';
   }
 
-  // "Started" lives in two places: the Candidate Status field and the
-  // Ready for day one task. Either one counts, so a candidate lands in the
-  // right group whichever field the person happened to set.
   function hasStarted(c) {
-    return c.candidateStatus === 'Started' || c.tasks.ReadyForDayOne === 'Started';
+    return c.candidateStatus === 'Started';
   }
 
   function isDeclined(c) {
     return c.candidateStatus === 'Declined' || c.candidateStatus === 'No Show';
-  }
-
-  // Freshly submitted: every task still sits at its default "Pending", so no
-  // one has picked this candidate up yet. As soon as any task moves off
-  // Pending they drop into whichever step they're actually on.
-  function isNewSubmission(c) {
-    for (var i = 0; i < TASKS.length; i++) {
-      if (c.tasks[TASKS[i].key] !== 'Pending') return false;
-    }
-    return true;
-  }
-
-  // Accepted the offer but never made it to day one - tracked separately from
-  // Declined (turned the offer down) so the two can be reported apart.
-  function didNotStart(c) {
-    return c.candidateStatus === 'Did Not Start';
-  }
-
-  // Anyone no longer moving toward a start date, for stats and the calendar.
-  function outOfPipeline(c) {
-    return isDeclined(c) || didNotStart(c);
   }
 
   function isOverdue(c) {
@@ -2155,7 +2020,6 @@
     if (status === 'Pending') return '#FAC775';
     if (status === 'Requested Creation') return '#378ADD';
     if (status === 'Sent') return '#FAC775';
-    if (status === 'Welcome sent') return '#5DCAA5';
     return '#EEEEEE';
   }
 
@@ -2178,24 +2042,11 @@
     return false;
   }
 
-  // Board pool: everything this user may see except declined. Keeps people
-  // who have started so they appear under "Already started" rather than
-  // silently vanishing off the coach and manager view.
-  function getBoardCandidates() {
-    var out = [];
-    for (var i = 0; i < allCandidates.length; i++) {
-      var c = allCandidates[i];
-      if (isDeclined(c)) continue;   // did-not-start stays, in its own group
-      if (isVisibleToCurrentUser(c)) out.push(c);
-    }
-    return out;
-  }
-
   function getActiveCandidates() {
     var active = [];
     for (var i = 0; i < allCandidates.length; i++) {
       var c = allCandidates[i];
-      if (hasStarted(c) || outOfPipeline(c)) continue;
+      if (hasStarted(c) || isDeclined(c)) continue;
       if (isVisibleToCurrentUser(c)) active.push(c);
     }
     return active;
@@ -2207,7 +2058,7 @@
   function getCalendarCandidates() {
     var out = [];
     for (var i = 0; i < allCandidates.length; i++) {
-      if (!outOfPipeline(allCandidates[i])) out.push(allCandidates[i]);
+      if (!isDeclined(allCandidates[i])) out.push(allCandidates[i]);
     }
     return out;
   }
@@ -2266,7 +2117,7 @@
   }
 
   function renderCounts() {
-    var pool = getBoardCandidates();
+    var pool = getActiveCandidates();
     var overdueCount = 0, readyCount = 0;
     for (var i = 0; i < pool.length; i++) {
       if (isOverdue(pool[i])) overdueCount++;
@@ -2279,7 +2130,7 @@
 
   function renderCandidates() {
     var list = document.getElementById('candidates-list');
-    var pool = getBoardCandidates();
+    var pool = getActiveCandidates();
     var filtered = [];
     for (var i = 0; i < pool.length; i++) {
       var c = pool[i];
@@ -2300,52 +2151,12 @@
       return;
     }
 
-    // Same stage grouping the admin tab uses, so coaches and managers see
-    // their people organised by the step each one is on.
-    var vBuckets = {};
-    for (var vb = 0; vb < filtered.length; vb++) {
-      var vKey = candidateStageKey(filtered[vb]);
-      if (!vBuckets[vKey]) vBuckets[vKey] = [];
-      vBuckets[vKey].push(filtered[vb]);
-    }
-
-    var vOrder = stageOrder();
-    var ordered = [];
-    for (var vo = 0; vo < vOrder.length; vo++) {
-      var vGroup = vBuckets[vOrder[vo]];
-      if (!vGroup || vGroup.length === 0) continue;
-
-      vGroup.sort(function (a, b) {
-        var da = daysUntilStart(a), db = daysUntilStart(b);
-        if (da === null && db === null) return String(a.name).localeCompare(b.name);
-        if (da === null) return 1;
-        if (db === null) return -1;
-        return da - db;
-      });
-
-      ordered.push({ header: STAGE_META[vOrder[vo]], count: vGroup.length });
-      for (var vg = 0; vg < vGroup.length; vg++) ordered.push({ cand: vGroup[vg] });
-    }
-
     var html = '';
-    for (var j = 0; j < ordered.length; j++) {
-      if (ordered[j].header) {
-        var vh = ordered[j].header;
-        html += '<div class="view-stage-head">';
-        if (vh.isNew) html += '<span class="stage-new">NEW</span>';
-        else if (vh.step) html += '<span class="stage-num">' + vh.step + '</span>';
-        html += '<span class="view-stage-name">' + escapeHtml(vh.label).toUpperCase() + '</span>';
-        html += '<span class="mkt-pill">' + ordered[j].count + '</span>';
-        html += '</div>';
-        continue;
-      }
-      var cand = ordered[j].cand;
-      var flagged = didNotStart(cand);
-      var chip = flagged
-        ? { text: 'Did not start', bg: '#FBEEDC', color: '#8A5A00' }
-        : statusChip(cand);
-      var av = flagged ? { bg: '#FBEEDC', color: '#8A5A00' } : avatarColors(cand);
-      var stripe = flagged ? '#C77800' : stripeColor(cand);
+    for (var j = 0; j < filtered.length; j++) {
+      var cand = filtered[j];
+      var chip = statusChip(cand);
+      var av = avatarColors(cand);
+      var stripe = stripeColor(cand);
 
       html += '<div class="candidate-card" id="view-card-' + cand.id + '">';
       html += '<div class="stripe" style="background:' + stripe + ';"></div>';
@@ -2354,7 +2165,7 @@
       html += '<div class="candidate-top" onclick="toggleViewCard(\'' + cand.id + '\')" style="cursor:pointer;">';
       html += '<div class="avatar" style="background:' + av.bg + '; color:' + av.color + ';">' + cand.initials + '</div>';
       html += '<div class="candidate-info">';
-      html += '<div class="candidate-name"' + (flagged ? ' style="color:#8A8780;"' : '') + '>' + cand.name + '</div>';
+      html += '<div class="candidate-name">' + cand.name + '</div>';
       html += '<div class="candidate-meta">' + cand.position + ' &middot; ' + cand.market + '</div>';
       html += '</div>';
       html += '<div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">';
@@ -2365,6 +2176,18 @@
 
       // Expanded detail
       html += '<div class="view-card-detail" style="display:none; padding-top:10px; border-top:0.5px solid var(--gray-border); margin-top:10px;">';
+      if (cand.phone) {
+        html += '<div style="display:flex; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:0.5px solid var(--gray-border);">';
+        html += '<span style="font-size:12px; color:var(--gray-text);">Phone</span>';
+        html += '<span style="font-size:12px; color:var(--gray-muted);">' + cand.phone + '</span>';
+        html += '</div>';
+      }
+      if (cand.email) {
+        html += '<div style="display:flex; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:0.5px solid var(--gray-border);">';
+        html += '<span style="font-size:12px; color:var(--gray-text);">Email</span>';
+        html += '<span style="font-size:12px; color:var(--gray-muted);">' + cand.email + '</span>';
+        html += '</div>';
+      }
       for (var k = 0; k < TASKS.length; k++) {
         var task = TASKS[k];
         var st = cand.tasks[task.key];
@@ -2477,7 +2300,7 @@
   // ---------------- ADMIN: CANDIDATE TASK EDITING ----------------
   // ---------------- ADMIN: FILTERS + COLLAPSE STATE ----------------
   var ADMIN_COLLAPSE_KEY = "newhirehub_admin_collapsed_v1";
-  var adminFilters = { search: "", coach: "", market: "", status: "all" };
+  var adminFilters = { search: "", coach: "", status: "all" };
 
   function loadCollapsedMarkets() {
     try {
@@ -2504,21 +2327,18 @@
   }
 
   function clearAdminFilters() {
-    adminFilters = { search: "", coach: "", market: "", status: "all" };
+    adminFilters = { search: "", coach: "", status: "all" };
     var s = document.getElementById('admin-search');
     var cf = document.getElementById('admin-coach-filter');
-    var mf = document.getElementById('admin-market-filter');
     var sf = document.getElementById('admin-status-filter');
     if (s) s.value = '';
     if (cf) cf.value = '';
-    if (mf) mf.value = '';
     if (sf) sf.value = 'all';
     renderAdminCandidates();
   }
 
   function adminFiltersActive() {
-    return adminFilters.search !== '' || adminFilters.coach !== '' ||
-           adminFilters.market !== '' || adminFilters.status !== 'all';
+    return adminFilters.search !== '' || adminFilters.coach !== '' || adminFilters.status !== 'all';
   }
 
   function candidateCoach(c) {
@@ -2528,9 +2348,7 @@
   }
 
   function matchesAdminFilters(c) {
-    if (adminFilters.market && (c.market || '') !== adminFilters.market) return false;
-    if (adminFilters.status === 'active' && (outOfPipeline(c) || hasStarted(c))) return false;
-    if (adminFilters.status === 'didnotstart' && !didNotStart(c)) return false;
+    if (adminFilters.status === 'active' && (isDeclined(c) || hasStarted(c))) return false;
     if (adminFilters.status === 'started' && !hasStarted(c)) return false;
     if (adminFilters.status === 'declined' && !isDeclined(c)) return false;
 
@@ -2547,29 +2365,6 @@
       if (hay.indexOf(q) === -1) return false;
     }
     return true;
-  }
-
-  function populateMarketFilter() {
-    var sel = document.getElementById('admin-market-filter');
-    if (!sel) return;
-    var markets = [];
-    for (var i = 0; i < allCandidates.length; i++) {
-      var mk = allCandidates[i].market || '';
-      if (mk && markets.indexOf(mk) === -1) markets.push(mk);
-    }
-    markets.sort();
-    var sig = markets.join('|');
-    if (sel.getAttribute('data-sig') !== sig) {
-      sel.setAttribute('data-sig', sig);
-      var html = '<option value="">All markets</option>';
-      for (var m = 0; m < markets.length; m++) {
-        html += '<option value="' + escapeAttr(markets[m]) + '">' + escapeHtml(markets[m]) + '</option>';
-      }
-      sel.innerHTML = html;
-    }
-    sel.value = adminFilters.market;
-    if (sel.value !== adminFilters.market) { adminFilters.market = ''; sel.value = ''; }
-    sel.className = 'admin-filter-select' + (adminFilters.market ? ' filtered' : '');
   }
 
   function populateCoachFilter() {
@@ -2649,7 +2444,7 @@
   // overdueDays is still hardcoded to 0 upstream, so "behind" is derived from
   // the start date instead: starting within a week and not day-one ready.
   function needsAttention(c) {
-    if (outOfPipeline(c) || hasStarted(c) || isReady(c)) return false;
+    if (isDeclined(c) || hasStarted(c) || isReady(c)) return false;
     if (isOverdue(c)) return true;
     var d = daysUntilStart(c);
     return d !== null && d <= 7;
@@ -2675,46 +2470,9 @@
     return brinksBlockers(c).length === 0;
   }
 
-  // Group keys, in the order they appear in the admin list.
-  var STAGE_META = (function () {
-    var meta = {
-      "__new": { label: "Newly added", step: 0, isNew: true },
-      "__started": { label: "Already started", step: 0 },
-      "__ready": { label: "Day one ready", step: 0 },
-      "__didnotstart": { label: "Did not start", step: 0 },
-      "__declined": { label: "Declined / no show", step: 0 }
-    };
-    for (var i = 0; i < TASKS.length; i++) {
-      meta["task:" + TASKS[i].key] = { label: TASKS[i].label, step: i + 1 };
-    }
-    return meta;
-  })();
-
-  function stageOrder() {
-    var order = ["__new"];
-    for (var i = 0; i < TASKS.length; i++) order.push("task:" + TASKS[i].key);
-    order.push("__ready");
-    order.push("__started");
-    order.push("__didnotstart");
-    order.push("__declined");
-    return order;
-  }
-
-  function candidateStageKey(c) {
-    if (isDeclined(c)) return "__declined";
-    if (didNotStart(c)) return "__didnotstart";
-    if (hasStarted(c)) return "__started";
-    if (isNewSubmission(c)) return "__new";
-    for (var i = 0; i < TASKS.length; i++) {
-      if (c.tasks[TASKS[i].key] !== "Complete") return "task:" + TASKS[i].key;
-    }
-    return "__ready";
-  }
-
   function taskPillStyle(val) {
     if (val === 'Complete' || val === 'Started') return 'background:#EAF3DE;color:#3B6D11;border-color:#C0DD97;';
     if (val === 'Requested Creation') return 'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4;';
-    if (val === 'Welcome sent') return 'background:#E1F5EE;color:#0F6E56;border-color:#A8DFCC;';
     if (val === 'Sent') return 'background:#FAEEDA;color:#854F0B;border-color:#FAC775;';
     return 'background:#FAEEDA;color:#854F0B;border-color:#FAC775;';
   }
@@ -2731,7 +2489,6 @@
     if (!container) return;
 
     populateCoachFilter();
-    populateMarketFilter();
 
     var coachSel = document.getElementById('admin-coach-filter');
     var statusSel = document.getElementById('admin-status-filter');
@@ -2769,67 +2526,64 @@
       return;
     }
 
-    // Grouped by the step each candidate is stuck on. TASKS is in sequence, so
-    // a candidate's stage is simply their first task that isn't Complete.
-    var buckets = {};
+    var markets = {};
+    var MARKET_ORDER = ['Rhode Island', 'Mass', 'Connecticut', 'Tennessee', 'Knoxville', 'Arkansas', 'Chattanooga'];
     for (var g = 0; g < visible.length; g++) {
-      var key = candidateStageKey(visible[g]);
-      if (!buckets[key]) buckets[key] = [];
-      buckets[key].push(visible[g]);
+      var mkt = visible[g].market || 'Other';
+      if (!markets[mkt]) markets[mkt] = [];
+      markets[mkt].push(visible[g]);
     }
 
-    var stageKeys = stageOrder();
+    var marketKeys = Object.keys(markets).sort(function (a, b) {
+      var ai = MARKET_ORDER.indexOf(a), bi = MARKET_ORDER.indexOf(b);
+      if (ai === -1) ai = 99;
+      if (bi === -1) bi = 99;
+      if (ai !== bi) return ai - bi;
+      return a.localeCompare(b);
+    });
 
-    for (var mk = 0; mk < stageKeys.length; mk++) {
-      var stageKey = stageKeys[mk];
-      var groupCandidates = buckets[stageKey];
-      if (!groupCandidates || groupCandidates.length === 0) continue;
+    for (var mk = 0; mk < marketKeys.length; mk++) {
+      var marketName = marketKeys[mk];
+      var marketCandidates = markets[marketName];
 
-      // soonest start date first - whoever is closest to day one is most urgent
-      groupCandidates.sort(function (a, b) {
-        var da = daysUntilStart(a), db = daysUntilStart(b);
-        if (da === null && db === null) return String(a.name).localeCompare(b.name);
-        if (da === null) return 1;
-        if (db === null) return -1;
-        return da - db;
+      // Keep active/in-process candidates on top; Started candidates sink to
+      // the bottom of their market group. Array.sort is stable in modern JS
+      // engines, so relative order within each group (active vs started) is preserved.
+      marketCandidates = marketCandidates.slice().sort(function (a, b) {
+        return (hasStarted(a) ? 1 : 0) - (hasStarted(b) ? 1 : 0);
       });
 
-      var behindCount = 0;
-      for (var mc = 0; mc < groupCandidates.length; mc++) {
-        if (needsAttention(groupCandidates[mc])) behindCount++;
+      var activeCount = 0, behindCount = 0;
+      for (var mc = 0; mc < marketCandidates.length; mc++) {
+        var mcand = marketCandidates[mc];
+        if (!isDeclined(mcand) && !hasStarted(mcand)) activeCount++;
+        if (needsAttention(mcand)) behindCount++;
       }
 
-      var meta = STAGE_META[stageKey];
       // filters force every matching group open, so results are never hidden
-      var isCollapsed = !filtering && !!collapsedMarkets[stageKey];
+      var isCollapsed = !filtering && !!collapsedMarkets[marketName];
 
       html += '<div class="mkt-group' + (isCollapsed ? ' collapsed' : '') + '">';
-      html += '<div class="mkt-head" onclick="toggleMarket(\'' + jsStr(stageKey) + '\')">';
+      html += '<div class="mkt-head" onclick="toggleMarket(\'' + jsStr(marketName) + '\')">';
       html += '<span class="mkt-chev">&#8250;</span>';
-      if (meta.isNew) {
-        html += '<span class="stage-new">NEW</span>';
-      } else if (meta.step) {
-        html += '<span class="stage-num">' + meta.step + '</span>';
-      }
-      html += '<span class="mkt-name">' + escapeHtml(meta.label).toUpperCase() + '</span>';
-      html += '<span class="mkt-pill">' + groupCandidates.length + '</span>';
+      html += '<span class="mkt-name">' + escapeHtml(marketName).toUpperCase() + '</span>';
+      html += '<span class="mkt-pill">' + activeCount + ' active</span>';
       html += '<div style="flex:1;"></div>';
       if (behindCount > 0) {
         html += '<span class="mkt-pill" style="background:#FCEBEB;color:#A32D2D;">' + behindCount + ' behind</span>';
+      } else {
+        html += '<span class="mkt-pill" style="background:#EAF3DE;color:#3B6D11;">on track</span>';
       }
       html += '</div>';
 
       html += '<div class="mkt-body">';
 
-      for (var ci = 0; ci < groupCandidates.length; ci++) {
-        var c = groupCandidates[ci];
+      for (var ci = 0; ci < marketCandidates.length; ci++) {
+        var c = marketCandidates[ci];
         var doneCount = taskCompleteCount(c);
         var av = avatarColors(c);
         var declined = isDeclined(c);
-        var dns = didNotStart(c);
-        var muted = declined || dns;
         var cardStyle = declined ? ' style="border-left:3px solid #E24B4A;"'
-                      : dns ? ' style="border-left:3px solid #C77800;"'
                       : hasStarted(c) ? ' style="border-left:3px solid #639922;"' : '';
 
         html += '<div class="admin-candidate-card' + (expandedIds['admin-card-' + c.id] ? ' expanded' : '') + '" id="admin-card-' + c.id + '"' + cardStyle + '>';
@@ -2837,13 +2591,11 @@
         html += '<div class="admin-candidate-summary" onclick="toggleAdminCard(\'' + jsStr(c.id) + '\')">';
         html += '<div class="admin-avatar" style="background:' + av.bg + ';color:' + av.color + ';">' + escapeHtml(c.initials || candidateInitials(c.name)) + '</div>';
         html += '<div class="admin-summary-info">';
-        html += '<div class="admin-summary-name"' + (muted ? ' style="color:#8A8780;"' : '') + '>' + escapeHtml(c.name) + '</div>';
+        html += '<div class="admin-summary-name"' + (declined ? ' style="color:#8A8780;"' : '') + '>' + escapeHtml(c.name) + '</div>';
 
         var metaBits = [];
-        if (c.homeLocation) metaBits.push(escapeHtml(c.homeLocation));
-        else if (c.market) metaBits.push(escapeHtml(c.market));
         if (c.position) metaBits.push(escapeHtml(c.position));
-        if (muted) metaBits.push(escapeHtml(c.candidateStatus));
+        if (declined) metaBits.push(escapeHtml(c.candidateStatus));
         else if (hasStarted(c)) metaBits.push('Started');
         else if (c.startDate) metaBits.push('Starts ' + escapeHtml(c.startDate));
         var coachName = candidateCoach(c);
@@ -2851,16 +2603,15 @@
         html += '<div class="admin-summary-meta">' + metaBits.join(' &middot; ') + '</div>';
 
         html += '</div>';
-        if (muted) {
-          var mutedChip = declined ? 'background:#FCEBEB;color:#A32D2D;' : 'background:#FBEEDC;color:#8A5A00;';
-          html += '<span class="admin-count-chip" style="' + mutedChip + '">' + escapeHtml(c.candidateStatus) + '</span>';
+        if (declined) {
+          html += '<span class="admin-count-chip" style="background:#FCEBEB;color:#A32D2D;">' + escapeHtml(c.candidateStatus) + '</span>';
         } else {
           html += '<span class="admin-count-chip" style="' + countChipStyle(doneCount, TASKS.length) + '">' + doneCount + ' of ' + TASKS.length + '</span>';
         }
         html += '<span class="admin-chevron">&#8250;</span>';
         html += '</div>';
 
-        if (!muted) {
+        if (!declined) {
           html += '<div class="admin-mini-progress">';
           for (var p = 0; p < TASKS.length; p++) {
             html += '<div class="admin-mini-seg" style="background:' + segColor(c.tasks[TASKS[p].key]) + ';"></div>';
@@ -2871,7 +2622,9 @@
         html += '<div class="admin-candidate-detail">';
 
         html += '<div class="admin-order-info">';
-        html += '<div class="admin-order-field"><label>STATUS</label><select onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidateStatus\', \'candidateStatus\', this.value)"><option value="Active"' + (c.candidateStatus === "Active" ? " selected" : "") + '>Active</option><option value="Declined"' + (c.candidateStatus === "Declined" ? " selected" : "") + '>Declined</option><option value="No Show"' + (c.candidateStatus === "No Show" ? " selected" : "") + '>No Show</option><option value="Did Not Start"' + (c.candidateStatus === "Did Not Start" ? " selected" : "") + '>Did Not Start</option><option value="Started"' + (c.candidateStatus === "Started" ? " selected" : "") + '>Started</option></select></div>';
+        html += '<div class="admin-order-field"><label>PHONE</label><input type="text" value="' + escapeAttr(c.phone || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidatePhone\', \'phone\', this.value)"></div>';
+        html += '<div class="admin-order-field"><label>EMAIL</label><input type="text" value="' + escapeAttr(c.email || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidateEmail\', \'email\', this.value)"></div>';
+        html += '<div class="admin-order-field"><label>STATUS</label><select onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidateStatus\', \'candidateStatus\', this.value)"><option value="Active"' + (c.candidateStatus === "Active" ? " selected" : "") + '>Active</option><option value="Declined"' + (c.candidateStatus === "Declined" ? " selected" : "") + '>Declined</option><option value="No Show"' + (c.candidateStatus === "No Show" ? " selected" : "") + '>No Show</option><option value="Started"' + (c.candidateStatus === "Started" ? " selected" : "") + '>Started</option></select></div>';
         html += '<div class="admin-order-field"><label>START DATE</label><input type="text" value="' + escapeAttr(c.startDate || '') + '" placeholder="07/27/2026" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'StartDate\', \'startDate\', this.value)"></div>';
         html += '<div class="admin-order-field"><label>SHIRT SIZE</label><input type="text" value="' + escapeAttr(c.shirtSize || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'UniformShirtSize\', \'shirtSize\', this.value)"></div>';
         html += '<div class="admin-order-field"><label>NAME TAG</label><input type="text" value="' + escapeAttr(c.nameTag || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'NameTag\', \'nameTag\', this.value)"></div>';
@@ -2940,55 +2693,6 @@
     }
   }
 
-  // PATCH that reports what Microsoft actually said. A choice column rejects
-  // any value not in its choices list, and that comes back as a 400 with an
-  // "invalid" message rather than anything obvious in the UI.
-  function graphPatchFields(itemId, realFields) {
-    return getSiteId().then(function (siteId) {
-      return getListId(siteId).then(function (listId) {
-        var url = "https://graph.microsoft.com/v1.0/sites/" + siteId +
-                  "/lists/" + listId + "/items/" + itemId + "/fields";
-        return fetch(url, {
-          method: "PATCH",
-          headers: {
-            Authorization: "Bearer " + graphToken,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(realFields)
-        }).then(function (res) {
-          if (res.ok) return res.json();
-          return res.text().then(function (body) {
-            var detail = "";
-            try {
-              var p = JSON.parse(body);
-              if (p.error) detail = (p.error.code || "") + ": " + (p.error.message || "");
-            } catch (e) { detail = String(body).slice(0, 300); }
-            var err = new Error("HTTP " + res.status + (detail ? " - " + detail : ""));
-            err.status = res.status;
-            err.detail = detail;
-            throw err;
-          });
-        });
-      });
-    });
-  }
-
-  function writeFailureMessage(err, fieldLabel, value) {
-    var msg = 'Could not save ' + fieldLabel + '.\n\n';
-    if (err.status === 400) {
-      msg += 'SharePoint rejected the value "' + value + '".\n\n' +
-             'This usually means "' + value + '" is not one of the allowed ' +
-             'choices on that column in SharePoint. Open the list settings, ' +
-             'edit the column, and add it to the choices.\n\n';
-    } else if (err.status === 403) {
-      msg += 'Access denied - this account can read the list but not write to it.\n\n';
-    } else if (err.status === 401) {
-      msg += 'Sign-in expired. Use Switch account and sign in again.\n\n';
-    }
-    msg += 'Details: ' + (err.message || String(err));
-    return msg;
-  }
-
   function updateTaskStatus(itemId, taskKey, newValue) {
     if (taskKey === 'BrinksCredentials' && newValue === 'Requested Creation') {
       var blockers = brinksBlockers(findCandidate(itemId));
@@ -3009,12 +2713,20 @@
       return;
     }
 
-    var taskLabel = taskKey;
-    for (var t = 0; t < TASKS.length; t++) {
-      if (TASKS[t].key === taskKey) taskLabel = TASKS[t].label;
-    }
-
-    graphPatchFields(itemId, realFields).then(function () {
+    getSiteId().then(function (siteId) {
+      return getListId(siteId).then(function (listId) {
+        var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items/" + itemId + "/fields";
+        return fetch(url, {
+          method: "PATCH",
+          headers: {
+            Authorization: "Bearer " + graphToken,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(realFields)
+        });
+      });
+    }).then(function (res) {
+      if (!res.ok) throw new Error("Update failed: " + res.status);
       // update local cache so the UI reflects the change immediately
       for (var i = 0; i < allCandidates.length; i++) {
         if (allCandidates[i].id === itemId) {
@@ -3027,8 +2739,8 @@
       renderCandidates();
       renderAdminCandidates();
     }).catch(function (err) {
-      console.error('Task update failed:', realFields, err);
-      alert(writeFailureMessage(err, taskLabel, newValue));
+      console.error(err);
+      alert('Could not update this task. Please try again.');
       renderAdminCandidates(); // revert dropdown to last known state
     });
   }
@@ -3057,30 +2769,18 @@
       });
     }).then(function (res) {
       if (!res.ok) {
-        return res.text().then(function (body) {
-          var detail = "";
-          try {
-            var p = JSON.parse(body);
-            if (p.error) detail = (p.error.code || "") + ": " + (p.error.message || "");
-          } catch (e) { detail = String(body).slice(0, 300); }
-          var err = new Error("HTTP " + res.status + (detail ? " - " + detail : ""));
-          err.status = res.status;
-          throw err;
-        });
+        return res.text().then(function(t) { throw new Error("Update failed: " + res.status + " " + t); });
       }
       for (var i = 0; i < allCandidates.length; i++) {
         if (allCandidates[i].id === itemId) {
           allCandidates[i][localKey] = newValue;
         }
       }
-      renderStats();
-      renderCounts();
       renderCandidates();
-      renderAdminCandidates();
+      console.log('Saved ' + friendlyKey + ' = ' + newValue);
     }).catch(function (err) {
-      console.error('updateOrderField error:', friendlyKey, newValue, err);
-      alert(writeFailureMessage(err, friendlyKey, newValue));
-      renderAdminCandidates();
+      console.error('updateOrderField error:', err);
+      alert('Could not save ' + friendlyKey + ': ' + err.message);
     });
   }
 
