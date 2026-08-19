@@ -2553,14 +2553,13 @@
     function stageForCandidate(sc) {
       if (isDeclined(sc)) return 'Declined / No show';
 
-      // Walk tasks in pipeline order. The first task that isn't done decides
-      // the stage - except Ready for Day One's "Started" value gets its own
-      // dedicated section instead of being grouped with candidates who
-      // haven't been marked ready yet (still "Pending").
+      // General rule: a candidate stays in a task's section until that exact
+      // task is marked Complete (or Welcome sent) - nothing else moves them
+      // out, including a "Started" value on Ready for Day One or the overall
+      // candidate Status field.
       for (var ti = 0; ti < TASKS.length; ti++) {
         var tval = sc.tasks[TASKS[ti].key];
         if (isTaskDone(tval)) continue;
-        if (TASKS[ti].key === 'ReadyForDayOne' && tval === 'Started') return 'Started';
         return TASKS[ti].label;
       }
 
