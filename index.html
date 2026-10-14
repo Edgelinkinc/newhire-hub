@@ -677,6 +677,33 @@
     .admin-summary { grid-template-columns:repeat(4,1fr); }
   }
 
+
+/* ---- Landing page responsive ---- */
+#view-home .actions{display:grid;grid-template-columns:1fr;gap:10px;}
+#view-home .actions .action-tile{margin:0;width:100%;}
+@media (min-width:700px){
+  #view-home .header{padding-left:28px;padding-right:28px;}
+  #view-home .stats{margin:20px 28px 0;padding:22px 0;}
+  #view-home .stat .num{font-size:34px;}
+  #view-home .section-label{margin:26px 28px 12px;}
+  #view-home .actions{grid-template-columns:1fr 1fr;gap:16px;padding:0 28px 28px;margin:0;}
+  #view-home .action-tile{min-height:104px;padding:20px;}
+  #view-home .action-title{font-size:17px;}
+  #view-home .action-desc{font-size:13px;}
+}
+@media (min-width:1000px){
+  #view-home .header h1{font-size:34px;}
+  #view-home .stats,#view-home .section-label{margin-left:40px;margin-right:40px;}
+  #view-home .actions{padding-left:40px;padding-right:40px;}
+  #view-home .header{padding-left:40px;padding-right:40px;}
+  #view-home .stat .num{font-size:44px;}
+  #view-home .actions{grid-template-columns:repeat(4,1fr);gap:18px;}
+  #view-home .action-tile{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:14px;min-height:170px;padding:24px;}
+  #view-home .action-tile .action-chevron{position:absolute;right:20px;top:20px;}
+  #view-home .action-tile{position:relative;}
+  #view-home .action-icon{width:48px;height:48px;font-size:22px;}
+  #view-home .action-title{font-size:18px;}
+}
 </style>
 </head>
 <body>
