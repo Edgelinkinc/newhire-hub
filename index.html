@@ -709,6 +709,66 @@
 @media (min-width:700px){ #signin-screen{zoom:1.25;margin-top:1vh;border-radius:16px;box-shadow:0 8px 40px rgba(74,27,92,.12);} }
 @media (min-width:1100px){ #signin-screen{zoom:1.35;} }
 @media (min-width:1700px){ #signin-screen{zoom:1.45;} }
+
+  /* ===== RECRUITING ===== */
+  .rc-header { background: #fff; padding: 18px 16px 0; border-bottom: 0.5px solid var(--gray-border); }
+  .rc-header h2 { font-size: 18px; font-weight: 600; color: var(--purple); }
+  .rc-sub { font-size: 11px; color: var(--magenta); font-weight: 600; margin: 2px 0 12px; }
+  .rc-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .rc-stat { background: var(--purple-light); border-radius: 12px; padding: 8px 6px; text-align: center; }
+  .rc-stat .num { font-size: 18px; font-weight: 700; color: var(--purple); }
+  .rc-stat .label { font-size: 9px; color: var(--purple); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 1px; }
+  .rc-pills { display: flex; gap: 6px; flex-wrap: wrap; padding-bottom: 10px; }
+  .rc-pill { font-size: 11px; padding: 7px 12px; border-radius: 14px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--gray-border); background: #fff; color: var(--purple); font-family: 'Montserrat', sans-serif; min-height: 32px; }
+  .rc-pill.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+  .rc-filters { display: flex; gap: 8px; flex-wrap: wrap; padding-bottom: 12px; }
+  .rc-select { font-family: 'Montserrat', sans-serif; font-size: 12px; padding: 8px 10px; border: 1.5px solid var(--gray-border); border-radius: 10px; background: #fff; color: var(--gray-text); min-height: 38px; flex: 1 1 120px; }
+  .rc-list { padding: 14px 16px 24px; display: flex; flex-direction: column; gap: 10px; flex: 1; overflow-y: auto; background: var(--bg-page); }
+  .rc-card { background: #fff; border-radius: 16px; border: 0.5px solid var(--gray-border); padding: 14px; position: relative; overflow: hidden; }
+  .rc-card .stripe { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; }
+  .rc-top { display: flex; align-items: center; gap: 10px; padding-left: 6px; cursor: pointer; }
+  .rc-score { min-width: 46px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.5px; flex-shrink: 0; padding: 0 6px; }
+  .rc-score.hi { background: var(--purple); color: #fff; }
+  .rc-score.mid { background: #B0005A; color: #fff; }
+  .rc-score.lo { background: #6A5872; color: #fff; }
+  .rc-score.na { background: var(--purple-light); color: var(--purple); font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; }
+  .rc-flags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; padding-left: 62px; }
+  .rc-flag { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 8px; background: #FDF0DC; color: #7A4300; }
+  .rc-detail { display: none; margin-top: 12px; padding-top: 12px; border-top: 0.5px solid var(--gray-border); }
+  .rc-card.open .rc-detail { display: block; }
+  .rc-label { font-size: 10px; font-weight: 700; color: var(--gray-muted); letter-spacing: 0.6px; text-transform: uppercase; margin: 12px 0 6px; }
+  .rc-why { font-size: 12.5px; line-height: 1.5; background: var(--purple-light); color: var(--gray-text); border-radius: 10px; padding: 10px 12px; }
+  .rc-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .rc-day { border-radius: 8px; padding: 6px 2px; text-align: center; min-height: 48px; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+  .rc-day b { font-size: 10px; text-transform: uppercase; }
+  .rc-day span { font-size: 9.5px; line-height: 1.2; }
+  .rc-day.open { background: var(--purple); color: #fff; }
+  .rc-day.off { background: #F1EFF2; color: #6A5872; }
+  .rc-day.win { background: #FCEFF6; color: #8A0046; border: 1px solid #F3BCD8; }
+  .rc-day.bad { background: #FCEBEB; color: var(--red); border: 1px solid var(--red); }
+  .rc-row { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 0.5px solid var(--gray-border); font-size: 12px; }
+  .rc-row span:first-child { color: var(--gray-muted); }
+  .rc-row span:last-child { font-weight: 600; text-align: right; }
+  .rc-bar { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 3px 0; }
+  .rc-bar .track { flex: 0 0 90px; height: 7px; background: #EFE7F2; border-radius: 4px; overflow: hidden; }
+  .rc-bar .fill { height: 100%; background: var(--purple); }
+  .rc-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .rc-btn { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; padding: 11px 14px; min-height: 44px; border-radius: 10px; cursor: pointer; flex: 1 1 130px; text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+  .rc-btn.primary { background: var(--magenta); color: #fff; border: 0; }
+  .rc-btn.ghost { background: #fff; color: var(--purple); border: 1.5px solid var(--purple); }
+  .rc-btn.danger { background: #fff; color: var(--red); border: 1.5px solid #E5C2C2; }
+  .rc-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .rc-note { width: 100%; font-family: 'Montserrat', sans-serif; font-size: 12.5px; padding: 10px; border: 1.5px solid var(--gray-border); border-radius: 10px; resize: vertical; min-height: 54px; }
+  .rc-state { font-size: 12.5px; font-weight: 700; padding: 11px; border-radius: 10px; text-align: center; flex: 1 1 100%; }
+  .rc-banner { margin: 14px 16px 0; background: #FFF8E8; border: 1px solid #FAC775; color: #854F0B; border-radius: 12px; padding: 12px 14px; font-size: 12px; line-height: 1.5; }
+  .rc-q { background: #fff; border: 0.5px solid var(--gray-border); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+  .rc-q-tag { align-self: flex-start; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; padding: 3px 8px; border-radius: 6px; }
+  .rc-q-title { font-size: 13px; font-weight: 700; color: var(--gray-text); }
+  .rc-q-detail { font-size: 12px; color: #4E3D56; line-height: 1.45; }
+  .rc-offer-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+  .rc-run { display: grid; grid-template-columns: 120px 110px 1fr; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--gray-border); font-size: 12px; }
+  @media (max-width: 560px) { .rc-run { grid-template-columns: 1fr; gap: 2px; } .rc-offer-grid { grid-template-columns: 1fr; } }
+  @media (min-width: 700px) { .rc-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; } .rc-list > .empty-state, .rc-list > .loading { grid-column: 1 / -1; } }
 </style>
 </head>
 <body>
@@ -844,6 +904,14 @@
         </div>
         <div class="action-chevron">&#8250;</div>
       </button>
+      <button class="action-tile secondary" onclick="goToView('recruiting')">
+        <div class="action-icon">&#128203;</div>
+        <div class="action-text">
+          <div class="action-title">Recruiting</div>
+          <div class="action-desc">Review new applicants</div>
+        </div>
+        <div class="action-chevron">&#8250;</div>
+      </button>
       <button class="action-tile secondary" onclick="goToView('calendar')">
         <div class="action-icon">&#128197;</div>
         <div class="action-text">
@@ -864,7 +932,7 @@
 
     <div class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
-      <button class="nav-item active" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item active" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button><button class="nav-item" data-nav="recruiting" onclick="goToView(\'recruiting\')"><span class="icon">&#128203;</span><span class="label">Recruiting</span></button>
       <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
       <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
@@ -918,7 +986,7 @@
 
     <div class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
-      <button class="nav-item active" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item active" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button><button class="nav-item" data-nav="recruiting" onclick="goToView(\'recruiting\')"><span class="icon">&#128203;</span><span class="label">Recruiting</span></button>
       <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
       <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
@@ -935,7 +1003,7 @@
     </div>
     <div class="bottom-nav">
       <button class="nav-item active" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
-      <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button><button class="nav-item" data-nav="recruiting" onclick="goToView(\'recruiting\')"><span class="icon">&#128203;</span><span class="label">Recruiting</span></button>
       <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
       <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
@@ -963,13 +1031,57 @@
     </div>
     <div class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
-      <button class="nav-item active" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item active" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button><button class="nav-item" data-nav="recruiting" onclick="goToView(\'recruiting\')"><span class="icon">&#128203;</span><span class="label">Recruiting</span></button>
       <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
       <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
     </div>
   </div>
 
+
+  <!-- ================= RECRUITING VIEW ================= -->
+  <div class="view" id="view-recruiting">
+    <div class="rc-header">
+      <div class="header-row">
+        <h2>Recruiting</h2>
+        <div class="refresh-wrap">
+          <span class="refresh-stamp" id="rc-stamp"></span>
+          <button class="refresh-btn" onclick="loadRecruiting(true)" title="Refresh">&#8635;</button>
+        </div>
+      </div>
+      <div class="rc-sub" id="rc-sub">Applicants for your stores</div>
+      <div class="rc-stats">
+        <div class="rc-stat"><div class="num" id="rc-stat-new">-</div><div class="label">New</div></div>
+        <div class="rc-stat"><div class="num" id="rc-stat-returned">-</div><div class="label">Screened</div></div>
+        <div class="rc-stat"><div class="num" id="rc-stat-noresp">-</div><div class="label">No reply</div></div>
+        <div class="rc-stat"><div class="num" id="rc-stat-hr">-</div><div class="label">With HR</div></div>
+      </div>
+      <div class="rc-pills" id="rc-pills" role="group" aria-label="Filter by status"></div>
+      <div class="rc-filters">
+        <select class="rc-select" id="rc-store" onchange="setRcFilter('store', this.value)" aria-label="Store"><option value="">All my stores</option></select>
+        <select class="rc-select" id="rc-role" onchange="setRcFilter('role', this.value)" aria-label="Role"><option value="">All roles</option></select>
+        <select class="rc-select" id="rc-day" onchange="setRcFilter('day', this.value)" aria-label="Available day">
+          <option value="">Any day</option><option>Mon</option><option>Tue</option><option>Wed</option><option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option>
+        </select>
+        <select class="rc-select" id="rc-shift" onchange="setRcFilter('shift', this.value)" aria-label="Shift">
+          <option value="">Any shift</option><option value="opens">Can open</option><option value="closes">Can close</option><option value="allday">Open all day</option>
+        </select>
+        <select class="rc-select" id="rc-sort" onchange="setRcFilter('sort', this.value)" aria-label="Sort">
+          <option value="score">Score high to low</option><option value="newest">Newest first</option>
+        </select>
+      </div>
+    </div>
+    <div id="rc-setup"></div>
+    <div class="rc-list" id="rc-list"><div class="loading">Loading applicants...</div></div>
+    <div class="bottom-nav">
+      <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
+      <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item active" data-nav="recruiting" onclick="goToView('recruiting')"><span class="icon">&#128203;</span><span class="label">Recruiting</span></button>
+      <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
+      <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
+      <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
+    </div>
+  </div>
 
   <!-- ================= CALENDAR VIEW ================= -->
   <div class="view" id="view-calendar">
@@ -1009,7 +1121,7 @@
 
     <div class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
-      <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button><button class="nav-item" data-nav="recruiting" onclick="goToView(\'recruiting\')"><span class="icon">&#128203;</span><span class="label">Recruiting</span></button>
       <button class="nav-item active" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
       <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
@@ -1167,7 +1279,7 @@
 
     <div class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
-      <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button><button class="nav-item" data-nav="recruiting" onclick="goToView(\'recruiting\')"><span class="icon">&#128203;</span><span class="label">Recruiting</span></button>
       <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
       <button class="nav-item active" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
@@ -1192,7 +1304,7 @@
       </div>
       <div class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="goToView('home')"><span class="icon">&#8962;</span><span class="label">Home</span></button>
-      <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button>
+      <button class="nav-item" data-nav="candidates" onclick="goToView('candidates')"><span class="icon">&#128101;</span><span class="label">Candidates</span></button><button class="nav-item" data-nav="recruiting" onclick="goToView(\'recruiting\')"><span class="icon">&#128203;</span><span class="label">Recruiting</span></button>
       <button class="nav-item" data-nav="calendar" onclick="goToView('calendar')"><span class="icon">&#128197;</span><span class="label">Calendar</span></button>
       <button class="nav-item" data-nav="training" onclick="goToView('training')"><span class="icon">&#127891;</span><span class="label">Training</span></button>
       <button class="nav-item active" data-nav="admin" onclick="goToView('admin')"><span class="icon">&#9881;</span><span class="label">Admin</span></button>
@@ -1207,6 +1319,7 @@
 
       <div class="admin-tabs">
         <div class="admin-tab active" data-admintab="candidates" onclick="setAdminTab('candidates')">Candidates</div>
+        <div class="admin-tab" data-admintab="recruiting" onclick="setAdminTab('recruiting')">Recruiting</div>
         <div class="admin-tab" data-admintab="recipients" onclick="setAdminTab('recipients')">Email recipients</div>
         <div class="admin-tab" data-admintab="thresholds" onclick="setAdminTab('thresholds')">Day thresholds</div>
         <div class="admin-tab" data-admintab="diagnostics" onclick="setAdminTab('diagnostics')">Diagnostics</div>
@@ -1234,6 +1347,18 @@
         </div>
       </div>
 
+      <!-- Recruiting tab: pending offers, review queue, automation log (HR only) -->
+      <div class="admin-panel" id="admin-panel-recruiting">
+        <div class="candidates-list" style="display:flex; flex-direction:column; gap:12px; align-items:stretch; max-width:760px;">
+          <div class="admin-section-label">PENDING OFFERS &middot; selected by coaches and managers</div>
+          <div id="rc-offers"><div class="loading">Loading...</div></div>
+          <div class="admin-section-label" style="margin-top:8px;">REVIEW QUEUE &middot; HR only</div>
+          <div id="rc-queue" style="display:flex; flex-direction:column; gap:8px;"></div>
+          <div class="admin-section-label" style="margin-top:8px;">AUTOMATION LOG</div>
+          <div id="rc-runs" style="background:#fff; border:0.5px solid var(--gray-border); border-radius:14px; padding:4px 14px;"></div>
+        </div>
+      </div>
+
       <!-- Email recipients tab (backsheet) -->
       <div class="admin-panel" id="admin-panel-recipients">
         <div class="candidates-list" id="admin-recipients-list"></div>
@@ -1253,6 +1378,8 @@
               <option value="onboarding">EdgeLink Inc New Hire Onboarding Tracker</option>
               <option value="roster">EdgeLink Store Roster</option>
               <option value="emailsettings">EdgeLink Email Settings</option>
+              <option value="recruit">EdgeLink Recruiting Candidates</option>
+              <option value="recruitlog">EdgeLink Recruiting Log</option>
             </select>
           </div>
           <button class="form-submit" style="margin-bottom:14px;" onclick="runFieldDiagnostic()">Show real SharePoint field names</button>
@@ -1287,6 +1414,9 @@
     rosterListName: "EdgeLink Store Roster",
     emailSettingsListName: "EdgeLink Email Settings",
     payListName: "EdgeLink NHH Pay Rates",
+    recruitListName: "EdgeLink Recruiting Candidates",
+    recruitLogListName: "EdgeLink Recruiting Log",
+    storeHoursPath: "Recruiting/store-hours.json",
     redirectUri: window.location.href.split('#')[0]
   };
 
@@ -1579,6 +1709,7 @@
     loadStoreRoster();
     applyPositionFilterForCurrentUser();
     loadCandidates();
+    loadRecruiting();
     try {
       var lastView = sessionStorage.getItem('nhh_last_view');
       if (lastView && lastView !== 'home' && document.getElementById('view-' + lastView)) goToView(lastView);
@@ -2532,6 +2663,8 @@
       document.getElementById('admin-content').style.display = 'flex';
       renderAdminCandidates();
       loadPayRates();
+      loadRecruitAdminData();
+      renderAdminRecruiting();
       renderBacksheetRecipients();
       renderBacksheetThresholds();
     } else {
@@ -3282,7 +3415,8 @@
   function runFieldDiagnostic() {
     var output = document.getElementById('diagnostic-output');
     var sel = document.getElementById('diagnostic-list-select');
-    var listName = sel && sel.value === 'roster' ? CONFIG.rosterListName : sel && sel.value === 'emailsettings' ? CONFIG.emailSettingsListName : CONFIG.listName;
+    var listName = sel && sel.value === 'roster' ? CONFIG.rosterListName : sel && sel.value === 'emailsettings' ? CONFIG.emailSettingsListName :
+      sel && sel.value === 'recruit' ? CONFIG.recruitListName : sel && sel.value === 'recruitlog' ? CONFIG.recruitLogListName : CONFIG.listName;
     output.textContent = 'Loading ' + listName + '...';
 
     getSiteId().then(function (siteId) {
@@ -3342,6 +3476,7 @@
       populateStoreDropdowns();
       reapplyStoreSelection();
       renderRosterBanner();
+      renderRecruiting();
     }).catch(function (err) {
       rosterStatus = {
         state: "failed",
@@ -3876,6 +4011,7 @@
     try { if (viewName !== 'add-success') sessionStorage.setItem('nhh_last_view', viewName); } catch (e) {}
 
     if (viewName === 'calendar') renderCalendar();
+    if (viewName === 'recruiting') renderRecruiting();
 
     var navItems = document.querySelectorAll('.nav-item');
     for (var j = 0; j < navItems.length; j++) {
@@ -3884,6 +4020,1106 @@
         navItems[j].className = 'nav-item active';
       }
     }
+  }
+
+  // ===========================================================
+  // RECRUITING
+  // Applicants arrive from the scheduled inbox scan (resumes from email and
+  // Indeed) through the "NHH - Recruiting Intake" flow into the
+  // EdgeLink Recruiting Candidates list. Coaches and managers review and mark
+  // Selected; HR sets start date + pay and hands off to the onboarding tracker.
+  // Pay expectation and pay rate live only in the HR-only pay list.
+  // ===========================================================
+
+  // Internal column names on EdgeLink Recruiting Candidates. Columns were
+  // created with these exact names, so internal = display. If one differs,
+  // check Admin > Diagnostics > Recruiting Candidates and fix it here.
+  var RECRUIT_FIELD_MAP = {
+    Name: "Title",
+    RecruitKey: "RecruitKey",
+    Email: "CandEmail",
+    Phone: "CandPhone",
+    Position: "Position",
+    HomeStore: "HomeStore",
+    Source: "Source",
+    Applied: "Applied",
+    ResumeUrl: "ResumeUrl",
+    Score: "Score",
+    ScoreReason: "ScoreReason",
+    Rubric: "Rubric",
+    Status: "RecruitStatus",
+    ScreenSent: "ScreenSentDate",
+    Reminder: "ReminderDate",
+    ScreenReturned: "ScreenReturnedDate",
+    Availability: "Availability",
+    HoursWanted: "HoursWanted",
+    AvailVaries: "AvailVaries",
+    AvailNote: "AvailNote",
+    Transport: "Transport",
+    EarliestStart: "EarliestStart",
+    SalesExperience: "SalesExperience",
+    CoachNote: "CoachNote",
+    SelectedBy: "SelectedBy",
+    SelectedDate: "SelectedDate",
+    OnboardingItemId: "OnboardingItemId",
+    ClosedBy: "ClosedBy",
+    ReviewIssues: "ReviewIssues"
+  };
+
+  var RECRUIT_LOG_FIELD_MAP = {
+    Title: "Title",
+    RunType: "RunType",
+    RunAt: "RunAt",
+    Details: "Details",
+    NeedsReview: "NeedsReview",
+    CandidateKey: "CandidateKey"
+  };
+
+  var RC = {
+    NEW: "New",
+    RETURNED: "Screening Returned",
+    NORESP: "No Response",
+    LINK: "Resume in Indeed",
+    SELECTED: "Selected",
+    HIRED: "Hired",
+    NOTFIT: "Not a Fit"
+  };
+
+  // [background, text color, label coaches see, stripe]
+  var RC_STATUS_STYLE = {
+    "New": ["#F3E9F6", "#4A1B5C", "New", "#8B5FA3"],
+    "Screening Returned": ["#E1F5EE", "#0F6E56", "Screening returned", "#5DCAA5"],
+    "No Response": ["#F1EFF2", "#4E3D56", "No response", "#B4B2A9"],
+    "Resume in Indeed": ["#FFF8E8", "#854F0B", "Resume in Indeed", "#FAC775"],
+    "Selected": ["#EAF2FC", "#1C5EA8", "With HR · offer pending", "#378ADD"],
+    "Hired": ["#4A1B5C", "#FFFFFF", "Hired", "#4A1B5C"],
+    "Not a Fit": ["#FCEBEB", "#A32D2D", "Not a fit", "#D85A30"]
+  };
+
+  var RC_PILLS = [
+    ["all", "All"], ["New", "New"], ["Screening Returned", "Screened"], ["No Response", "No reply"],
+    ["Resume in Indeed", "In Indeed"], ["Selected", "With HR"], ["Hired", "Hired"], ["Not a Fit", "Not a fit"]
+  ];
+  var RC_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+  // Built-in hours, used only when Recruiting/store-hours.json can't be read.
+  var STORE_HOURS_FALLBACK = {
+    mallStaffLeadMinutes: 30,
+    "default": {
+      Mon: { open: "09:30", close: "19:30" }, Tue: { open: "09:30", close: "19:30" },
+      Wed: { open: "09:30", close: "19:30" }, Thu: { open: "09:30", close: "19:30" },
+      Fri: { open: "09:30", close: "19:30" }, Sat: { open: "09:30", close: "19:30" },
+      Sun: { open: "10:45", close: "18:30" }
+    },
+    stores: {
+      "RI-PROVIDENCE PLACE MALL": { mall: true, hours: {
+        Mon: { open: "11:00", close: "20:00" }, Tue: { open: "11:00", close: "20:00" },
+        Wed: { open: "11:00", close: "20:00" }, Thu: { open: "11:00", close: "20:00" },
+        Fri: { open: "10:00", close: "21:00" }, Sat: { open: "10:00", close: "21:00" },
+        Sun: { open: "11:00", close: "18:00" } } },
+      "MA-CAPE CODE MALL": { mall: true, hours: {
+        Mon: { open: "10:00", close: "20:00" }, Tue: { open: "10:00", close: "20:00" },
+        Wed: { open: "10:00", close: "20:00" }, Thu: { open: "10:00", close: "20:00" },
+        Fri: { open: "10:00", close: "21:00" }, Sat: { open: "10:00", close: "21:00" },
+        Sun: { open: "11:00", close: "18:00" } } },
+      "MA-SOUTH SHORE MALL": { mall: true, hours: {
+        Mon: { open: "10:00", close: "20:00" }, Tue: { open: "10:00", close: "20:00" },
+        Wed: { open: "10:00", close: "20:00" }, Thu: { open: "10:00", close: "20:00" },
+        Fri: { open: "10:00", close: "21:00" }, Sat: { open: "10:00", close: "21:00" },
+        Sun: { open: "11:00", close: "18:00" } } },
+      "CT-BUCKLAND HILLS MALL": { mall: true, hours: {
+        Mon: { open: "10:00", close: "20:00" }, Tue: { open: "10:00", close: "20:00" },
+        Wed: { open: "10:00", close: "20:00" }, Thu: { open: "10:00", close: "20:00" },
+        Fri: { open: "10:00", close: "21:00" }, Sat: { open: "10:00", close: "21:00" },
+        Sun: { open: "11:00", close: "18:00" } } }
+    },
+    exceptions: []
+  };
+
+  var storeHours = STORE_HOURS_FALLBACK;
+  var recruits = [];
+  var recruitLog = [];
+  var recruitPay = {};          // "R-<RecruitKey>" -> { itemId, expectation }
+  var rcListId = null;
+  var rcLogListId = null;
+  var rcState = "loading";      // loading | ok | missing | error
+  var rcError = "";
+  var rcFilters = { status: "all", store: "", role: "", day: "", shift: "", sort: "score" };
+  var rcOpenCards = {};
+  var rcBusy = {};
+
+  function rcGet(f, key) {
+    var v = f[RECRUIT_FIELD_MAP[key]];
+    return (v === undefined || v === null) ? "" : v;
+  }
+
+  function rcToReal(friendly) {
+    var real = {};
+    for (var k in friendly) {
+      if (RECRUIT_FIELD_MAP[k]) real[RECRUIT_FIELD_MAP[k]] = friendly[k];
+    }
+    return real;
+  }
+
+  function graphFetchAll(url, acc) {
+    acc = acc || [];
+    return graphFetch(url).then(function (data) {
+      acc = acc.concat(data.value || []);
+      if (data["@odata.nextLink"]) return graphFetchAll(data["@odata.nextLink"], acc);
+      return acc;
+    });
+  }
+
+  function graphPatch(url, body) {
+    return fetch(url, {
+      method: "PATCH",
+      headers: { Authorization: "Bearer " + graphToken, "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function (res) {
+      if (!res.ok) {
+        return res.text().then(function (t) { throw new Error("Graph PATCH failed: " + res.status + " " + t); });
+      }
+      return res.json();
+    });
+  }
+
+  // ---------- time + availability ----------
+  function rcHm(str) {
+    var m = /^(\d{1,2}):(\d{2})$/.exec(String(str || ""));
+    return m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : null;
+  }
+
+  // Accepts 09:30, 9:30, 9:30a, 9:30 AM, 2p, 14:00
+  function rcParseTime(str) {
+    var m = /^\s*(\d{1,2})(?::(\d{2}))?\s*(a|p|am|pm)?\s*$/i.exec(String(str || ""));
+    if (!m) return null;
+    var h = parseInt(m[1], 10);
+    var mi = m[2] ? parseInt(m[2], 10) : 0;
+    var ap = (m[3] || "").toLowerCase();
+    if (ap.charAt(0) === "p" && h < 12) h += 12;
+    if (ap.charAt(0) === "a" && h === 12) h = 0;
+    if (h > 23 || mi > 59) return null;
+    return h * 60 + mi;
+  }
+
+  function rcFmt(min) {
+    if (min === null || min === undefined) return "";
+    var h = Math.floor(min / 60), m = min % 60;
+    var ap = h >= 12 ? "p" : "a";
+    var hh = h % 12; if (hh === 0) hh = 12;
+    return hh + ":" + (m < 10 ? "0" : "") + m + ap;
+  }
+
+  // "Mon:Open; Tue:09:30-14:00; Wed:Off" -> { Mon: {type:'open'}, Tue: {type:'win', start, end}, ... }
+  function rcParseAvailability(str) {
+    var s = String(str || "").replace(/^\s+|\s+$/g, "");
+    if (!s) return null;
+    var out = {};
+    var parts = s.split(/[;,\n]+/);
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i].replace(/^\s+|\s+$/g, "");
+      var idx = p.indexOf(":");
+      if (idx < 1) continue;
+      var day = p.substring(0, 3);
+      day = day.charAt(0).toUpperCase() + day.substring(1, 3).toLowerCase();
+      if (RC_DAYS.indexOf(day) === -1) continue;
+      var val = p.substring(idx + 1).replace(/^\s+|\s+$/g, "");
+      var low = val.toLowerCase();
+      if (low === "open" || low === "all day" || low === "any") {
+        out[day] = { type: "open" };
+      } else if (low === "off" || low === "not available" || low === "n/a" || low === "") {
+        out[day] = { type: "off" };
+      } else {
+        var se = val.split(/\s*(?:-|–|to)\s*/);
+        var st = rcParseTime(se[0]);
+        var en = se.length > 1 ? rcParseTime(se[1]) : null;
+        if (st === null || en === null) out[day] = { type: "unknown", text: val };
+        else out[day] = { type: "win", start: st, end: en };
+      }
+    }
+    for (var d = 0; d < RC_DAYS.length; d++) {
+      if (!out[RC_DAYS[d]]) out[RC_DAYS[d]] = { type: "off" };
+    }
+    return out;
+  }
+
+  function rcStoreHoursFor(store, day) {
+    var key = String(store || "").toUpperCase();
+    var entry = (storeHours.stores && storeHours.stores[key]) || null;
+    var src = (entry && entry.hours && entry.hours[day]) || (storeHours["default"] && storeHours["default"][day]) || STORE_HOURS_FALLBACK["default"][day];
+    var open = rcHm(src.open), close = rcHm(src.close);
+    var lead = entry && entry.mall ? (storeHours.mallStaffLeadMinutes || 30) : 0;
+    return { open: open, close: close, staffStart: open - lead, mall: !!(entry && entry.mall) };
+  }
+
+  function rcDayInfo(c, day) {
+    if (!c.avail) return null;
+    var a = c.avail[day];
+    var hrs = rcStoreHoursFor(c.store, day);
+    if (!a || a.type === "off") return { available: false, opens: false, closes: false, bad: false, a: a || { type: "off" } };
+    if (a.type === "open") return { available: true, opens: true, closes: true, bad: false, a: a, allDay: true };
+    if (a.type === "unknown") return { available: false, opens: false, closes: false, bad: true, a: a };
+    var bad = a.end <= a.start;
+    var len = a.end - a.start;
+    return {
+      available: !bad && len >= 240,
+      opens: !bad && a.start <= hrs.staffStart,
+      closes: !bad && a.end >= hrs.close,
+      bad: bad, a: a
+    };
+  }
+
+  function rcFlags(c) {
+    var flags = [];
+    if (c.avail) {
+      var days = 0, weekend = false, opens = false, closes = false, bad = false;
+      for (var i = 0; i < RC_DAYS.length; i++) {
+        var di = rcDayInfo(c, RC_DAYS[i]);
+        if (di.bad) bad = true;
+        if (di.available) {
+          days++;
+          if (RC_DAYS[i] === "Sat" || RC_DAYS[i] === "Sun") weekend = true;
+        }
+        if (di.opens) opens = true;
+        if (di.closes) closes = true;
+      }
+      if (!weekend) flags.push("No weekends");
+      if (!opens) flags.push("No opening");
+      if (!closes) flags.push("No closing");
+      if (days < 5) flags.push(days + (days === 1 ? " day" : " days") + " available");
+      if (/under\s*20/i.test(c.hoursWanted)) flags.push("Under 20 hrs");
+      if (bad) flags.push("Check times");
+    }
+    if (/^no/i.test(c.transport)) flags.push("No reliable transportation");
+    return flags;
+  }
+
+  function rcTimeErrors(c) {
+    var errs = [];
+    if (!c.avail) return errs;
+    for (var i = 0; i < RC_DAYS.length; i++) {
+      var a = c.avail[RC_DAYS[i]];
+      if (a && a.type === "win" && a.end <= a.start) errs.push(RC_DAYS[i] + " " + rcFmt(a.start) + "–" + rcFmt(a.end));
+      if (a && a.type === "unknown") errs.push(RC_DAYS[i] + " \"" + a.text + "\"");
+    }
+    return errs;
+  }
+
+  function rcAvailToOnboarding(c) {
+    if (!c.avail) return "";
+    var parts = [];
+    for (var i = 0; i < RC_DAYS.length; i++) {
+      var a = c.avail[RC_DAYS[i]];
+      if (!a || a.type === "off") continue;
+      if (a.type === "open") parts.push(RC_DAYS[i] + ":Open");
+      else if (a.type === "win") parts.push(RC_DAYS[i] + ":" + rcFmt(a.start) + "-" + rcFmt(a.end));
+    }
+    return parts.join(", ");
+  }
+
+  // ---------- mapping ----------
+  function rcParseIssues(raw) {
+    if (!raw) return [];
+    try {
+      var arr = JSON.parse(raw);
+      return Object.prototype.toString.call(arr) === "[object Array]" ? arr : [];
+    } catch (e) {
+      return [{ type: "Note", detail: String(raw), resolved: false }];
+    }
+  }
+
+  function rcParseRubric(raw) {
+    var out = [];
+    var parts = String(raw || "").split(/[;\n]+/);
+    for (var i = 0; i < parts.length; i++) {
+      var m = /^\s*(.+?)\s*:\s*(\d(?:\.\d)?)\s*$/.exec(parts[i]);
+      if (m) out.push({ label: m[1], pts: parseFloat(m[2]) });
+    }
+    return out;
+  }
+
+  function mapRecruit(item) {
+    var f = item.fields || {};
+    var scoreRaw = rcGet(f, "Score");
+    var score = scoreRaw === "" ? null : parseFloat(scoreRaw);
+    if (isNaN(score)) score = null;
+    var applied = String(rcGet(f, "Applied")).split(/\n+/);
+    var appliedClean = [];
+    for (var i = 0; i < applied.length; i++) {
+      if (applied[i].replace(/\s/g, "")) appliedClean.push(applied[i]);
+    }
+    var name = rcGet(f, "Name") || "Unnamed applicant";
+    return {
+      id: item.id,
+      created: item.createdDateTime || "",
+      key: rcGet(f, "RecruitKey"),
+      name: name,
+      initials: name.split(" ").map(function (p) { return p.charAt(0); }).join("").substring(0, 2).toUpperCase(),
+      email: rcGet(f, "Email"),
+      phone: rcGet(f, "Phone"),
+      position: rcGet(f, "Position"),
+      store: rcGet(f, "HomeStore"),
+      source: rcGet(f, "Source"),
+      applied: appliedClean,
+      resumeUrl: rcGet(f, "ResumeUrl"),
+      score: score,
+      scoreReason: rcGet(f, "ScoreReason"),
+      rubric: rcParseRubric(rcGet(f, "Rubric")),
+      status: rcGet(f, "Status") || RC.NEW,
+      screenSent: rcGet(f, "ScreenSent"),
+      reminder: rcGet(f, "Reminder"),
+      returned: rcGet(f, "ScreenReturned"),
+      avail: rcParseAvailability(rcGet(f, "Availability")),
+      hoursWanted: rcGet(f, "HoursWanted"),
+      varies: rcGet(f, "AvailVaries"),
+      availNote: rcGet(f, "AvailNote"),
+      transport: rcGet(f, "Transport"),
+      earliest: rcGet(f, "EarliestStart"),
+      sales: rcGet(f, "SalesExperience"),
+      coachNote: rcGet(f, "CoachNote"),
+      selectedBy: rcGet(f, "SelectedBy"),
+      selectedDate: rcGet(f, "SelectedDate"),
+      onbId: rcGet(f, "OnboardingItemId"),
+      closedBy: rcGet(f, "ClosedBy"),
+      issues: rcParseIssues(rcGet(f, "ReviewIssues"))
+    };
+  }
+
+  function findRecruit(id) {
+    for (var i = 0; i < recruits.length; i++) {
+      if (String(recruits[i].id) === String(id)) return recruits[i];
+    }
+    return null;
+  }
+
+  // Coaches see their stores, managers see their stores, HR sees everyone.
+  function recruitVisible(c) {
+    if (isAdminUser()) return true;
+    var email = getCurrentUserEmail();
+    if (!email || !c.store) return false;
+    var entry = getStoreRosterEntry(c.store);
+    if (entry) {
+      if (entry.coachEmail && entry.coachEmail.toLowerCase() === email) return true;
+      if (entry.managerEmail && entry.managerEmail.toLowerCase() === email) return true;
+    }
+    var coachName = getCoachNameFromEmail(email);
+    if (coachName) {
+      var mapped = (entry && entry.coach && entry.coach !== "TBD") ? entry.coach : (lookupStoreMap(STORE_COACH_MAP, c.store) || "");
+      if (mapped && mapped.toLowerCase().indexOf(coachName.toLowerCase()) !== -1) return true;
+    }
+    var ms = getManagerStores(email);
+    if (ms) {
+      for (var i = 0; i < ms.length; i++) {
+        if (ms[i].toUpperCase() === c.store.toUpperCase()) return true;
+      }
+    }
+    return false;
+  }
+
+  // ---------- loading ----------
+  function loadStoreHours(siteId) {
+    var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/drive/root:/" + CONFIG.storeHoursPath;
+    return graphFetch(url).then(function (meta) {
+      var dl = meta["@microsoft.graph.downloadUrl"];
+      if (!dl) throw new Error("No download link for store hours file");
+      return fetch(dl).then(function (r) { return r.json(); });
+    }).then(function (j) {
+      if (j && j["default"]) {
+        storeHours = j;
+        renderRecruiting();
+        renderAdminRecruiting();
+      }
+    }).catch(function (err) {
+      console.warn("Store hours file not available - using built-in hours.", err);
+    });
+  }
+
+  function loadRecruiting(isRefresh) {
+    var listEl = document.getElementById("rc-list");
+    if (listEl && !isRefresh && !recruits.length) listEl.innerHTML = '<div class="loading">Loading applicants...</div>';
+    getSiteId().then(function (siteId) {
+      loadStoreHours(siteId);
+      return findListIdByName(siteId, CONFIG.recruitListName).then(function (id) {
+        rcListId = id;
+        return graphFetchAll("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + id + "/items?expand=fields&$top=500");
+      });
+    }).then(function (items) {
+      recruits = items.map(mapRecruit);
+      rcState = "ok";
+      rcError = "";
+      renderRecruiting();
+      renderAdminRecruiting();
+      rcStamp();
+    }).catch(function (err) {
+      console.error("Recruiting load failed:", err);
+      rcState = err && err.notVisible ? "missing" : "error";
+      rcError = (err && err.message) || String(err);
+      renderRecruiting();
+      renderAdminRecruiting();
+      rcStamp();
+    });
+    if (isAdminUser() && document.getElementById("admin-content").style.display === "flex") loadRecruitAdminData();
+  }
+
+  function rcStamp() {
+    var el = document.getElementById("rc-stamp");
+    if (!el) return;
+    var now = new Date();
+    var hh = now.getHours(), mm = ("0" + now.getMinutes()).slice(-2);
+    var ampm = hh >= 12 ? "pm" : "am";
+    hh = hh % 12; if (hh === 0) hh = 12;
+    el.textContent = "Updated " + hh + ":" + mm + ampm;
+  }
+
+  // HR-only data: automation log and pay expectations.
+  function loadRecruitAdminData() {
+    if (!isAdminUser()) return;
+    getSiteId().then(function (siteId) {
+      var logP = findListIdByName(siteId, CONFIG.recruitLogListName).then(function (id) {
+        rcLogListId = id;
+        return graphFetchAll("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + id + "/items?expand=fields&$top=500");
+      }).then(function (items) {
+        recruitLog = [];
+        for (var i = 0; i < items.length; i++) {
+          var f = items[i].fields || {};
+          recruitLog.push({
+            id: items[i].id,
+            title: f[RECRUIT_LOG_FIELD_MAP.Title] || "",
+            type: f[RECRUIT_LOG_FIELD_MAP.RunType] || "",
+            at: f[RECRUIT_LOG_FIELD_MAP.RunAt] || items[i].createdDateTime || "",
+            details: f[RECRUIT_LOG_FIELD_MAP.Details] || "",
+            needsReview: f[RECRUIT_LOG_FIELD_MAP.NeedsReview] || "",
+            candKey: f[RECRUIT_LOG_FIELD_MAP.CandidateKey] || ""
+          });
+        }
+        recruitLog.sort(function (a, b) { return String(b.at) < String(a.at) ? -1 : String(b.at) > String(a.at) ? 1 : 0; });
+      }).catch(function (err) {
+        console.warn("Recruiting log not available:", err);
+        recruitLog = [];
+      });
+      var payP = findListIdByName(siteId, CONFIG.payListName).then(function (id) {
+        payListId = id;
+        return graphFetchAll("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + id + "/items?expand=fields&$top=500");
+      }).then(function (items) {
+        recruitPay = {};
+        for (var i = 0; i < items.length; i++) {
+          var f = items[i].fields || {};
+          var t = String(f.Title || "");
+          if (t.indexOf("R-") === 0) recruitPay[t] = { itemId: items[i].id, expectation: f.PayExpectation || "" };
+          else payItemIds[t] = items[i].id;
+        }
+      }).catch(function (err) {
+        console.warn("Pay list not available for recruiting:", err);
+      });
+      return Promise.all([logP, payP]);
+    }).then(function () {
+      renderAdminRecruiting();
+    });
+  }
+
+  // ---------- coach / manager view ----------
+  function setRcFilter(kind, value) {
+    rcFilters[kind] = value;
+    renderRecruiting();
+  }
+
+  function toggleRcCard(id) {
+    rcOpenCards[id] = !rcOpenCards[id];
+    var card = document.getElementById("rc-card-" + id);
+    if (card) card.className = "rc-card" + (rcOpenCards[id] ? " open" : "");
+  }
+
+  function rcScoreHtml(score) {
+    if (score === null) return '<div class="rc-score na">Not<br>scored</div>';
+    var cls = score >= 4 ? "hi" : score >= 3 ? "mid" : "lo";
+    return '<div class="rc-score ' + cls + '" aria-label="Score ' + score.toFixed(1) + ' of 5">' + score.toFixed(1) + '</div>';
+  }
+
+  function rcStatusChip(status) {
+    var s = RC_STATUS_STYLE[status] || RC_STATUS_STYLE[RC.NEW];
+    return '<span class="status-chip" style="background:' + s[0] + '; color:' + s[1] + ';">' + escapeHtml(s[2]) + '</span>';
+  }
+
+  function rcMatches(c) {
+    var f = rcFilters;
+    if (f.status === "all") {
+      if (c.status === RC.NOTFIT) return false;
+    } else if (c.status !== f.status) {
+      return false;
+    }
+    if (f.store && String(c.store).toUpperCase() !== f.store.toUpperCase()) return false;
+    if (f.role && c.position !== f.role) return false;
+    if (f.day || f.shift) {
+      if (!c.avail) return false;
+      var days = f.day ? [f.day] : RC_DAYS;
+      var ok = false;
+      for (var i = 0; i < days.length && !ok; i++) {
+        var di = rcDayInfo(c, days[i]);
+        if (!di) continue;
+        if (f.shift === "opens") ok = di.opens;
+        else if (f.shift === "closes") ok = di.closes;
+        else if (f.shift === "allday") ok = !!di.allDay;
+        else ok = di.available;
+      }
+      if (!ok) return false;
+    }
+    return true;
+  }
+
+  function rcFillSelect(id, values, current, allLabel) {
+    var sel = document.getElementById(id);
+    if (!sel) return;
+    var html = '<option value="">' + escapeHtml(allLabel) + '</option>';
+    for (var i = 0; i < values.length; i++) {
+      html += '<option value="' + escapeAttr(values[i]) + '"' + (values[i] === current ? ' selected' : '') + '>' + escapeHtml(values[i]) + '</option>';
+    }
+    sel.innerHTML = html;
+  }
+
+  function renderRcSetup() {
+    var el = document.getElementById("rc-setup");
+    if (!el) return;
+    if (rcState === "missing") {
+      el.innerHTML = '<div class="rc-banner">' + (isAdminUser()
+        ? '<strong>Recruiting list not found.</strong> Create &quot;' + escapeHtml(CONFIG.recruitListName) + '&quot; on the NEWHIRESS site with the columns in the setup guide, then refresh.'
+        : '<strong>Recruiting is not switched on yet.</strong> HR will let you know when applicants start showing here.') + '</div>';
+    } else if (rcState === "error") {
+      el.innerHTML = '<div class="rc-banner"><strong>Could not load applicants.</strong> ' + escapeHtml(rcError) +
+        ' <button class="roster-retry" onclick="loadRecruiting()">Retry</button></div>';
+    } else {
+      el.innerHTML = "";
+    }
+  }
+
+  function renderRecruiting() {
+    var listEl = document.getElementById("rc-list");
+    if (!listEl) return;
+    renderRcSetup();
+    if (rcState === "loading") return;
+    if (rcState !== "ok") { listEl.innerHTML = ""; return; }
+
+    var pool = [];
+    for (var i = 0; i < recruits.length; i++) {
+      if (recruitVisible(recruits[i])) pool.push(recruits[i]);
+    }
+
+    var counts = { all: 0 };
+    var stores = [], roles = [];
+    for (var j = 0; j < pool.length; j++) {
+      var p = pool[j];
+      counts[p.status] = (counts[p.status] || 0) + 1;
+      if (p.status !== RC.NOTFIT) counts.all++;
+      if (p.store && stores.indexOf(p.store) === -1) stores.push(p.store);
+      if (p.position && roles.indexOf(p.position) === -1) roles.push(p.position);
+    }
+    stores.sort(); roles.sort();
+    document.getElementById("rc-stat-new").textContent = (counts[RC.NEW] || 0) + (counts[RC.LINK] || 0);
+    document.getElementById("rc-stat-returned").textContent = counts[RC.RETURNED] || 0;
+    document.getElementById("rc-stat-noresp").textContent = counts[RC.NORESP] || 0;
+    document.getElementById("rc-stat-hr").textContent = counts[RC.SELECTED] || 0;
+    document.getElementById("rc-sub").textContent = isAdminUser() ? "All stores · HR view" : "Applicants for your stores";
+
+    var pills = "";
+    for (var k = 0; k < RC_PILLS.length; k++) {
+      var key = RC_PILLS[k][0];
+      var on = rcFilters.status === key;
+      pills += '<button type="button" class="rc-pill' + (on ? ' active' : '') + '" aria-pressed="' + on + '" onclick="setRcFilter(\'status\', \'' + jsStr(key) + '\')">' +
+        escapeHtml(RC_PILLS[k][1]) + ' ' + (counts[key] || 0) + '</button>';
+    }
+    document.getElementById("rc-pills").innerHTML = pills;
+    rcFillSelect("rc-store", stores, rcFilters.store, isAdminUser() ? "All stores" : "All my stores");
+    rcFillSelect("rc-role", roles, rcFilters.role, "All roles");
+
+    var shown = [];
+    for (var m = 0; m < pool.length; m++) {
+      if (rcMatches(pool[m])) shown.push(pool[m]);
+    }
+    shown.sort(function (a, b) {
+      if (rcFilters.sort === "newest") return String(b.created) < String(a.created) ? -1 : String(b.created) > String(a.created) ? 1 : 0;
+      var as = a.score === null ? -1 : a.score, bs = b.score === null ? -1 : b.score;
+      return bs - as;
+    });
+
+    if (!shown.length) {
+      var email = getCurrentUserEmail();
+      var known = isAdminUser() || COACH_EMAILS.indexOf(email) !== -1 || getManagerStores(email) !== null || getCoachNameFromEmail(email);
+      listEl.innerHTML = '<div class="empty-state">' + (known
+        ? (pool.length ? 'No applicants match these filters.' : 'No applicants for your stores yet. New resumes show here as soon as they come in.')
+        : 'Your account (' + escapeHtml(email) + ') is not set up for recruiting. Contact HR at hr@edgelinkinc.com.') + '</div>';
+      return;
+    }
+
+    var html = "";
+    for (var n = 0; n < shown.length; n++) html += rcCardHtml(shown[n]);
+    listEl.innerHTML = html;
+  }
+
+  function rcCardHtml(c) {
+    var st = RC_STATUS_STYLE[c.status] || RC_STATUS_STYLE[RC.NEW];
+    var flags = rcFlags(c);
+    var id = escapeAttr(c.id);
+    var html = '<div class="rc-card' + (rcOpenCards[c.id] ? ' open' : '') + '" id="rc-card-' + id + '">';
+    html += '<div class="stripe" style="background:' + st[3] + ';"></div>';
+    html += '<div class="rc-top" role="button" tabindex="0" onclick="toggleRcCard(\'' + jsStr(c.id) + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleRcCard(\'' + jsStr(c.id) + '\');}">';
+    html += rcScoreHtml(c.score);
+    html += '<div class="candidate-info"><div class="candidate-name">' + escapeHtml(c.name) + '</div>';
+    html += '<div class="candidate-meta">' + escapeHtml(c.position || "Role not set") + ' &middot; ' + escapeHtml(c.store || "Store not set") + '</div>';
+    var dup = c.applied.length > 1 ? ' &middot; applied ' + c.applied.length + 'x' : '';
+    html += '<div class="candidate-meta">' + escapeHtml(c.source || "") + dup + '</div></div>';
+    html += rcStatusChip(c.status);
+    html += '</div>';
+    if (flags.length) {
+      html += '<div class="rc-flags">';
+      for (var i = 0; i < flags.length; i++) html += '<span class="rc-flag">' + escapeHtml(flags[i]) + '</span>';
+      html += '</div>';
+    }
+
+    html += '<div class="rc-detail">';
+    if (c.phone) html += '<div class="rc-row"><span>Phone</span><span><a href="tel:' + escapeAttr(normalizePhone(c.phone)) + '">' + escapeHtml(rcFormatPhone(c.phone)) + '</a></span></div>';
+    if (c.email) html += '<div class="rc-row"><span>Email</span><span><a href="mailto:' + escapeAttr(c.email) + '">' + escapeHtml(c.email) + '</a></span></div>';
+    if (c.resumeUrl) {
+      html += '<div class="rc-actions"><a class="rc-btn ghost" href="' + escapeAttr(c.resumeUrl) + '" target="_blank" rel="noopener">' +
+        (c.status === RC.LINK ? 'Open in Indeed' : 'View resume') + '</a></div>';
+    }
+
+    if (c.scoreReason) {
+      html += '<div class="rc-label">Why this score</div><div class="rc-why">' + escapeHtml(c.scoreReason) + '</div>';
+    }
+
+    html += '<div class="rc-label">Availability</div>';
+    if (c.avail) {
+      html += '<div class="rc-grid">';
+      for (var d = 0; d < RC_DAYS.length; d++) {
+        var a = c.avail[RC_DAYS[d]];
+        var cls = "off", txt = "Not avail.";
+        if (a.type === "open") { cls = "open"; txt = "Open"; }
+        else if (a.type === "win") { cls = a.end <= a.start ? "bad" : "win"; txt = rcFmt(a.start) + "–" + rcFmt(a.end); }
+        else if (a.type === "unknown") { cls = "bad"; txt = a.text; }
+        html += '<div class="rc-day ' + cls + '"><b>' + RC_DAYS[d] + '</b><span>' + escapeHtml(txt) + '</span></div>';
+      }
+      html += '</div>';
+      if (c.hoursWanted) html += '<div class="rc-row"><span>Hours wanted</span><span>' + escapeHtml(c.hoursWanted) + '</span></div>';
+      if (c.varies) html += '<div class="rc-row"><span>Changes week to week</span><span>' + escapeHtml(c.varies + (c.availNote ? " · " + c.availNote : "")) + '</span></div>';
+    } else {
+      var msg = c.status === RC.NORESP ? "Screening not returned. Call the applicant directly - they can still be selected."
+        : c.status === RC.LINK ? "Screening goes out once HR pulls the resume from Indeed."
+        : c.screenSent ? "Screening sent " + c.screenSent + ". Availability shows here when it comes back."
+        : "Screening not sent yet.";
+      html += '<div class="rc-why">' + escapeHtml(msg) + '</div>';
+    }
+
+    if (c.rubric.length) {
+      html += '<div class="rc-label">Rubric</div>';
+      for (var r = 0; r < c.rubric.length; r++) {
+        html += '<div class="rc-bar"><span style="flex:1;">' + escapeHtml(c.rubric[r].label) + '</span><span class="track"><span class="fill" style="display:block; width:' +
+          Math.max(0, Math.min(100, c.rubric[r].pts * 20)) + '%;"></span></span><b>' + c.rubric[r].pts + '/5</b></div>';
+      }
+    }
+
+    if (c.transport || c.earliest || c.sales) {
+      html += '<div class="rc-label">Screening answers</div>';
+      if (c.transport) html += '<div class="rc-row"><span>Reliable transportation</span><span>' + escapeHtml(c.transport) + '</span></div>';
+      if (c.earliest) html += '<div class="rc-row"><span>Earliest start</span><span>' + escapeHtml(c.earliest) + '</span></div>';
+      if (c.sales) html += '<div class="rc-row"><span>Sales experience</span><span>' + escapeHtml(c.sales) + '</span></div>';
+    }
+
+    if (c.applied.length) {
+      html += '<div class="rc-label">Application history</div>';
+      for (var h = 0; h < c.applied.length; h++) html += '<div style="font-size:12px; padding:2px 0;">' + escapeHtml(c.applied[h]) + '</div>';
+    }
+
+    var canSelect = c.status === RC.NEW || c.status === RC.RETURNED || c.status === RC.NORESP || c.status === RC.LINK;
+    if (canSelect) {
+      html += '<div class="rc-label">Note to HR (optional)</div>';
+      html += '<textarea class="rc-note" id="rc-note-' + id + '" placeholder="Strong closer, wants weekends">' + escapeHtml(c.coachNote) + '</textarea>';
+      html += '<div class="rc-actions">';
+      html += '<button type="button" class="rc-btn primary" ' + (rcBusy[c.id] ? 'disabled ' : '') + 'onclick="rcSelect(\'' + jsStr(c.id) + '\')">Selected &middot; send to HR</button>';
+      html += '<button type="button" class="rc-btn danger" ' + (rcBusy[c.id] ? 'disabled ' : '') + 'onclick="rcNotFit(\'' + jsStr(c.id) + '\')">Not a fit</button>';
+      html += '</div>';
+    } else if (c.status === RC.SELECTED) {
+      html += '<div class="rc-actions"><div class="rc-state" style="background:#EAF2FC; color:#1C5EA8;">With HR &middot; offer pending' +
+        (c.selectedBy ? '<br><span style="font-weight:500;">Selected by ' + escapeHtml(c.selectedBy) + (c.selectedDate ? ' on ' + escapeHtml(c.selectedDate) : '') + '</span>' : '') + '</div></div>';
+      if (c.coachNote) html += '<div class="rc-why" style="margin-top:8px;"><strong>Note to HR:</strong> ' + escapeHtml(c.coachNote) + '</div>';
+    } else if (c.status === RC.HIRED) {
+      html += '<div class="rc-actions"><div class="rc-state" style="background:#F3E9F6; color:#4A1B5C;">Hired &middot; now in the Candidates tab</div></div>';
+    } else if (c.status === RC.NOTFIT) {
+      html += '<div class="rc-actions"><div class="rc-state" style="background:#FCEBEB; color:#A32D2D;">Marked not a fit' + (c.closedBy ? ' by ' + escapeHtml(c.closedBy) : '') + '</div>';
+      if (isAdminUser()) html += '<button type="button" class="rc-btn ghost" onclick="rcRestore(\'' + jsStr(c.id) + '\')">Restore</button>';
+      html += '</div>';
+    }
+    html += '<div style="font-size:10.5px; color:var(--gray-muted); margin-top:10px; line-height:1.45;">Score uses job-related criteria only. Flags inform; they never remove an applicant. Start date and pay are set by HR.</div>';
+    html += '</div></div>';
+    return html;
+  }
+
+  // ---------- coach / manager actions ----------
+  function rcItemUrl(siteId, itemId) {
+    return "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + rcListId + "/items/" + itemId + "/fields";
+  }
+
+  function rcUpdate(c, friendly, done) {
+    rcBusy[c.id] = true;
+    renderRecruiting();
+    return getSiteId().then(function (siteId) {
+      return graphPatch(rcItemUrl(siteId, c.id), rcToReal(friendly));
+    }).then(function () {
+      var local = {
+        Status: "status", CoachNote: "coachNote", SelectedBy: "selectedBy", SelectedDate: "selectedDate",
+        ClosedBy: "closedBy", OnboardingItemId: "onbId"
+      };
+      for (var k in friendly) {
+        if (local[k]) c[local[k]] = friendly[k];
+        if (k === "ReviewIssues") c.issues = rcParseIssues(friendly[k]);
+      }
+      rcBusy[c.id] = false;
+      renderRecruiting();
+      renderAdminRecruiting();
+      if (done) done();
+    }).catch(function (err) {
+      console.error(err);
+      rcBusy[c.id] = false;
+      renderRecruiting();
+      alert("Could not save this change. Check your connection and try again.\n\n" + err.message);
+    });
+  }
+
+  function rcSelect(id) {
+    var c = findRecruit(id);
+    if (!c) return;
+    var noteEl = document.getElementById("rc-note-" + id);
+    rcUpdate(c, {
+      Status: RC.SELECTED,
+      CoachNote: noteEl ? noteEl.value.replace(/^\s+|\s+$/g, "") : "",
+      SelectedBy: getCurrentUserName(),
+      SelectedDate: todayIso()
+    });
+  }
+
+  function rcNotFit(id) {
+    var c = findRecruit(id);
+    if (!c) return;
+    if (!confirm("Mark " + c.name + " as not a fit? They move to the Not a fit filter. HR can restore them.")) return;
+    rcUpdate(c, { Status: RC.NOTFIT, ClosedBy: getCurrentUserName() });
+  }
+
+  function rcRestore(id) {
+    var c = findRecruit(id);
+    if (!c) return;
+    rcUpdate(c, { Status: c.avail ? RC.RETURNED : RC.NEW, ClosedBy: "" });
+  }
+
+  // ---------- HR: pending offers, review queue, log ----------
+  var RC_MARKETS = ["Rhode Island", "Mass", "Connecticut", "Knoxville", "Arkansas", "Chattanooga"];
+
+  function rcGuessMarket(store) {
+    var s = String(store || "").toUpperCase();
+    if (s.indexOf("RI-") === 0) return "Rhode Island";
+    if (s.indexOf("MA-") === 0) return "Mass";
+    if (s.indexOf("CT-") === 0) return "Connecticut";
+    if (s.indexOf("AR-") === 0) return "Arkansas";
+    return "";
+  }
+
+  function rcIsoToUs(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+    return m ? m[2] + "/" + m[3] + "/" + m[1] : "";
+  }
+
+  function rcFormatPhone(p) {
+    var d = normalizePhone(p);
+    if (d.length === 11 && d.charAt(0) === "1") d = d.substring(1);
+    return d.length === 10 ? d.substring(0, 3) + "-" + d.substring(3, 6) + "-" + d.substring(6) : String(p || "");
+  }
+
+  function rcAvailSummary(c) {
+    if (!c.avail) return "Not returned";
+    var parts = [];
+    for (var i = 0; i < RC_DAYS.length; i++) {
+      var a = c.avail[RC_DAYS[i]];
+      if (a.type === "open") parts.push(RC_DAYS[i] + " open");
+      else if (a.type === "win") parts.push(RC_DAYS[i] + " " + rcFmt(a.start) + "–" + rcFmt(a.end));
+    }
+    return parts.length ? parts.join(" · ") : "No days available";
+  }
+
+  function renderAdminRecruiting() {
+    var offersEl = document.getElementById("rc-offers");
+    if (!offersEl || !isAdminUser()) return;
+    var queueEl = document.getElementById("rc-queue");
+    var runsEl = document.getElementById("rc-runs");
+
+    if (rcState === "missing" || rcState === "error") {
+      offersEl.innerHTML = '<div class="rc-banner" style="margin:0;">' + (rcState === "missing"
+        ? 'Create the &quot;' + escapeHtml(CONFIG.recruitListName) + '&quot; list on NEWHIRESS (see the setup guide), then refresh.'
+        : 'Could not load applicants: ' + escapeHtml(rcError)) + '</div>';
+      queueEl.innerHTML = "";
+      runsEl.innerHTML = "";
+      return;
+    }
+    if (rcState === "loading") return;
+
+    // Pending offers
+    var offers = [];
+    for (var i = 0; i < recruits.length; i++) if (recruits[i].status === RC.SELECTED) offers.push(recruits[i]);
+    if (!offers.length) {
+      offersEl.innerHTML = '<div class="empty-state" style="padding:16px;">No pending offers. When a coach or manager marks an applicant Selected, they show here.</div>';
+    } else {
+      var oh = "";
+      for (var o = 0; o < offers.length; o++) oh += rcOfferHtml(offers[o]);
+      offersEl.innerHTML = oh;
+    }
+
+    // Review queue
+    var q = [];
+    for (var r = 0; r < recruits.length; r++) {
+      var c = recruits[r];
+      if (c.status === RC.HIRED || c.status === RC.NOTFIT) continue;
+      var resolvedTime = false;
+      for (var s = 0; s < c.issues.length; s++) {
+        var iss = c.issues[s];
+        if (iss.type === "Time check" && iss.resolved) resolvedTime = true;
+        if (!iss.resolved) q.push({ kind: "issue", c: c, idx: s, tag: iss.type || "Review", detail: iss.detail || "" });
+      }
+      var te = rcTimeErrors(c);
+      if (te.length && !resolvedTime) q.push({ kind: "time", c: c, tag: "Time check", detail: "End time is at or before start time: " + te.join(", ") + ". Likely AM/PM swapped - confirm with the applicant." });
+      if (c.status === RC.LINK) q.push({ kind: "link", c: c, tag: "Resume in Indeed", detail: "Indeed sent a link only. Download the resume and save it to Recruiting/Resumes so it can be scored and screened." });
+    }
+    for (var l = 0; l < recruitLog.length; l++) {
+      if (String(recruitLog[l].needsReview).toLowerCase() === "yes") {
+        q.push({ kind: "log", log: recruitLog[l], tag: recruitLog[l].type || "Review", detail: recruitLog[l].details, title: recruitLog[l].title });
+      }
+    }
+    var tagColors = {
+      "Time check": ["#FFF8E8", "#854F0B"], "Contradiction": ["#EAF2FC", "#1C5EA8"],
+      "Unmatched response": ["#FCEBEB", "#A32D2D"], "Resume in Indeed": ["#F3E9F6", "#4A1B5C"]
+    };
+    if (!q.length) {
+      queueEl.innerHTML = '<div class="empty-state" style="padding:16px;">Nothing to review.</div>';
+    } else {
+      var qh = "";
+      for (var x = 0; x < q.length; x++) {
+        var it = q[x];
+        var col = tagColors[it.tag] || ["#F1EFF2", "#4E3D56"];
+        var title = it.kind === "log" ? it.title : it.c.name + " · " + (it.c.store || "no store");
+        qh += '<div class="rc-q"><span class="rc-q-tag" style="background:' + col[0] + '; color:' + col[1] + ';">' + escapeHtml(it.tag) + '</span>';
+        qh += '<div class="rc-q-title">' + escapeHtml(title) + '</div><div class="rc-q-detail">' + escapeHtml(it.detail) + '</div>';
+        qh += '<div class="rc-actions" style="margin-top:4px;">';
+        if (it.kind === "link" && it.c.resumeUrl) qh += '<a class="rc-btn ghost" href="' + escapeAttr(it.c.resumeUrl) + '" target="_blank" rel="noopener">Open in Indeed</a>';
+        if (it.kind === "issue") qh += '<button type="button" class="rc-btn ghost" onclick="rcResolveIssue(\'' + jsStr(it.c.id) + '\',' + it.idx + ')">Mark reviewed</button>';
+        if (it.kind === "time") qh += '<button type="button" class="rc-btn ghost" onclick="rcResolveTime(\'' + jsStr(it.c.id) + '\')">Mark reviewed</button>';
+        if (it.kind === "log") qh += '<button type="button" class="rc-btn ghost" onclick="rcResolveLog(\'' + jsStr(it.log.id) + '\')">Mark reviewed</button>';
+        qh += '</div></div>';
+      }
+      queueEl.innerHTML = qh;
+    }
+
+    // Automation log
+    var runs = [];
+    for (var y = 0; y < recruitLog.length && runs.length < 20; y++) {
+      if (String(recruitLog[y].needsReview).toLowerCase() !== "yes") runs.push(recruitLog[y]);
+    }
+    if (!runs.length) {
+      runsEl.innerHTML = '<div class="empty-state" style="padding:16px;">' + (rcLogListId ? "No runs logged yet." : "Create the &quot;" + escapeHtml(CONFIG.recruitLogListName) + "&quot; list to see run history.") + '</div>';
+    } else {
+      var rh = "";
+      for (var z = 0; z < runs.length; z++) {
+        rh += '<div class="rc-run"><span style="color:var(--gray-muted);">' + escapeHtml(rcWhen(runs[z].at)) + '</span><b>' + escapeHtml(runs[z].type || runs[z].title) + '</b><span>' + escapeHtml(runs[z].details || runs[z].title) + '</span></div>';
+      }
+      runsEl.innerHTML = rh;
+    }
+  }
+
+  function rcWhen(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso || "");
+    var h = d.getHours(), m = ("0" + d.getMinutes()).slice(-2), ap = h >= 12 ? "PM" : "AM";
+    h = h % 12; if (h === 0) h = 12;
+    return MONTH_ABBR[d.getMonth()] + " " + d.getDate() + " · " + h + ":" + m + " " + ap;
+  }
+
+  function rcOfferHtml(c) {
+    var id = escapeAttr(c.id);
+    var pay = c.key ? recruitPay["R-" + c.key] : null;
+    var html = '<div class="rc-q" style="gap:4px;">';
+    html += '<div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">';
+    html += '<div><div class="rc-q-title" style="font-size:15px;">' + escapeHtml(c.name) + '</div>';
+    html += '<div class="rc-q-detail">' + escapeHtml((c.position || "Role not set") + " · " + (c.store || "Store not set")) +
+      (c.selectedBy ? " · selected by " + escapeHtml(c.selectedBy) + (c.selectedDate ? " " + escapeHtml(c.selectedDate) : "") : "") + '</div></div>';
+    html += rcScoreHtml(c.score) + '</div>';
+    if (c.coachNote) html += '<div class="rc-why"><strong>Coach note:</strong> ' + escapeHtml(c.coachNote) + '</div>';
+    html += '<div class="rc-row"><span>Pay expectation (HR only)</span><span>' + escapeHtml(pay && pay.expectation ? pay.expectation : (c.avail ? "Not given" : "Screening not returned")) + '</span></div>';
+    html += '<div class="rc-row"><span>Earliest start</span><span>' + escapeHtml(c.earliest || "Not given") + '</span></div>';
+    html += '<div class="rc-row"><span>Availability</span><span>' + escapeHtml(rcAvailSummary(c)) + '</span></div>';
+    if (c.resumeUrl) html += '<div class="rc-row"><span>Resume</span><span><a href="' + escapeAttr(c.resumeUrl) + '" target="_blank" rel="noopener">Open</a></span></div>';
+
+    html += '<div class="rc-offer-grid">';
+    html += '<label class="form-label" style="display:flex; flex-direction:column; gap:4px;">Position *<select class="form-input" id="rc-pos-' + id + '">';
+    html += '<option value="">Select</option>';
+    for (var i = 0; i < ALL_POSITIONS.length; i++) {
+      html += '<option' + (ALL_POSITIONS[i] === c.position ? ' selected' : '') + '>' + escapeHtml(ALL_POSITIONS[i]) + '</option>';
+    }
+    html += '</select></label>';
+    var mk = rcGuessMarket(c.store);
+    html += '<label class="form-label" style="display:flex; flex-direction:column; gap:4px;">Market *<select class="form-input" id="rc-mkt-' + id + '"><option value="">Select</option>';
+    for (var j = 0; j < RC_MARKETS.length; j++) {
+      html += '<option' + (RC_MARKETS[j] === mk ? ' selected' : '') + '>' + RC_MARKETS[j] + '</option>';
+    }
+    html += '</select></label>';
+    html += '<label class="form-label" style="display:flex; flex-direction:column; gap:4px;">Start date *<input type="date" class="form-input" id="rc-date-' + id + '"></label>';
+    html += '<label class="form-label" style="display:flex; flex-direction:column; gap:4px;">Pay rate ($/hr) *<input type="text" inputmode="decimal" class="form-input" id="rc-pay-' + id + '" placeholder="0.00"></label>';
+    html += '</div>';
+    html += '<div class="rc-actions">';
+    html += '<button type="button" class="rc-btn primary" id="rc-accept-' + id + '" onclick="rcAcceptOffer(\'' + jsStr(c.id) + '\')">Offer accepted &middot; send to New Hire Hub</button>';
+    html += '<button type="button" class="rc-btn ghost" onclick="rcSendBack(\'' + jsStr(c.id) + '\')">Send back to coach</button>';
+    html += '</div>';
+    html += '<div class="rc-q-detail" id="rc-offer-msg-' + id + '" style="font-size:11.5px;">Creates the onboarding record. The welcome email only goes out when Clear Identification is set to Sent. Pay goes to the HR-only pay list.</div>';
+    html += '</div>';
+    return html;
+  }
+
+  function rcSendBack(id) {
+    var c = findRecruit(id);
+    if (!c) return;
+    rcUpdate(c, { Status: c.avail ? RC.RETURNED : RC.NEW });
+  }
+
+  function rcResolveIssue(id, idx) {
+    var c = findRecruit(id);
+    if (!c || !c.issues[idx]) return;
+    var list = c.issues.slice();
+    list[idx] = { type: list[idx].type, detail: list[idx].detail, resolved: true, resolvedBy: getCurrentUserName(), resolvedOn: todayIso() };
+    rcUpdate(c, { ReviewIssues: JSON.stringify(list) });
+  }
+
+  function rcResolveTime(id) {
+    var c = findRecruit(id);
+    if (!c) return;
+    var list = c.issues.slice();
+    list.push({ type: "Time check", detail: rcTimeErrors(c).join(", "), resolved: true, resolvedBy: getCurrentUserName(), resolvedOn: todayIso() });
+    rcUpdate(c, { ReviewIssues: JSON.stringify(list) });
+  }
+
+  function rcResolveLog(logId) {
+    if (!rcLogListId) return;
+    getSiteId().then(function (siteId) {
+      var body = {};
+      body[RECRUIT_LOG_FIELD_MAP.NeedsReview] = "Done";
+      return graphPatch("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + rcLogListId + "/items/" + logId + "/fields", body);
+    }).then(function () {
+      for (var i = 0; i < recruitLog.length; i++) {
+        if (String(recruitLog[i].id) === String(logId)) recruitLog[i].needsReview = "Done";
+      }
+      renderAdminRecruiting();
+    }).catch(function (err) {
+      console.error(err);
+      alert("Could not update the log item: " + err.message);
+    });
+  }
+
+  function rcSavePayForOnboarding(siteId, onbId, rate) {
+    var findP = payListId ? Promise.resolve(payListId) : findListIdByName(siteId, CONFIG.payListName).then(function (pid) { payListId = pid; return pid; });
+    return findP.then(function (pid) {
+      var base = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + pid + "/items";
+      var existing = payItemIds[onbId];
+      if (existing) return graphPatch(base + "/" + existing + "/fields", { PayRate: rate });
+      return graphPost(base, { fields: { Title: String(onbId), PayRate: rate } }).then(function (j) {
+        if (j && j.id) payItemIds[onbId] = j.id;
+      });
+    }).then(function () {
+      var cand = findCandidate(onbId);
+      if (cand) cand.payRate = rate;
+    });
+  }
+
+  function rcAcceptOffer(id) {
+    var c = findRecruit(id);
+    if (!c) return;
+    var pos = document.getElementById("rc-pos-" + id).value;
+    var mkt = document.getElementById("rc-mkt-" + id).value;
+    var dateIso = document.getElementById("rc-date-" + id).value;
+    var rate = document.getElementById("rc-pay-" + id).value.replace(/^\s+|\s+$/g, "").replace(/^\$/, "");
+    var msgEl = document.getElementById("rc-offer-msg-" + id);
+    var btn = document.getElementById("rc-accept-" + id);
+
+    var missing = [];
+    if (!pos) missing.push("position");
+    if (!mkt) missing.push("market");
+    if (!dateIso) missing.push("start date");
+    if (!rate || isNaN(parseFloat(rate))) missing.push("pay rate");
+    if (missing.length) { alert("Enter the " + missing.join(", ") + " before sending to the New Hire Hub."); return; }
+
+    var startUs = rcIsoToUs(dateIso);
+    var entry = getStoreRosterEntry(c.store || "") || {};
+    var coach = (entry.coach && entry.coach !== "TBD") ? entry.coach : (lookupStoreMap(STORE_COACH_MAP, c.store) || "TBD");
+    var manager = (entry.manager && entry.manager !== "TBD") ? entry.manager : (lookupStoreMap(STORE_MANAGER_MAP, c.store) || "TBD");
+    var cleanName = titleCaseName(c.name);
+
+    var noteText = "Hired from Recruiting." +
+      (c.score !== null ? " Score " + c.score.toFixed(1) + "/5." : "") +
+      (c.selectedBy ? " Selected by " + c.selectedBy + "." : "") +
+      (c.coachNote ? " Note: " + c.coachNote : "") +
+      (c.resumeUrl ? " Resume: " + c.resumeUrl : "");
+
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+    msgEl.textContent = "Creating the onboarding record...";
+
+    var dupes = findPossibleDuplicates(cleanName, c.phone, c.email, c.store);
+    var existing = dupes.length ? dupes[0].cand : null;
+    var siteIdRef = null;
+    var onbId = null;
+
+    getSiteId().then(function (siteId) {
+      siteIdRef = siteId;
+      return getListId(siteId).then(function (listId) {
+        var base = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items";
+        if (existing) {
+          var notes = parseNotes(existing.notes);
+          notes.push({ ts: noteTimestamp(), author: getCurrentUserName(), text: noteText });
+          var upd = { StartDate: startUs, NotesUpdates: serializeNotes(notes) };
+          onbId = existing.id;
+          return graphPatch(base + "/" + existing.id + "/fields", toRealFields(upd));
+        }
+        var fields = {
+          CandidateName: cleanName,
+          CandidatePhone: rcFormatPhone(c.phone),
+          CandidateEmail: c.email,
+          Position: pos,
+          Market: mkt,
+          HomeLocationAssigned: c.store,
+          CoachAssigned: coach,
+          ManagerAssigned: manager,
+          StartDate: startUs,
+          NameTag: cleanName.split(" ")[0],
+          Availability: rcAvailToOnboarding(c),
+          NotesUpdates: serializeNotes([{ ts: noteTimestamp(), author: getCurrentUserName(), text: noteText }])
+        };
+        var real = toRealFields(fields);
+        var clean = {};
+        for (var k in real) {
+          if (real[k] !== "" && real[k] !== null && real[k] !== undefined) clean[k] = real[k];
+        }
+        return graphPost(base, { fields: clean }).then(function (j) { onbId = j.id; });
+      });
+    }).then(function () {
+      msgEl.textContent = "Saving pay rate...";
+      return rcSavePayForOnboarding(siteIdRef, onbId, rate);
+    }).then(function () {
+      return graphPatch(rcItemUrl(siteIdRef, c.id), rcToReal({ Status: RC.HIRED, OnboardingItemId: String(onbId) }));
+    }).then(function () {
+      c.status = RC.HIRED;
+      c.onbId = String(onbId);
+      loadCandidates(true);
+      renderRecruiting();
+      renderAdminRecruiting();
+      alert(cleanName + (existing ? " was already in the onboarding tracker - that record was updated with the start date." : " is now in the New Hire Hub.") +
+        "\n\nStart date " + startUs + ". Pay saved to the HR-only list. The welcome email goes out when Clear Identification is set to Sent.");
+    }).catch(function (err) {
+      console.error(err);
+      btn.disabled = false;
+      btn.textContent = "Offer accepted · send to New Hire Hub";
+      msgEl.textContent = "Something failed: " + err.message + (onbId ? " (onboarding record " + onbId + " was created - do not resend; fix the step that failed)" : "");
+    });
   }
 
   // ---------------- INIT ----------------
