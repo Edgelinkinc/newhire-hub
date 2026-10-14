@@ -1546,6 +1546,10 @@
     loadStoreRoster();
     applyPositionFilterForCurrentUser();
     loadCandidates();
+    try {
+      var lastView = sessionStorage.getItem('nhh_last_view');
+      if (lastView && lastView !== 'home' && document.getElementById('view-' + lastView)) goToView(lastView);
+    } catch (e) {}
   }
 
   var DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
@@ -3823,6 +3827,8 @@
       views[i].className = 'view';
     }
     document.getElementById('view-' + viewName).className = 'view active';
+    // remember the screen so a browser refresh returns here instead of Home
+    try { if (viewName !== 'add-success') sessionStorage.setItem('nhh_last_view', viewName); } catch (e) {}
 
     if (viewName === 'calendar') renderCalendar();
 
