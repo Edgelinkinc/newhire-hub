@@ -426,6 +426,7 @@
   }
   .cal-daycount-note { font-size: 11.5px; color: var(--gray-muted); margin-bottom: 10px; }
 
+
   /* ===== ADMIN ===== */
   .admin-tabs {
     display: flex; gap: 6px; padding: 12px 14px; background: #fff;
@@ -621,6 +622,61 @@
     background: #fff;
     overflow-y: auto;
   }
+  /* ===== v2 additions: dates, notes, pay, admin layout ===== */
+  .sent-line { display:block; font-size:10px; font-weight:600; color:var(--gray-muted); margin-top:1px; }
+  .sent-line.warn { color:#8A5A0B; }
+  .start-row { display:flex; justify-content:space-between; align-items:center; padding:9px 12px; margin:8px 0; border-radius:8px; background:var(--purple-light); border:1px solid #D9C5E0; }
+  .start-row.pending { background:#FCF0D8; border-color:#F2B84B; }
+  .start-row-label { font-size:10px; font-weight:700; letter-spacing:0.08em; color:var(--purple); }
+  .start-row.pending .start-row-label, .start-row.pending .start-row-val { color:#8A5A0B; }
+  .start-row-val { font-size:13px; font-weight:700; color:var(--purple); }
+  .note-list { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+  .note-item { background:var(--bg-page); border-radius:8px; padding:8px 10px; }
+  .note-text { font-size:12px; line-height:1.45; color:var(--gray-text); word-break:break-word; }
+  .note-meta { font-size:10px; font-weight:600; color:var(--gray-muted); margin-top:3px; }
+  .note-edit { background:none; border:none; color:var(--magenta); font-size:10px; font-weight:700; cursor:pointer; font-family:inherit; padding:0 0 0 6px; }
+  .note-empty { font-size:12px; color:var(--gray-muted); padding:4px 0; }
+  .pay-box { margin-top:16px; background:var(--bg-page); border:1px dashed var(--purple); border-radius:10px; padding:12px; }
+  .pay-head { display:flex; justify-content:space-between; align-items:center; font-size:10px; font-weight:700; letter-spacing:0.1em; color:var(--purple); margin-bottom:8px; }
+  .pay-tag { background:var(--purple); color:#fff; border-radius:999px; padding:3px 8px; font-size:9px; letter-spacing:0.08em; }
+  .start-approve { grid-column:1 / -1; background:var(--purple-light); border:1px solid #D9C5E0; border-radius:10px; padding:10px 12px; }
+  .start-approve.pending { background:#FCF0D8; border-color:#F2B84B; }
+  .start-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .start-btn { background:var(--magenta); color:#fff; border:0; border-radius:8px; font-family:inherit; font-size:12px; font-weight:700; padding:8px 14px; cursor:pointer; }
+  .start-chip { background:#fff; color:var(--purple); border:1px solid #D9C5E0; border-radius:999px; font-family:inherit; font-size:11px; font-weight:600; padding:7px 12px; cursor:pointer; }
+  .start-hint { font-size:11px; color:#8A5A0B; margin-top:6px; }
+
+  .admin-summary { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:12px 14px 0; background:#fff; }
+  .sum-tile { border:1px solid var(--gray-border); border-radius:10px; padding:8px 10px; cursor:pointer; background:#fff; text-align:left; font-family:inherit; }
+  .sum-tile .sum-num { font-size:20px; font-weight:700; color:var(--purple); line-height:1.1; }
+  .sum-tile .sum-lbl { font-size:9px; font-weight:700; letter-spacing:0.06em; color:var(--gray-muted); text-transform:uppercase; margin-top:2px; }
+  .sum-tile .sum-behind { font-size:10px; font-weight:700; color:#A32D2D; margin-top:2px; }
+  .sum-tile.on { border-color:var(--magenta); background:var(--magenta-light); }
+  .admin-chip-btn { font-family:inherit; font-size:12px; font-weight:700; padding:9px 12px; border-radius:9px; border:1px solid #F2B84B; background:#FCF0D8; color:#8A5A0B; cursor:pointer; }
+  .admin-chip-btn.on { background:#8A5A0B; color:#fff; }
+  .admin-cols { display:none; }
+  .admin-cell-store, .admin-cell-start, .admin-cell-step { display:none; }
+  .admin-meta-mobile { display:block; }
+  .step-pill { display:inline-block; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:600; white-space:nowrap; background:#E4EFFA; color:#1D5FA8; }
+  .step-pill.done { background:#E4F3EA; color:#1F6B4A; }
+  .step-pill.started { background:#EFE4F4; color:#4A1B5C; }
+  .date-pill { font-size:12px; font-weight:600; color:var(--purple); }
+  .date-pill.pending { display:inline-block; background:#FCF0D8; color:#8A5A0B; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:700; }
+
+  @media (min-width: 1000px) {
+    #app { max-width: 1240px; }
+    .admin-summary { grid-template-columns:repeat(8,1fr); }
+    .admin-cols { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,0.9fr) 130px 124px 96px 20px; gap:12px; padding:6px 27px; font-size:10px; font-weight:700; letter-spacing:0.08em; color:var(--gray-muted); }
+    .admin-candidate-summary { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,0.9fr) 130px 124px 96px 20px; gap:12px; align-items:center; }
+    .admin-cell-store, .admin-cell-start, .admin-cell-step { display:block; font-size:12px; color:var(--gray-text); }
+    .admin-meta-mobile { display:none; }
+    .admin-candidate-detail .admin-order-info { grid-template-columns:repeat(3,1fr); }
+    .candidates-list { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; align-items:start; }
+  }
+  @media (min-width: 700px) and (max-width: 999px) {
+    .admin-summary { grid-template-columns:repeat(4,1fr); }
+  }
+
 </style>
 </head>
 <body>
@@ -943,7 +999,7 @@
 
       <div class="form-group">
         <label class="form-label">Phone *</label>
-        <input type="tel" class="form-input" id="f-phone" required>
+        <input type="tel" class="form-input" id="f-phone" required inputmode="tel" maxlength="12" placeholder="000-000-0000" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" title="Use the format 000-000-0000" oninput="formatPhoneInput(this)">
       </div>
 
       <div class="form-group">
@@ -1047,9 +1103,13 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Projected Start Date</label>
-        <input type="text" class="form-input" id="f-startdate" placeholder="07/27/2026" readonly style="background:var(--gray-border); color:var(--gray-muted); cursor:not-allowed;">
-        <p style="font-size:11px; color:var(--gray-muted); margin:4px 0 0;">This is the candidate's expected start date. We will keep you posted in the event of any changes.</p>
+        <div style="background:var(--purple-light); border:1px solid #D9C5E0; border-radius:10px; padding:12px 14px; display:flex; gap:10px; align-items:flex-start;">
+          <div style="font-size:18px; line-height:1;">&#128197;</div>
+          <div>
+            <div style="font-size:13px; font-weight:700; color:var(--purple);">Start date is set by HR</div>
+            <div style="font-size:12px; color:var(--purple); line-height:1.5; margin-top:2px;">HR will confirm your new hire's start date after onboarding review. Until then it shows as &quot;Pending HR confirmation&quot;.</div>
+          </div>
+        </div>
       </div>
 
       <div class="form-group">
@@ -1122,6 +1182,7 @@
 
       <!-- Candidates tab: editable task statuses -->
       <div class="admin-panel active" id="admin-panel-candidates">
+        <div class="admin-summary" id="admin-summary"></div>
         <div class="admin-toolbar">
           <input type="text" class="admin-search" id="admin-search" placeholder="Search name, store, or NTID" oninput="setAdminFilter('search', this.value)">
           <select class="admin-filter-select" id="admin-coach-filter" onchange="setAdminFilter('coach', this.value)">
@@ -1133,7 +1194,9 @@
             <option value="started">Started</option>
             <option value="declined">Declined / no show</option>
           </select>
+          <button class="admin-chip-btn" id="admin-needsdate-btn" onclick="toggleNeedsDate()">Needs start date</button>
         </div>
+        <div class="admin-cols" id="admin-cols"><span>CANDIDATE</span><span>STORE</span><span>COACH</span><span>NEXT STEP</span><span>START DATE</span><span>PROGRESS</span><span></span></div>
         <div class="admin-list-wrap" id="admin-candidates-list">
           <div class="loading">Loading candidates...</div>
         </div>
@@ -1191,6 +1254,7 @@
     listName: "EdgeLink Inc New Hire Onboarding Tracker",
     rosterListName: "EdgeLink Store Roster",
     emailSettingsListName: "EdgeLink Email Settings",
+    payListName: "EdgeLink NHH Pay Rates",
     redirectUri: window.location.href.split('#')[0]
   };
 
@@ -1369,7 +1433,13 @@
     NameTag: "NameTag",
     BiLingual: "Bi_x002d_Lingual",
     Availability: "Availability",
-    CandidateStatus: "CandidateStatus"
+    CandidateStatus: "CandidateStatus",
+    ClearIdentificationSent: "ClearIdSentDate",
+    OfferLetterSent: "OfferLetterSentDate",
+    NTIDCreatedSent: "NTIDSentDate",
+    OnboardingStatusSent: "PaperworkSentDate",
+    BrinksCredentialsSent: "BrinksSentDate",
+    ReadyForDayOneSent: "DayOneSentDate"
   };
 
   function toRealFields(friendlyFields) {
@@ -1472,7 +1542,6 @@
     document.getElementById('signin-screen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
     buildAvailabilityGrid();
-    document.getElementById('f-startdate').value = nextWednesday();
     renderSignedInAs();
     loadStoreRoster();
     applyPositionFilterForCurrentUser();
@@ -1671,6 +1740,17 @@
   }
 
   // Digits only, so (413) 777-1175 and 4137771175 compare equal.
+  // Keeps the phone field in 000-000-0000 format as the user types.
+  function formatPhoneInput(el) {
+    var d = String(el.value || '').replace(/\D/g, '');
+    if (d.length > 10 && d.charAt(0) === '1') d = d.substring(1);
+    d = d.substring(0, 10);
+    var out = d;
+    if (d.length > 6) out = d.substring(0, 3) + '-' + d.substring(3, 6) + '-' + d.substring(6);
+    else if (d.length > 3) out = d.substring(0, 3) + '-' + d.substring(3);
+    el.value = out;
+  }
+
   function normalizePhone(p) {
     return String(p || '').replace(/\D/g, '');
   }
@@ -1704,6 +1784,13 @@
 
   function submitCandidate(evt) {
     evt.preventDefault();
+
+    var phoneCheck = document.getElementById('f-phone').value;
+    if (!/^\d{3}-\d{3}-\d{4}$/.test(phoneCheck)) {
+      alert('Enter the phone number as 000-000-0000.');
+      document.getElementById('f-phone').focus();
+      return false;
+    }
 
     var dupName = document.getElementById('f-name').value;
     var dupes = findPossibleDuplicates(
@@ -1757,7 +1844,6 @@
       UniformShirtSize: shirtSizeVal,
       NameTag: cleanName.split(' ')[0],
       BiLingual: document.getElementById('f-bilingual').value,
-      StartDate: document.getElementById('f-startdate').value || "",
       Availability: getAvailabilityValue(),
       NotesUpdates: document.getElementById('f-notes').value
     };
@@ -1883,6 +1969,11 @@
       var realKey = FIELD_MAP[TASKS[i].key];
       tasks[TASKS[i].key] = (realKey && f[realKey]) || "Pending";
     }
+    var sent = {};
+    for (var si2 = 0; si2 < TASKS.length; si2++) {
+      var sk2 = FIELD_MAP[TASKS[si2].key + 'Sent'];
+      sent[TASKS[si2].key] = (sk2 && f[sk2]) || "";
+    }
     var name = f[FIELD_MAP.CandidateName] || "Unnamed candidate";
     var initials = name.split(" ").map(function (p) { return p.charAt(0); }).join("").substring(0, 2).toUpperCase();
     return {
@@ -1905,6 +1996,8 @@
       ntid: f[FIELD_MAP.NTID] || "",
       tmobileEmail: f[FIELD_MAP.TMobileEmail] || "",
       tasks: tasks,
+      sent: sent,
+      payRate: "",
       // overdue calc is a placeholder here; real threshold-based countdown
       // gets computed once per-task "last updated" date fields exist on the list
       overdueDays: 0,
@@ -1984,6 +2077,101 @@
   // "Welcome sent" is the automated write-back value for Clear Identification
   // once the welcome email goes out - it's functionally the same as Complete
   // for coloring, counting, and stage progression.
+  // ---- Sent-date helpers (dates are stored as yyyy-mm-dd text in SharePoint)
+  var MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function todayIso() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  function parseIso(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
+    if (!m) return null;
+    return new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10));
+  }
+
+  function daysSinceIso(iso) {
+    var d = parseIso(iso);
+    if (!d) return null;
+    var t = new Date();
+    t.setHours(0, 0, 0, 0);
+    return Math.round((t - d) / 86400000);
+  }
+
+  // "Sent Oct 12 - 2 days ago" / "Not sent yet" / "Date not recorded"
+  function sentInfo(c, taskKey) {
+    var val = c.tasks[taskKey];
+    var iso = (c.sent && c.sent[taskKey]) || '';
+    var d = parseIso(iso);
+    if (!d) {
+      if (!val || val === 'Pending') return { text: 'Not sent yet', warn: false };
+      return { text: 'Date not recorded', warn: false };
+    }
+    var label = MONTH_ABBR[d.getMonth()] + ' ' + d.getDate();
+    var n = daysSinceIso(iso);
+    var ago = n === 0 ? 'today' : (n === 1 ? '1 day ago' : n + ' days ago');
+    var done = isTaskDone(val);
+    return { text: 'Sent ' + label + (done ? '' : ' \u00B7 ' + ago), warn: !done && n >= 3 };
+  }
+
+  function startLabel(c) {
+    return c.startDate ? c.startDate : 'Pending HR confirmation';
+  }
+
+  function getCurrentUserName() {
+    var acct = getSignedInAccount();
+    if (acct && acct.name) return acct.name;
+    var e = getCurrentUserEmail();
+    return e ? e.split('@')[0] : 'Unknown';
+  }
+
+  function isAdminUser() {
+    return getCurrentUserEmail() === 'cheryl@edgelinkinc.com';
+  }
+
+  // Notes are stored one per line: "[10/14/2026 1:20 PM | Author] text"
+  function parseNotes(raw) {
+    var out = [];
+    var lines = String(raw || '').split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      var ln = lines[i];
+      if (!ln.replace(/\s/g, '')) continue;
+      var m = /^\[([^\]|]+?)(?:\s*\|\s*([^\]]+))?\]\s?([\s\S]*)$/.exec(ln);
+      if (m) out.push({ ts: m[1], author: m[2] || '', text: m[3] });
+      else if (out.length) out[out.length - 1].text += ' ' + ln;
+      else out.push({ ts: '', author: '', text: ln });
+    }
+    return out;
+  }
+
+  function serializeNotes(list) {
+    var lines = [];
+    for (var i = 0; i < list.length; i++) {
+      var n = list[i];
+      var head = n.ts ? '[' + n.ts + (n.author ? ' | ' + n.author : '') + '] ' : '';
+      lines.push(head + String(n.text).replace(/\n/g, ' '));
+    }
+    return lines.join('\n');
+  }
+
+  function notesHtml(c, idPrefix) {
+    var list = parseNotes(c.notes);
+    if (!list.length) return '<div class="note-empty">No notes yet.</div>';
+    var me = getCurrentUserName().toLowerCase();
+    var html = '';
+    for (var i = list.length - 1; i >= 0; i--) {
+      var n = list[i];
+      var mine = n.author && n.author.toLowerCase() === me;
+      html += '<div class="note-item">';
+      html += '<div class="note-text">' + escapeHtml(n.text) + '</div>';
+      html += '<div class="note-meta">' + escapeHtml(n.author || 'Earlier note') + (n.ts ? ' &middot; ' + escapeHtml(n.ts) : '');
+      if (mine || isAdminUser()) html += ' <button class="note-edit" onclick="editNote(\'' + jsStr(c.id) + '\',' + i + ')">Edit</button>';
+      html += '</div></div>';
+    }
+    return html;
+  }
+
   function isTaskDone(v) {
     return v === 'Complete' || v === 'Welcome sent';
   }
@@ -2208,24 +2396,28 @@
         html += '<span style="font-size:12px; color:var(--gray-muted);">' + cand.email + '</span>';
         html += '</div>';
       }
+      html += '<div class="start-row' + (cand.startDate ? '' : ' pending') + '"><span class="start-row-label">START DATE</span><span class="start-row-val">' + escapeHtml(startLabel(cand)) + '</span></div>';
       for (var k = 0; k < TASKS.length; k++) {
         var task = TASKS[k];
         var st = cand.tasks[task.key];
+        var sInfo = sentInfo(cand, task.key);
         var isDone = st === 'Complete' || st === 'Welcome sent';
         var isStartedTask = st === 'Started';
-        var tbg = isDone ? '#E1F5EE' : isStartedTask ? '#F3E9F6' : st === 'Pending' ? '#FFF8E8' : st === 'Requested Creation' ? '#EAF2FC' : '#F3F3F3';
-        var tc = isDone ? '#0F6E56' : isStartedTask ? '#4A1B5C' : st === 'Pending' ? '#854F0B' : st === 'Requested Creation' ? '#1C5EA8' : '#5F5E5A';
+        var tbg = isDone ? '#E1F5EE' : isStartedTask ? '#F3E9F6' : (st === 'Pending' || st === 'Sent') ? '#FFF8E8' : st === 'Requested Creation' ? '#EAF2FC' : '#F3F3F3';
+        var tc = isDone ? '#0F6E56' : isStartedTask ? '#4A1B5C' : (st === 'Pending' || st === 'Sent') ? '#854F0B' : st === 'Requested Creation' ? '#1C5EA8' : '#5F5E5A';
         html += '<div style="display:flex; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:0.5px solid var(--gray-border);">';
-        html += '<span style="font-size:12px; color:var(--gray-text);">' + task.label + '</span>';
+        html += '<span style="font-size:12px; color:var(--gray-text);">' + task.label + '<span class="sent-line' + (sInfo.warn ? ' warn' : '') + '">' + escapeHtml(sInfo.text) + '</span></span>';
         html += '<span style="font-size:10px; font-weight:600; padding:3px 9px; border-radius:10px; background:' + tbg + '; color:' + tc + ';">' + st + '</span>';
         html += '</div>';
       }
       html += '<div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;">';
       if (cand.shirtSize) html += '<span style="font-size:10px; background:var(--gray-border); padding:3px 8px; border-radius:8px;">Shirt: ' + cand.shirtSize + '</span>';
       if (cand.nameTag) html += '<span style="font-size:10px; background:var(--gray-border); padding:3px 8px; border-radius:8px;">Tag: ' + cand.nameTag + '</span>';
-      if (cand.startDate) html += '<span style="font-size:10px; background:var(--gray-border); padding:3px 8px; border-radius:8px;">Start: ' + cand.startDate + '</span>';
       if (cand.ntid) html += '<span style="font-size:10px; background:var(--gray-border); padding:3px 8px; border-radius:8px;">NTID: ' + cand.ntid + '</span>';
       html += '</div>';
+      html += '<div class="admin-section-label" style="margin-top:12px;">NOTES</div>';
+      html += '<div class="admin-note-row"><input type="text" class="admin-note-input" id="note-' + escapeAttr(cand.id) + '" placeholder="Add a note..."><button class="admin-note-btn" onclick="addNote(\'' + jsStr(cand.id) + '\')">+ Note</button></div>';
+      html += '<div class="note-list">' + notesHtml(cand) + '</div>';
       html += '</div>';
 
       html += '</div>';
@@ -2301,6 +2493,7 @@
       document.getElementById('admin-pin-gate').style.display = 'none';
       document.getElementById('admin-content').style.display = 'flex';
       renderAdminCandidates();
+      loadPayRates();
       renderBacksheetRecipients();
       renderBacksheetThresholds();
     } else {
@@ -2322,7 +2515,7 @@
   // ---------------- ADMIN: CANDIDATE TASK EDITING ----------------
   // ---------------- ADMIN: FILTERS + COLLAPSE STATE ----------------
   var ADMIN_COLLAPSE_KEY = "newhirehub_admin_collapsed_v1";
-  var adminFilters = { search: "", coach: "", status: "all" };
+  var adminFilters = { search: "", coach: "", status: "all", stage: "", needsDate: false };
 
   function loadCollapsedMarkets() {
     try {
@@ -2349,7 +2542,7 @@
   }
 
   function clearAdminFilters() {
-    adminFilters = { search: "", coach: "", status: "all" };
+    adminFilters = { search: "", coach: "", status: "all", stage: "", needsDate: false };
     var s = document.getElementById('admin-search');
     var cf = document.getElementById('admin-coach-filter');
     var sf = document.getElementById('admin-status-filter');
@@ -2360,7 +2553,7 @@
   }
 
   function adminFiltersActive() {
-    return adminFilters.search !== '' || adminFilters.coach !== '' || adminFilters.status !== 'all';
+    return adminFilters.search !== '' || adminFilters.coach !== '' || adminFilters.status !== 'all' || adminFilters.stage !== '' || adminFilters.needsDate;
   }
 
   function candidateCoach(c) {
@@ -2369,7 +2562,31 @@
     return v;
   }
 
+  function toggleNeedsDate() {
+    adminFilters.needsDate = !adminFilters.needsDate;
+    renderAdminCandidates();
+  }
+
+  function setStageFilter(name) {
+    adminFilters.stage = (adminFilters.stage === name) ? '' : name;
+    renderAdminCandidates();
+  }
+
+  // The step a candidate is currently sitting in. Only that step's own
+  // Complete / Welcome sent moves them on.
+  function candidateStage(sc) {
+    if (isDeclined(sc)) return 'Declined / No show';
+    for (var ti = 0; ti < TASKS.length; ti++) {
+      if (isTaskDone(sc.tasks[TASKS[ti].key])) continue;
+      return TASKS[ti].label;
+    }
+    if (hasStarted(sc)) return 'Started';
+    return 'Day one ready';
+  }
+
   function matchesAdminFilters(c) {
+    if (adminFilters.stage && candidateStage(c) !== adminFilters.stage) return false;
+    if (adminFilters.needsDate && (c.startDate || isDeclined(c) || hasStarted(c))) return false;
     if (adminFilters.status === 'active' && (isDeclined(c) || hasStarted(c))) return false;
     if (adminFilters.status === 'started' && !hasStarted(c)) return false;
     if (adminFilters.status === 'declined' && !isDeclined(c)) return false;
@@ -2506,12 +2723,46 @@
     return 'background:#FCEBEB;color:#A32D2D;';
   }
 
+  function renderAdminSummary() {
+    var box = document.getElementById('admin-summary');
+    if (!box) return;
+    var names = [];
+    for (var i = 0; i < TASKS.length; i++) names.push(TASKS[i].label);
+    names.push('Day one ready');
+    names.push('Started');
+    var counts = {}, behind = {}, pendingDate = 0;
+    for (var a = 0; a < allCandidates.length; a++) {
+      var c = allCandidates[a];
+      var st = candidateStage(c);
+      if (st === 'Declined / No show') continue;
+      counts[st] = (counts[st] || 0) + 1;
+      if (needsAttention(c)) behind[st] = (behind[st] || 0) + 1;
+      if (!c.startDate && !hasStarted(c)) pendingDate++;
+    }
+    var html = '';
+    for (var n = 0; n < names.length; n++) {
+      var nm = names[n];
+      var label = (n < TASKS.length ? (n + 1) + '. ' : '') + nm;
+      html += '<button class="sum-tile' + (adminFilters.stage === nm ? ' on' : '') + '" onclick="setStageFilter(\'' + jsStr(nm) + '\')">';
+      html += '<div class="sum-num">' + (counts[nm] || 0) + '</div><div class="sum-lbl">' + escapeHtml(label) + '</div>';
+      if (behind[nm]) html += '<div class="sum-behind">' + behind[nm] + ' behind</div>';
+      html += '</button>';
+    }
+    box.innerHTML = html;
+    var nb = document.getElementById('admin-needsdate-btn');
+    if (nb) {
+      nb.className = 'admin-chip-btn' + (adminFilters.needsDate ? ' on' : '');
+      nb.textContent = 'Needs start date ' + pendingDate;
+    }
+  }
+
   // ---------------- ADMIN: CANDIDATE TASK EDITING ----------------
   function renderAdminCandidates() {
     var container = document.getElementById('admin-candidates-list');
     if (!container) return;
 
     populateCoachFilter();
+    renderAdminSummary();
 
     var coachSel = document.getElementById('admin-coach-filter');
     var statusSel = document.getElementById('admin-status-filter');
@@ -2558,23 +2809,7 @@
     STAGE_ORDER.push('Started');
     STAGE_ORDER.push('Declined / No show');
 
-    function stageForCandidate(sc) {
-      if (isDeclined(sc)) return 'Declined / No show';
-
-      // General rule: a candidate stays in a task's section until that exact
-      // task is marked Complete (or Welcome sent) - nothing else moves them
-      // out, including a "Started" value on Ready for Day One or the overall
-      // candidate Status field.
-      for (var ti = 0; ti < TASKS.length; ti++) {
-        var tval = sc.tasks[TASKS[ti].key];
-        if (isTaskDone(tval)) continue;
-        return TASKS[ti].label;
-      }
-
-      // Every task is Complete - fall back to overall candidate status.
-      if (hasStarted(sc)) return 'Started';
-      return 'Day one ready';
-    }
+    var stageForCandidate = candidateStage;
 
     var MARKET_ORDER = ['Rhode Island', 'Mass', 'Connecticut', 'Tennessee', 'Knoxville', 'Arkansas', 'Chattanooga'];
 
@@ -2651,21 +2886,27 @@
 
         html += '<div class="admin-candidate-card' + (expandedIds['admin-card-' + c.id] ? ' expanded' : '') + '" id="admin-card-' + c.id + '"' + cardStyle + '>';
 
+        var rowStage = stageForCandidate(c);
+        var stageCls = rowStage === 'Started' ? ' started' : (rowStage === 'Day one ready' ? ' done' : '');
         html += '<div class="admin-candidate-summary" onclick="toggleAdminCard(\'' + jsStr(c.id) + '\')">';
+        html += '<div style="display:flex;align-items:center;gap:11px;min-width:0;">';
         html += '<div class="admin-avatar" style="background:' + av.bg + ';color:' + av.color + ';">' + escapeHtml(c.initials || candidateInitials(c.name)) + '</div>';
         html += '<div class="admin-summary-info">';
         html += '<div class="admin-summary-name"' + (declined ? ' style="color:#8A8780;"' : '') + '>' + escapeHtml(c.name) + '</div>';
-
         var metaBits = [];
         if (c.position) metaBits.push(escapeHtml(c.position));
         if (declined) metaBits.push(escapeHtml(c.candidateStatus));
         else if (hasStarted(c)) metaBits.push('Started');
-        else if (c.startDate) metaBits.push('Starts ' + escapeHtml(c.startDate));
+        else metaBits.push(c.startDate ? 'Starts ' + escapeHtml(c.startDate) : 'Start date pending');
         var coachName = candidateCoach(c);
         if (coachName) metaBits.push(escapeHtml(coachName));
-        html += '<div class="admin-summary-meta">' + metaBits.join(' &middot; ') + '</div>';
-
-        html += '</div>';
+        if (!declined && !hasStarted(c)) metaBits.push('Next: ' + escapeHtml(rowStage));
+        html += '<div class="admin-summary-meta admin-meta-mobile">' + metaBits.join(' &middot; ') + '</div>';
+        html += '</div></div>';
+        html += '<div class="admin-cell-store">' + escapeHtml(c.homeLocation || '') + (c.trainingStore && c.trainingStore !== c.homeLocation ? '<div style="font-size:10px;color:var(--gray-muted);">Training: ' + escapeHtml(c.trainingStore) + '</div>' : '') + '</div>';
+        html += '<div class="admin-cell-store">' + escapeHtml(coachName || 'Unassigned') + '</div>';
+        html += '<div class="admin-cell-step"><span class="step-pill' + stageCls + '">' + escapeHtml(declined ? c.candidateStatus : rowStage) + '</span></div>';
+        html += '<div class="admin-cell-start">' + (c.startDate ? '<span class="date-pill">' + escapeHtml(c.startDate) + '</span>' : (hasStarted(c) || declined ? '' : '<span class="date-pill pending">Pending</span>')) + '</div>';
         if (declined) {
           html += '<span class="admin-count-chip" style="background:#FCEBEB;color:#A32D2D;">' + escapeHtml(c.candidateStatus) + '</span>';
         } else {
@@ -2688,7 +2929,7 @@
         html += '<div class="admin-order-field"><label>PHONE</label><input type="text" value="' + escapeAttr(c.phone || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidatePhone\', \'phone\', this.value)"></div>';
         html += '<div class="admin-order-field"><label>EMAIL</label><input type="text" value="' + escapeAttr(c.email || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidateEmail\', \'email\', this.value)"></div>';
         html += '<div class="admin-order-field"><label>STATUS</label><select onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'CandidateStatus\', \'candidateStatus\', this.value)"><option value="Active"' + (c.candidateStatus === "Active" ? " selected" : "") + '>Active</option><option value="Declined"' + (c.candidateStatus === "Declined" ? " selected" : "") + '>Declined</option><option value="No Show"' + (c.candidateStatus === "No Show" ? " selected" : "") + '>No Show</option><option value="Started"' + (c.candidateStatus === "Started" ? " selected" : "") + '>Started</option></select></div>';
-        html += '<div class="admin-order-field"><label>START DATE</label><input type="text" value="' + escapeAttr(c.startDate || '') + '" placeholder="07/27/2026" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'StartDate\', \'startDate\', this.value)"></div>';
+        html += '<div class="admin-order-field start-approve' + (c.startDate ? '' : ' pending') + '"><label>START DATE &middot; HR APPROVAL</label><input type="text" id="sd-' + escapeAttr(c.id) + '" value="' + escapeAttr(c.startDate || '') + '" placeholder="' + nextWednesday() + '" onchange="saveStartDate(\'' + jsStr(c.id) + '\', this.value)"><div class="start-actions"><button class="start-btn" onclick="saveStartDate(\'' + jsStr(c.id) + '\', document.getElementById(\'sd-' + jsStr(c.id) + '\').value || nextWednesday())">' + (c.startDate ? 'Update date' : 'Confirm date') + '</button><button class="start-chip" onclick="saveStartDate(\'' + jsStr(c.id) + '\', nextWednesday())">Use next Wednesday ' + nextWednesday() + '</button></div>' + (c.startDate ? '' : '<div class="start-hint">Coaches and managers see &quot;Pending HR confirmation&quot; until you confirm.</div>') + '</div>';
         html += '<div class="admin-order-field"><label>STORE</label><input type="text" value="' + escapeAttr(c.homeLocation || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'HomeLocationAssigned\', \'homeLocation\', this.value)"></div>';
         html += '<div class="admin-order-field"><label>TRAINING STORE</label><input type="text" value="' + escapeAttr(c.trainingStore || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'TrainingStore\', \'trainingStore\', this.value)"></div>';
         html += '<div class="admin-order-field"><label>SHIRT SIZE</label><input type="text" value="' + escapeAttr(c.shirtSize || '') + '" onchange="updateOrderField(\'' + jsStr(c.id) + '\', \'UniformShirtSize\', \'shirtSize\', this.value)"></div>';
@@ -2702,7 +2943,8 @@
           var task = TASKS[k];
           var currentVal = c.tasks[task.key];
           html += '<div class="admin-task-row">';
-          html += '<div class="admin-task-label"><span class="admin-task-dot" style="background:' + segColor(currentVal) + ';"></span>' + escapeHtml(task.label) + '</div>';
+          var adSent = sentInfo(c, task.key);
+          html += '<div class="admin-task-label"><span class="admin-task-dot" style="background:' + segColor(currentVal) + ';"></span><span>' + escapeHtml(task.label) + '<span class="sent-line' + (adSent.warn ? ' warn' : '') + '">' + escapeHtml(adSent.text) + '</span></span></div>';
           html += '<select class="admin-task-select" style="' + taskPillStyle(currentVal) + '" onchange="updateTaskStatus(\'' + jsStr(c.id) + '\', \'' + task.key + '\', this.value)">';
           var blockers = brinksBlockers(c);
           // if SharePoint holds a value this task doesn't list, show it anyway -
@@ -2730,12 +2972,20 @@
           }
         }
 
+        html += '<div class="pay-box"><div class="pay-head"><span>PAY RATE</span><span class="pay-tag">ADMIN ONLY</span></div>';
+        if (payAvailable) {
+          html += '<div class="admin-note-row"><input type="text" class="admin-note-input" id="pay-' + escapeAttr(c.id) + '" value="' + escapeAttr(c.payRate || '') + '" placeholder="$0.00 / hr"><button class="admin-note-btn" onclick="savePayRate(\'' + jsStr(c.id) + '\')">Save</button></div>';
+        } else {
+          html += '<div class="note-empty">Pay rate list not available.</div>';
+        }
+        html += '</div>';
+
         html += '<div class="admin-section-label" style="margin-top:16px;">NOTES LOG</div>';
         html += '<div class="admin-note-row">';
         html += '<input type="text" class="admin-note-input" id="note-' + escapeAttr(c.id) + '" placeholder="Add a note...">';
         html += '<button class="admin-note-btn" onclick="addNote(\'' + jsStr(c.id) + '\')">+ Note</button>';
         html += '</div>';
-        html += '<div class="admin-note-log">' + (c.notes ? escapeHtml(c.notes) : 'No notes yet.') + '</div>';
+        html += '<div class="note-list">' + notesHtml(c) + '</div>';
 
         html += '</div>';
         html += '</div>';
@@ -2771,6 +3021,13 @@
 
     var friendlyFields = {};
     friendlyFields[taskKey] = newValue;
+    // First time this step leaves Pending, record the date it was sent.
+    var stampCand = findCandidate(itemId);
+    var stampedIso = '';
+    if (stampCand && newValue !== 'Pending' && !(stampCand.sent && stampCand.sent[taskKey])) {
+      stampedIso = todayIso();
+      friendlyFields[taskKey + 'Sent'] = stampedIso;
+    }
     var realFields = toRealFields(friendlyFields);
 
     if (Object.keys(realFields).length === 0) {
@@ -2797,6 +3054,7 @@
       for (var i = 0; i < allCandidates.length; i++) {
         if (allCandidates[i].id === itemId) {
           allCandidates[i].tasks[taskKey] = newValue;
+          if (stampedIso) allCandidates[i].sent[taskKey] = stampedIso;
           allCandidates[i].nextStep = computeNextStep(allCandidates[i].tasks);
         }
       }
@@ -2808,6 +3066,75 @@
       console.error(err);
       alert('Could not update this task. Please try again.');
       renderAdminCandidates(); // revert dropdown to last known state
+    });
+  }
+
+  // HR entering the date is the approval. Accepts mm/dd/yyyy.
+  function saveStartDate(itemId, value) {
+    var v = String(value || '').replace(/^\s+|\s+$/g, '');
+    if (v && !calParseStart(v)) { alert('Enter the start date as mm/dd/yyyy.'); return; }
+    updateOrderField(itemId, 'StartDate', 'startDate', v);
+  }
+
+  // ---- Pay rate: stored in a separate list that only HR can open, so
+  // coaches and managers cannot read it even directly from SharePoint.
+  var payAvailable = false;
+  var payListId = null;
+  var payItemIds = {};
+
+  function loadPayRates() {
+    if (!isAdminUser()) return;
+    getSiteId().then(function (siteId) {
+      return findListIdByName(siteId, CONFIG.payListName).then(function (id) {
+        payListId = id;
+        var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + id + "/items?expand=fields&$top=500";
+        return graphFetch(url);
+      });
+    }).then(function (data) {
+      payAvailable = true;
+      var items = data.value || [];
+      var byCand = {};
+      for (var i = 0; i < items.length; i++) {
+        var f = items[i].fields || {};
+        byCand[f.Title] = { itemId: items[i].id, rate: f.PayRate || '' };
+      }
+      for (var j = 0; j < allCandidates.length; j++) {
+        var hit = byCand[allCandidates[j].id];
+        allCandidates[j].payRate = hit ? hit.rate : '';
+        if (hit) payItemIds[allCandidates[j].id] = hit.itemId;
+      }
+      renderAdminCandidates();
+    }).catch(function (err) {
+      console.warn('Pay rate list not available:', err);
+      payAvailable = false;
+    });
+  }
+
+  function savePayRate(candId) {
+    var input = document.getElementById('pay-' + candId);
+    if (!input || !payListId) return;
+    var val = input.value.replace(/^\s+|\s+$/g, '');
+    getSiteId().then(function (siteId) {
+      var base = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + payListId + "/items";
+      var existing = payItemIds[candId];
+      var url = existing ? base + "/" + existing + "/fields" : base;
+      var body = existing ? { PayRate: val } : { fields: { Title: String(candId), PayRate: val } };
+      return fetch(url, {
+        method: existing ? "PATCH" : "POST",
+        headers: { Authorization: "Bearer " + graphToken, "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      }).then(function (res) {
+        if (!res.ok) throw new Error("Pay rate save failed: " + res.status);
+        return res.json();
+      }).then(function (j) {
+        if (!existing && j && j.id) payItemIds[candId] = j.id;
+        var c = findCandidate(candId);
+        if (c) c.payRate = val;
+        renderAdminCandidates();
+      });
+    }).catch(function (err) {
+      console.error(err);
+      alert('Could not save the pay rate. Please try again.');
     });
   }
 
@@ -2843,6 +3170,8 @@
         }
       }
       renderCandidates();
+      renderAdminCandidates();
+      if (document.getElementById('view-calendar').className.indexOf('active') !== -1) renderCalendar();
       console.log('Saved ' + friendlyKey + ' = ' + newValue);
     }).catch(function (err) {
       console.error('updateOrderField error:', err);
@@ -3114,30 +3443,11 @@
     document.getElementById('f-coach').innerHTML = '<option value="">Select home store first</option>';
     document.getElementById('f-manager').innerHTML = '<option value="">Select home store first</option>';
     document.getElementById('shirtsize-other-group').style.display = 'none';
-    document.getElementById('f-startdate').value = nextWednesday();
     buildAvailabilityGrid(); // reset availability selections
   }
 
-  function addNote(itemId) {
-    var input = document.getElementById('note-' + itemId);
-    if (!input || !input.value.trim()) return;
-    var noteText = input.value.trim();
-    var now = new Date();
-    var timestamp = (now.getMonth()+1) + '/' + now.getDate() + '/' + now.getFullYear() + ' ' +
-      now.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
-    var newEntry = '[' + timestamp + '] ' + noteText;
-
-    // Find current notes for this candidate
-    var candidate = null;
-    for (var i = 0; i < allCandidates.length; i++) {
-      if (allCandidates[i].id === itemId) { candidate = allCandidates[i]; break; }
-    }
-    var existingNotes = candidate ? candidate.notes || '' : '';
-    var updatedNotes = existingNotes ? existingNotes + '\n' + newEntry : newEntry;
-
-    var friendlyFields = { NotesUpdates: updatedNotes };
-    var realFields = toRealFields(friendlyFields);
-
+  function saveNotes(itemId, candidate, updatedNotes, done) {
+    var realFields = toRealFields({ NotesUpdates: updatedNotes });
     getSiteId().then(function(siteId) {
       return getListId(siteId).then(function(listId) {
         return fetch("https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items/" + itemId + "/fields", {
@@ -3149,12 +3459,48 @@
     }).then(function(res) {
       if (!res.ok) throw new Error("Note save failed: " + res.status);
       if (candidate) candidate.notes = updatedNotes;
-      input.value = '';
+      if (done) done();
+      renderCandidates();
       renderAdminCandidates();
     }).catch(function(err) {
       console.error(err);
-      alert('Could not save note. Please try again.');
+      alert('Could not save the note. Please try again.');
     });
+  }
+
+  function noteTimestamp() {
+    var now = new Date();
+    return (now.getMonth()+1) + '/' + now.getDate() + '/' + now.getFullYear() + ' ' +
+      now.toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit'});
+  }
+
+  function addNote(itemId) {
+    var input = document.getElementById('note-' + itemId);
+    if (!input || !input.value.trim()) return;
+    var candidate = findCandidate(itemId);
+    var list = parseNotes(candidate ? candidate.notes : '');
+    list.push({ ts: noteTimestamp(), author: getCurrentUserName(), text: input.value.trim() });
+    saveNotes(itemId, candidate, serializeNotes(list), function () { input.value = ''; });
+  }
+
+  // Coaches and managers can edit only their own notes. There is no delete.
+  function editNote(itemId, idx) {
+    var candidate = findCandidate(itemId);
+    if (!candidate) return;
+    var list = parseNotes(candidate.notes);
+    var n = list[idx];
+    if (!n) return;
+    if (!isAdminUser() && (n.author || '').toLowerCase() !== getCurrentUserName().toLowerCase()) {
+      alert('You can only edit your own notes.');
+      return;
+    }
+    var updated = prompt('Edit note', n.text);
+    if (updated === null) return;
+    updated = updated.replace(/^\s+|\s+$/g, '');
+    if (!updated) { alert('A saved note cannot be deleted. Enter the corrected text.'); return; }
+    n.text = updated;
+    n.ts = n.ts ? n.ts.replace(/ \(edited\)$/, '') + ' (edited)' : n.ts;
+    saveNotes(itemId, candidate, serializeNotes(list));
   }
 
   function setupShirtSizeToggle() {
@@ -3405,6 +3751,19 @@
         html += calPeopleHtml(upcoming, true);
       }
     }
+    var pend = [];
+    var everyone = getCalendarCandidates();
+    for (var pi = 0; pi < everyone.length; pi++) {
+      var pc = everyone[pi];
+      if (hasStarted(pc) || calParseStart(pc.startDate)) continue;
+      if (!calMatchesFilters(pc)) continue;
+      pend.push(pc);
+    }
+    if (pend.length) {
+      html += '<div class="cal-day-panel-head" style="color:#8A5A0B;">PENDING HR CONFIRMATION &middot; ' + pend.length + '</div>';
+      html += '<div class="cal-daycount-note">These candidates do not have a confirmed start date yet.</div>';
+      html += calPeopleHtml(pend);
+    }
     panel.innerHTML = html;
   }
 
@@ -3439,6 +3798,7 @@
       var bits = [];
       if (c.position) bits.push(escapeHtml(c.position));
       if (c.homeLocation) bits.push(escapeHtml(c.homeLocation));
+      bits.push(c.nextStep ? 'Next: ' + escapeHtml(c.nextStep) : 'All steps done');
       if (showDate && c._calDate) {
         bits.unshift(CAL_MONTHS[c._calDate.getMonth()].slice(0, 3) + ' ' + c._calDate.getDate());
       }
