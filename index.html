@@ -1438,6 +1438,7 @@
     OfferLetterSent: "OfferLetterSentDate",
     NTIDCreatedSent: "NTIDSentDate",
     OnboardingStatusSent: "PaperworkSentDate",
+    BrinksNote: "BrinksNote",
     BrinksCredentialsSent: "BrinksSentDate",
     ReadyForDayOneSent: "DayOneSentDate"
   };
@@ -2002,6 +2003,7 @@
       tasks: tasks,
       sent: sent,
       payRate: "",
+      brinksNote: f[FIELD_MAP.BrinksNote] || "",
       // overdue calc is a placeholder here; real threshold-based countdown
       // gets computed once per-task "last updated" date fields exist on the list
       overdueDays: 0,
@@ -2967,6 +2969,8 @@
         }
 
         if (c.tasks.BrinksCredentials !== 'Complete') {
+          html += '<div class="pay-box"><div class="pay-head"><span>NOTE FOR BRINKS</span><span class="pay-tag" style="background:#E4EFFA;color:#1D5FA8;">PRINTS IN EMAIL</span></div>';
+          html += '<div class="admin-note-row"><input type="text" class="admin-note-input" id="bn-' + escapeAttr(c.id) + '" value="' + escapeAttr(c.brinksNote || '') + '" placeholder="Optional note to include in the Brinks request email"><button class="admin-note-btn" onclick="saveBrinksNote(\'' + jsStr(c.id) + '\')">Save</button></div></div>';
           var bBlock = brinksBlockers(c);
           if (bBlock.length > 0) {
             html += '<button class="brinks-send-btn" disabled>Send Brinks request</button>';
@@ -3080,6 +3084,11 @@
     updateOrderField(itemId, 'StartDate', 'startDate', v);
   }
 
+  function saveBrinksNote(candId) {
+    var el = document.getElementById('bn-' + candId);
+    updateOrderField(candId, 'BrinksNote', 'brinksNote', el ? el.value : '');
+  }
+
   // ---- Pay rate: stored in a separate list that only HR can open, so
   // coaches and managers cannot read it even directly from SharePoint.
   var payAvailable = false;
@@ -3152,7 +3161,7 @@
       return;
     }
 
-    getSiteId().then(function (siteId) {
+    return getSiteId().then(function (siteId) {
       return getListId(siteId).then(function (listId) {
         var url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items/" + itemId + "/fields";
         return fetch(url, {
@@ -3193,8 +3202,12 @@
     // NOTE: this flips the field to "Requested Creation" which the future
     // Power Automate flow watches for to email the Brinks department.
     // Actual email sending is not yet wired - that's a later phase.
-    updateTaskStatus(itemId, 'BrinksCredentials', 'Requested Creation');
-    alert('Brinks Credentials set to "Requested Creation" for ' + candidateName + '. Once email automation is built, this will notify the Brinks department automatically.');
+    var bnEl = document.getElementById('bn-' + itemId);
+    var saveNote = (bnEl ? updateOrderField(itemId, 'BrinksNote', 'brinksNote', bnEl.value) : null);
+    Promise.resolve(saveNote).then(function () {
+      updateTaskStatus(itemId, 'BrinksCredentials', 'Requested Creation');
+      alert('Brinks request sent for ' + candidateName + '. The Brinks department has been emailed.');
+    });
   }
 
   // ---------------- ADMIN: BACKSHEET (email recipients) ----------------
